@@ -46,4 +46,6 @@ public class Booking {
     public void setEndLocation(String endLocation) {
         this.endLocation = endLocation;
     }
+
+
 }
