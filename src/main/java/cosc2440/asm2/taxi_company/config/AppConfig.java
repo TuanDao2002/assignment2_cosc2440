@@ -21,8 +21,7 @@ import java.util.Properties;
 public class AppConfig {
     @Bean
     public HibernateTransactionManager transactionManager(SessionFactory sessionFactory) {
-        HibernateTransactionManager tx = new HibernateTransactionManager(sessionFactory);
-        return tx;
+        return new HibernateTransactionManager(sessionFactory);
     }
 
     @Bean
