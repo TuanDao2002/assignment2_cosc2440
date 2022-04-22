@@ -1,8 +1,6 @@
 package cosc2440.asm2.taxi_company.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.OptBoolean;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -72,16 +70,16 @@ public class Booking {
         return pickUpDatetime;
     }
 
-    public void setPickUpDatetime(String dateString) {
-        this.pickUpDatetime = LocalDateTime.parse(dateString, DATE_TIME_FORMATTER.withResolverStyle(ResolverStyle.STRICT));
+    public void setPickUpDatetime(String dateTimeString) {
+        this.pickUpDatetime = LocalDateTime.parse(dateTimeString, DATE_TIME_FORMATTER.withResolverStyle(ResolverStyle.STRICT));
     }
 
     public LocalDateTime getDropOffDateTime() {
         return dropOffDateTime;
     }
 
-    public void setDropOffDateTime(LocalDateTime dropOffDateTime) {
-        this.dropOffDateTime = dropOffDateTime;
+    public void setDropOffDateTime(String dateTimeString) {
+        this.dropOffDateTime = LocalDateTime.parse(dateTimeString, DATE_TIME_FORMATTER.withResolverStyle(ResolverStyle.STRICT));
     }
 
     public ZonedDateTime getDateCreated() {
