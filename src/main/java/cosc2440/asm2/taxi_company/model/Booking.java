@@ -1,6 +1,7 @@
 package cosc2440.asm2.taxi_company.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -17,23 +18,29 @@ public class Booking {
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long bookingID;
 
     @Column(nullable = false)
-    String startLocation;
+    private String startLocation;
 
     @Column(nullable = false)
-    String endLocation;
+    private String endLocation;
 
     @Column(nullable = false)
     @JsonFormat(pattern = datetimePattern)
-    LocalDateTime pickUpDatetime;
+    private LocalDateTime pickUpDatetime;
 
     @Column
     LocalDateTime dropOffDateTime;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    // set name for the join column in Booking and the name of reference column is the ID column of Invoice
+    @JoinColumn(name = "invoiceID", referencedColumnName = "invoiceID")
+    @JsonIgnoreProperties(value = "booking")
+    private Invoice invoice;
+
     @Column(nullable = false)
-    ZonedDateTime dateCreated;
+    private ZonedDateTime dateCreated;
 
     public Booking() {
         this.dateCreated = ZonedDateTime.now();
@@ -46,9 +53,13 @@ public class Booking {
         this.dateCreated = ZonedDateTime.now();
     }
 
-    public Long getId() { return id; }
+    public Long getBookingID() {
+        return bookingID;
+    }
 
-    public void setId(Long id) { this.id = id; }
+    public void setBookingID(Long bookingID) {
+        this.bookingID = bookingID;
+    }
 
     public String getStartLocation() {
         return startLocation;
@@ -66,23 +77,31 @@ public class Booking {
         this.endLocation = endLocation;
     }
 
-    public LocalDateTime getPickUpDatetime() {
-        return pickUpDatetime;
+    public String getPickUpDatetime() {
+        return pickUpDatetime != null ? pickUpDatetime.format(DATE_TIME_FORMATTER) : null;
     }
 
     public void setPickUpDatetime(String dateTimeString) {
         this.pickUpDatetime = LocalDateTime.parse(dateTimeString, DATE_TIME_FORMATTER.withResolverStyle(ResolverStyle.STRICT));
     }
 
-    public LocalDateTime getDropOffDateTime() {
-        return dropOffDateTime;
+    public String getDropOffDateTime() {
+        return dropOffDateTime != null ? dropOffDateTime.format(DATE_TIME_FORMATTER) : null;
     }
 
     public void setDropOffDateTime(String dateTimeString) {
-        this.dropOffDateTime = LocalDateTime.parse(dateTimeString, DATE_TIME_FORMATTER.withResolverStyle(ResolverStyle.STRICT));
+        this.dropOffDateTime = dateTimeString == null ? null : LocalDateTime.parse(dateTimeString, DATE_TIME_FORMATTER.withResolverStyle(ResolverStyle.STRICT));
     }
 
     public ZonedDateTime getDateCreated() {
         return dateCreated;
+    }
+
+    public Invoice getInvoice() {
+        return invoice;
+    }
+
+    public void setInvoice(Invoice invoice) {
+        this.invoice = invoice;
     }
 }
