@@ -9,7 +9,7 @@ public class Car {
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String VIN;
+    private Long VIN;
 
     @Column
     private String make;
@@ -35,7 +35,7 @@ public class Car {
     public Car() {
     }
 
-    public Car(String VIN, String make, String model, String color, boolean isConvertible, double rating, String licensePlate, double ratePerKilometer) {
+    public Car(Long VIN, String make, String model, String color, boolean isConvertible, double rating, String licensePlate, double ratePerKilometer) {
         this.VIN = VIN;
         this.make = make;
         this.model = model;
@@ -56,11 +56,11 @@ public class Car {
         this.ratePerKilometer = ratePerKilometer;
     }
 
-    public String getVIN() {
+    public Long getVIN() {
         return VIN;
     }
 
-    public void setVIN(String VIN) {
+    public void setVIN(Long VIN) {
         this.VIN = VIN;
     }
 
