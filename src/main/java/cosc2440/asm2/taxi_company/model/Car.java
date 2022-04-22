@@ -3,6 +3,7 @@ package cosc2440.asm2.taxi_company.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
+import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "car")
@@ -39,7 +40,13 @@ public class Car {
     @JsonIgnoreProperties(value = "car")
     private Driver driver;
 
+    private boolean isAvailable;
+
+    @Column(nullable = false)
+    private ZonedDateTime dateCreated;
+
     public Car() {
+        this.dateCreated = ZonedDateTime.now();
     }
 
     public Car(Long VIN, String make, String model, String color, boolean isConvertible, double rating, String licensePlate, double ratePerKilometer) {
@@ -51,6 +58,7 @@ public class Car {
         this.rating = rating;
         this.licensePlate = licensePlate;
         this.ratePerKilometer = ratePerKilometer;
+        this.dateCreated = ZonedDateTime.now();
     }
 
     public Car(String make, String model, String color, boolean isConvertible, double rating, String licensePlate, double ratePerKilometer) {
@@ -61,6 +69,7 @@ public class Car {
         this.rating = rating;
         this.licensePlate = licensePlate;
         this.ratePerKilometer = ratePerKilometer;
+        this.dateCreated = ZonedDateTime.now();
     }
 
     public Long getVIN() {
@@ -125,6 +134,30 @@ public class Car {
 
     public void setRatePerKilometer(double ratePerKilometer) {
         this.ratePerKilometer = ratePerKilometer;
+    }
+
+    public Driver getDriver() {
+        return driver;
+    }
+
+    public void setDriver(Driver driver) {
+        this.driver = driver;
+    }
+
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public void setAvailable(boolean available) {
+        isAvailable = available;
+    }
+
+    public ZonedDateTime getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(ZonedDateTime dateCreated) {
+        this.dateCreated = dateCreated;
     }
 
     @Override

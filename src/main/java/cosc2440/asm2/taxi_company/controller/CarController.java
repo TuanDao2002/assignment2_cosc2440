@@ -37,7 +37,6 @@ public class CarController {
 
     @RequestMapping(path = "/car", method = RequestMethod.PUT)
     public String updateCar(@RequestBody Car car) {
-        System.err.println(car);
         return carService.updateCar(car);
     }
 }

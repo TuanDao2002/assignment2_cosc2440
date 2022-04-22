@@ -4,6 +4,7 @@ package cosc2440.asm2.taxi_company.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
+import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "driver")
@@ -27,7 +28,11 @@ public class Driver {
     @JsonIgnoreProperties(value = "driver")
     private Car car;
 
+    @Column(nullable = false)
+    private ZonedDateTime dateCreated;
+
     public Driver() {
+        this.dateCreated = ZonedDateTime.now();
     }
 
     public Driver(Long id, String licenseNumber, String phoneNumber, double rating) {
@@ -35,12 +40,14 @@ public class Driver {
         this.licenseNumber = licenseNumber;
         this.phoneNumber = phoneNumber;
         this.rating = rating;
+        this.dateCreated = ZonedDateTime.now();
     }
 
     public Driver(String licenseNumber, String phoneNumber, double rating) {
         this.licenseNumber = licenseNumber;
         this.phoneNumber = phoneNumber;
         this.rating = rating;
+        this.dateCreated = ZonedDateTime.now();
     }
 
     public Long getId() {
@@ -73,6 +80,22 @@ public class Driver {
 
     public void setRating(double rating) {
         this.rating = rating;
+    }
+
+    public Car getCar() {
+        return car;
+    }
+
+    public void setCar(Car car) {
+        this.car = car;
+    }
+
+    public ZonedDateTime getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(ZonedDateTime dateCreated) {
+        this.dateCreated = dateCreated;
     }
 
     @Override

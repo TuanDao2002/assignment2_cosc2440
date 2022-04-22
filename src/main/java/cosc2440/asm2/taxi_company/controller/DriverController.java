@@ -1,6 +1,7 @@
 package cosc2440.asm2.taxi_company.controller;
 
 import cosc2440.asm2.taxi_company.model.Driver;
+import cosc2440.asm2.taxi_company.service.CarService;
 import cosc2440.asm2.taxi_company.service.DriverService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,9 @@ public class DriverController {
 
     @Autowired
     private DriverService driverService;
+
+    @Autowired
+    private CarService carService;
 
     @RequestMapping(path = "/driver", method = RequestMethod.GET)
     public ResponseEntity<List<Driver>> getAllDrivers(@RequestParam(value = "page", defaultValue = "0") int page,
@@ -38,5 +42,22 @@ public class DriverController {
     @RequestMapping(path = "/driver", method = RequestMethod.PUT)
     public String updateDriver(@RequestBody Driver driver) {
         return driverService.updateDriver(driver);
+    }
+
+    @RequestMapping(path = "/driver/pick", method = RequestMethod.GET)
+    public String pickCarById(@RequestParam(value = "carVIN") Long carVIN,
+                              @RequestParam(value = "driverId") Long driverID) {
+        if (carService.getCarById(carVIN) == null) {
+            return String.format("Car with VIN %d does not exist!", carVIN);
+        }
+
+        if (driverService.getDriverById(driverID) == null) {
+            return String.format("Driver with id %d does not exist!", driverID);
+        }
+
+        // Handle more logic here (set car, set driver, set available,...)
+
+
+        return String.format("Assign car with VIN %d to driver with id %d!", carVIN, driverID);
     }
 }
