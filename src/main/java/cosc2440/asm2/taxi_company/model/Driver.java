@@ -1,6 +1,8 @@
 package cosc2440.asm2.taxi_company.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 
 @Entity
@@ -19,6 +21,11 @@ public class Driver {
 
     @Column
     private double rating;
+
+    @OneToOne(mappedBy = "driver")
+    @JoinColumn(name = "id")
+    @JsonIgnoreProperties(value = "driver")
+    private Car car;
 
     public Driver() {
     }

@@ -1,5 +1,7 @@
 package cosc2440.asm2.taxi_company.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 
 @Entity
@@ -31,6 +33,11 @@ public class Car {
 
     @Column
     private double ratePerKilometer;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id", referencedColumnName = "id")
+    @JsonIgnoreProperties(value = "car")
+    private Driver driver;
 
     public Car() {
     }
