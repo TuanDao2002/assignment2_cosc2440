@@ -1,6 +1,8 @@
 package cosc2440.asm2.taxi_company.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -17,23 +19,28 @@ public class Booking {
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column(nullable = false)
-    String startLocation;
+    private String startLocation;
 
     @Column(nullable = false)
-    String endLocation;
+    private String endLocation;
 
     @Column(nullable = false)
     @JsonFormat(pattern = datetimePattern)
-    LocalDateTime pickUpDatetime;
+    private LocalDateTime pickUpDatetime;
 
     @Column
     LocalDateTime dropOffDateTime;
 
+//    @OneToOne(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "invoice_id", referencedColumnName = "id")
+//    @JsonIgnoreProperties(value = "booking")
+//    private Invoice invoice;
+
     @Column(nullable = false)
-    ZonedDateTime dateCreated;
+    private ZonedDateTime dateCreated;
 
     public Booking() {
         this.dateCreated = ZonedDateTime.now();
