@@ -39,4 +39,44 @@ public class InvoiceService {
 
         return new ResponseEntity<>(list, new HttpHeaders(), HttpStatus.OK);
     }
+
+    public String add(Invoice invoice) {
+        invoiceRepository.save(invoice);
+        return "Invoice with id: " + invoice.getInvoiceID() + " is added!!!";
+    }
+
+    public Invoice getOne(Long invoiceID) {
+        if (invoiceRepository.findById(invoiceID).isPresent()) {
+            return invoiceRepository.findById(invoiceID).get();
+        } else {
+            return null;
+        }
+    }
+
+    public String delete(Long InvoiceID) {
+        Invoice findInvoice = getOne(InvoiceID);
+
+        if (findInvoice == null) {
+            return "Invoice with ID: " + InvoiceID + " does not exist!!!";
+        } else {
+            // set the Invoice object in Booking to be null
+            findInvoice.getBooking().setInvoice(null);
+
+            // delete the Invoice from database
+            invoiceRepository.deleteById(InvoiceID);
+            return "Invoice with ID: " + InvoiceID + " is deleted!!!";
+        }
+    }
+
+    public String update(Invoice invoice) {
+        Invoice findInvoice = getOne(invoice.getInvoiceID());
+
+        if (findInvoice == null) {
+            return "Invoice with ID: " + invoice.getInvoiceID() + " does not exist!!!";
+        } else {
+            findInvoice.setTotalCharge(invoice.getTotalCharge());
+            invoiceRepository.save(findInvoice);
+            return "Invoice with ID: " + invoice.getInvoiceID() + " is updated!!!";
+        }
+    }
 }

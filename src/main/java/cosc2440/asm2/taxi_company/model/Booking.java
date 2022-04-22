@@ -31,7 +31,11 @@ public class Booking {
     private LocalDateTime pickUpDatetime;
 
     @Column
-    LocalDateTime dropOffDateTime;
+    @JsonFormat(pattern = datetimePattern)
+    LocalDateTime dropOffDatetime;
+
+    @Column
+    int distance;
 
     @OneToOne(cascade = CascadeType.ALL)
     // set name for the join column in Booking and the name of reference column is the ID column of Invoice
@@ -86,15 +90,19 @@ public class Booking {
     }
 
     public String getDropOffDateTime() {
-        return dropOffDateTime != null ? dropOffDateTime.format(DATE_TIME_FORMATTER) : null;
+        return dropOffDatetime != null ? dropOffDatetime.format(DATE_TIME_FORMATTER) : null;
     }
 
     public void setDropOffDateTime(String dateTimeString) {
-        this.dropOffDateTime = dateTimeString == null ? null : LocalDateTime.parse(dateTimeString, DATE_TIME_FORMATTER.withResolverStyle(ResolverStyle.STRICT));
+        this.dropOffDatetime = dateTimeString == null ? null : LocalDateTime.parse(dateTimeString, DATE_TIME_FORMATTER.withResolverStyle(ResolverStyle.STRICT));
     }
 
-    public ZonedDateTime getDateCreated() {
-        return dateCreated;
+    public int getDistance() {
+        return distance;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
     }
 
     public Invoice getInvoice() {
@@ -103,5 +111,13 @@ public class Booking {
 
     public void setInvoice(Invoice invoice) {
         this.invoice = invoice;
+    }
+
+    public ZonedDateTime getDateCreated() {
+        return dateCreated;
+    }
+
+    public static DateTimeFormatter getDateTimeFormatter() {
+        return DATE_TIME_FORMATTER;
     }
 }

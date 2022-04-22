@@ -3,6 +3,7 @@ package cosc2440.asm2.taxi_company.service;
 import cosc2440.asm2.taxi_company.model.Booking;
 import cosc2440.asm2.taxi_company.repository.BookingRepository;
 import cosc2440.asm2.taxi_company.repository.InvoiceRepository;
+import cosc2440.asm2.taxi_company.utility.DateComparator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -80,11 +81,17 @@ public class BookingService {
             // set new attributes for updated Booking
             findBooking.setStartLocation(booking.getStartLocation());
             findBooking.setEndLocation(booking.getEndLocation());
+
             findBooking.setPickUpDatetime(booking.getPickUpDatetime());
             findBooking.setDropOffDateTime(booking.getDropOffDateTime());
 
-            // delete the old Invoice from database
-            invoiceRepository.delete(findBooking.getInvoice());
+            if (!DateComparator.validateDatetimeOf(findBooking)) {
+                return "The drop-off date time must be after the pick-up date time";
+            }
+
+            // if the Invoice exists in Booking, delete it from database
+            if (invoiceRepository.findById(findBooking.getInvoice().getInvoiceID()).isPresent())
+                invoiceRepository.delete(findBooking.getInvoice());
 
             // set the new Invoice for Booking and update Booking
             findBooking.setInvoice(booking.getInvoice());
@@ -92,4 +99,31 @@ public class BookingService {
             return "Booking with ID: " + booking.getBookingID() + " is updated!!!";
         }
     }
+
+    public String finalizeBooking(Long bookingID, String dropOffDatetime, int distance) {
+        Booking findBooking = getOne(bookingID);
+
+        if (findBooking == null) {
+            return "Booking with ID: " + bookingID + " does not exist!!!";
+        } else {
+            // set the new drop off date time and distance to finalize booking
+            findBooking.setDropOffDateTime(dropOffDatetime);
+
+            if (!DateComparator.validateDatetimeOf(findBooking)) {
+                return "The drop-off date time must be after the pick-up date time";
+            }
+
+            // check if the distance is greater than 0
+            if (distance <= 0) {
+                return "The distance must be greater than 0";
+            }
+            findBooking.setDistance(distance);
+
+            // update the new modification to booking
+            bookingRepository.save(findBooking);
+            return "Booking with ID: " + bookingID + " is finalized!!!";
+        }
+    }
+
+
 }
