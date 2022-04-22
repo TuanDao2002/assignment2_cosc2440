@@ -1,7 +1,6 @@
 package cosc2440.asm2.taxi_company.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
@@ -12,24 +11,28 @@ public class Invoice {
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long invoiceID;
 
     @Column
     private int totalCharge;
 
-//    @OneToOne(mappedBy = "booking")
-//    @JsonIgnoreProperties(value = "invoice")
-//    private Booking booking;
+    // Booking own the join column so this will be mapped by "invoice", the table name of Invoice class
+    @OneToOne(mappedBy = "invoice")
+    // set the name of join column with Booking class
+    @JoinColumn(name = "invoiceID")
+    @JsonIgnoreProperties(value = "invoice")
+    private Booking booking;
 
     @Column(nullable = false)
     private ZonedDateTime dateCreated;
 
     public Invoice() {
-
+        this.dateCreated = ZonedDateTime.now();
     }
 
     public Invoice(int totalCharge) {
         this.totalCharge = totalCharge;
+        this.dateCreated = ZonedDateTime.now();
     }
 
     public int getTotalCharge() {
@@ -40,19 +43,19 @@ public class Invoice {
         this.totalCharge = totalCharge;
     }
 
-//    public Booking getBooking() {
-//        return booking;
-//    }
-//
-//    public void setBooking(Booking booking) {
-//        this.booking = booking;
-//    }
-
-    public Long getId() {
-        return id;
+    public Booking getBooking() {
+        return booking;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setBooking(Booking booking) {
+        this.booking = booking;
+    }
+
+    public Long getInvoiceID() {
+        return invoiceID;
+    }
+
+    public void setInvoiceID(Long invoiceID) {
+        this.invoiceID = invoiceID;
     }
 }

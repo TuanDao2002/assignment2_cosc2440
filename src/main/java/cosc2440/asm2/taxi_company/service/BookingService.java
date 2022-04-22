@@ -2,6 +2,7 @@ package cosc2440.asm2.taxi_company.service;
 
 import cosc2440.asm2.taxi_company.model.Booking;
 import cosc2440.asm2.taxi_company.repository.BookingRepository;
+import cosc2440.asm2.taxi_company.repository.InvoiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,8 +22,15 @@ public class BookingService {
     @Autowired
     private BookingRepository bookingRepository;
 
+    @Autowired
+    private InvoiceRepository invoiceRepository;
+
     public void setBookingRepository(BookingRepository bookingRepository) {
         this.bookingRepository = bookingRepository;
+    }
+
+    public void setInvoiceRepository(InvoiceRepository invoiceRepository) {
+        this.invoiceRepository = invoiceRepository;
     }
 
     public ResponseEntity<List<Booking>> getAll(Integer pageNumber, Integer pageSize) {
@@ -42,11 +50,15 @@ public class BookingService {
 
     public String add(Booking booking) {
         bookingRepository.save(booking);
-        return "Booking with id: " + booking.getId() + " is added!!!";
+        return "Booking with id: " + booking.getBookingID() + " is added!!!";
     }
 
     public Booking getOne(Long bookingID) {
-        return bookingRepository.findById(bookingID).get();
+        if (bookingRepository.findById(bookingID).isPresent()) {
+            return bookingRepository.findById(bookingID).get();
+        } else {
+            return null;
+        }
     }
 
     public String delete(Long bookingID) {
@@ -61,11 +73,23 @@ public class BookingService {
     }
 
     public String update(Booking booking) {
-        if (getOne(booking.getId()) == null) {
-            return "Booking with ID: " + booking.getId() + " does not exist!!!";
+        Booking findBooking = getOne(booking.getBookingID());
+        if (findBooking == null) {
+            return "Booking with ID: " + booking.getBookingID() + " does not exist!!!";
         } else {
-            bookingRepository.save(booking);
-            return "Booking with ID: " + booking.getId() + " is updated!!!";
+            // set new attributes for updated Booking
+            findBooking.setStartLocation(booking.getStartLocation());
+            findBooking.setEndLocation(booking.getEndLocation());
+            findBooking.setPickUpDatetime(booking.getPickUpDatetime());
+            findBooking.setDropOffDateTime(booking.getDropOffDateTime());
+
+            // delete the old Invoice from database
+            invoiceRepository.delete(findBooking.getInvoice());
+
+            // set the new Invoice for Booking and update Booking
+            findBooking.setInvoice(booking.getInvoice());
+            bookingRepository.save(findBooking);
+            return "Booking with ID: " + booking.getBookingID() + " is updated!!!";
         }
     }
 }

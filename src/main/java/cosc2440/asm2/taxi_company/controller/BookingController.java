@@ -30,14 +30,14 @@ public class BookingController {
         return bookingService.update(booking);
     }
 
-    @RequestMapping(path = "/booking", method = RequestMethod.DELETE)
-    public String deleteBooking(Long bookingID) {
+    @RequestMapping(path = "/booking/{bookingID}", method = RequestMethod.DELETE)
+    public String deleteBooking(@PathVariable Long bookingID) {
         return bookingService.delete(bookingID);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public String invalidWarning() {
-        return "Invalid datetime format. Should have format of HH:mm:ss dd-MM-uuuu and valid datetime numbers";
+        return "Invalid datetime format.\nThe pick up date time should not be null,\nall date times have format of HH:mm:ss dd-MM-uuuu and valid datetime numbers";
     }
 
 }
