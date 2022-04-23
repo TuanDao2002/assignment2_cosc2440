@@ -59,11 +59,22 @@ public class DriverController {
             return String.format("Driver with id %d does not exist!", driverID);
         }
 
-        // Handle more logic here (set car, set driver, set available,...)
+        if (!carToUpdate.isAvailable()) {
+            return String.format("Car with VIN %d is not available!", carVIN);
+        }
+
+        if (driverToUpdate.getCar() != null) {
+            return String.format("Driver with id %d already have car with VIN %d!", driverID, driverToUpdate.getCar().getVIN());
+        }
+
+        // Assign car and driver to each other
         driverToUpdate.setCar(carToUpdate);
         carToUpdate.setDriver(driverToUpdate);
+
+        // Make car unavailable
         carToUpdate.setAvailable(false);
 
+        // Update in database
         driverService.updateDriver(driverToUpdate);
         carService.updateCar(carToUpdate);
 
