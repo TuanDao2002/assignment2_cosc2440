@@ -4,8 +4,12 @@ import cosc2440.asm2.taxi_company.model.Booking;
 import cosc2440.asm2.taxi_company.repository.BookingRepository;
 import cosc2440.asm2.taxi_company.repository.InvoiceRepository;
 import cosc2440.asm2.taxi_company.utility.DateComparator;
+import org.hibernate.Criteria;
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
@@ -14,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +32,9 @@ public class BookingService {
     @Autowired
     private InvoiceRepository invoiceRepository;
 
+    @Autowired
+    private SessionFactory sessionFactory;
+
     public void setBookingRepository(BookingRepository bookingRepository) {
         this.bookingRepository = bookingRepository;
     }
@@ -34,9 +43,67 @@ public class BookingService {
         this.invoiceRepository = invoiceRepository;
     }
 
-    public ResponseEntity<List<Booking>> getAll(Integer pageNumber, Integer pageSize) {
+    public void setSessionFactory(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
+
+    public List<Booking> searchBookingByDate(String matchPickUpDate, String startDate, String endDate) {
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Booking.class);
+
+        // format of the input date from the request
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM-uuuu");
+
+        // if the Booking's pickUpDatetime is matched with matchPickUpDate, return it to client
+        if (matchPickUpDate != null) {
+            // convert string to LocalDate
+            LocalDate match = LocalDate.parse(matchPickUpDate, dtf);
+
+            // find all bookings in the database
+            List<Booking> allBookings = (List<Booking>) bookingRepository.findAll();
+
+            // find all bookings that match with matchPickUpDate
+            List<Booking> matchBookings = new ArrayList<>();
+            for (Booking booking : allBookings) {
+                if (booking.getPickUpDatetimeObj().toLocalDate().equals(match)) {
+                    matchBookings.add(booking);
+                }
+            }
+
+            return matchBookings;
+        }
+
+        // if the Booking's pickUpDatetime is greater than or equal to startDate, return it to client
+        if (startDate != null) {
+            // convert string to LocalDate
+            LocalDate start = LocalDate.parse(startDate, dtf);
+
+            // find all bookings that have pickUpDatetime greater than or equal to startDate
+            criteria.add(Restrictions.ge("pickUpDatetime", start.atStartOfDay()));
+        }
+
+        // if the Booking's pickUpDatetime is less than or equal to endDate, return it to client
+        if (endDate != null) {
+            // convert string to LocalDate
+            LocalDate end = LocalDate.parse(endDate, dtf);
+
+            // find all bookings that have pickUpDatetime less than or equal to endDate
+            criteria.add(Restrictions.le("pickUpDatetime", end.atStartOfDay()));
+        }
+
+        return criteria.list();
+    }
+
+    public ResponseEntity<List<Booking>> getAll(Integer pageNumber, Integer pageSize,
+                                                String matchPickUpDate, String startDate, String endDate) {
+
+        // return empty if the retrieve Bookings are not found or the page size is 0
+        List<Booking> retrievedBookingList = searchBookingByDate(matchPickUpDate, startDate, endDate);
+        if (retrievedBookingList.isEmpty() || pageSize == 0) return new ResponseEntity<>(new ArrayList<>(), new HttpHeaders(), HttpStatus.OK);
+
         Pageable paging = PageRequest.of(pageNumber, pageSize);
-        Page<Booking> pagedResult = bookingRepository.findAll(paging);
+        int start = (int)paging.getOffset();
+        int end = Math.min((start + paging.getPageSize()), retrievedBookingList.size());
+        Page<Booking> pagedResult = new PageImpl<>(retrievedBookingList.subList(start, end), paging, retrievedBookingList.size());
 
         List<Booking> list;
 
@@ -98,6 +165,11 @@ public class BookingService {
             bookingRepository.save(findBooking);
             return "Booking with ID: " + booking.getBookingID() + " is updated!!!";
         }
+    }
+
+    public String createBooking(String startLocation, String endLocation, String pickUpDatetime) {
+        Booking booking = new Booking(startLocation, endLocation, pickUpDatetime);
+        return add(booking);
     }
 
     public String finalizeBooking(Long bookingID, String dropOffDatetime, int distance) {

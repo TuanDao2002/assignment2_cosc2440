@@ -1,6 +1,7 @@
 package cosc2440.asm2.taxi_company.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
@@ -95,6 +96,16 @@ public class Booking {
 
     public void setDropOffDateTime(String dateTimeString) {
         this.dropOffDatetime = dateTimeString == null ? null : LocalDateTime.parse(dateTimeString, DATE_TIME_FORMATTER.withResolverStyle(ResolverStyle.STRICT));
+    }
+
+    @JsonIgnore
+    public LocalDateTime getDropOffDatetimeObj() {
+        return dropOffDatetime;
+    }
+
+    @JsonIgnore
+    public LocalDateTime getPickUpDatetimeObj() {
+        return pickUpDatetime;
     }
 
     public int getDistance() {
