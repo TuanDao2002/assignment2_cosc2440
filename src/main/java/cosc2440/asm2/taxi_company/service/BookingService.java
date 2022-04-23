@@ -1,6 +1,7 @@
 package cosc2440.asm2.taxi_company.service;
 
 import cosc2440.asm2.taxi_company.model.Booking;
+import cosc2440.asm2.taxi_company.model.Driver;
 import cosc2440.asm2.taxi_company.model.Invoice;
 import cosc2440.asm2.taxi_company.repository.BookingRepository;
 import cosc2440.asm2.taxi_company.utility.DateUtility;
@@ -129,11 +130,16 @@ public class BookingService {
     }
 
     public String add(Booking booking) {
+        if (!DateUtility.validateDatetimeOf(booking)) {
+            return "The drop-off date time must be after the pick-up date time";
+        }
+
         bookingRepository.save(booking);
         return "Booking with id: " + booking.getBookingID() + " is added!!!";
     }
 
     public Booking getOne(Long bookingID) {
+        if (bookingID == null) return null;
         if (bookingRepository.findById(bookingID).isPresent()) {
             return bookingRepository.findById(bookingID).get();
         } else {
@@ -169,14 +175,24 @@ public class BookingService {
             }
 
             // if the Invoice exists in Booking, delete it from database and update new attributes for the Invoice
-            Invoice invoice = invoiceService.getOne(findBooking.getInvoice().getInvoiceID());
-            if (invoice != null) {
+            if (booking.getInvoice() != null && booking.getInvoice().getInvoiceID() != null
+                    && findBooking.getInvoice() != null
+                    && !booking.getInvoice().getInvoiceID().equals(findBooking.getInvoice().getInvoiceID())) {
+                return "Not match invoice ID";
+            } else if (booking.getInvoice() != null && booking.getInvoice().getInvoiceID() != null) {
+                Invoice invoice = invoiceService.getOne(booking.getInvoice().getInvoiceID());
+                if (invoice == null || findBooking.getInvoice() == null) {
+                    invoice = new Invoice();
+                }
+
                 if (booking.getInvoice().getTotalCharge() != 0) {
                     invoice.setTotalCharge(booking.getInvoice().getTotalCharge());
                 }
 
                 Invoice savedInvoice = invoiceService.getInvoiceRepository().save(invoice);
                 findBooking.setInvoice(savedInvoice);
+            } else if (booking.getInvoice() != null && booking.getInvoice().getInvoiceID() == null){
+                return "No invoice ID is specified";
             }
 
             // set the new Invoice for Booking and update Booking
@@ -196,6 +212,8 @@ public class BookingService {
         if (findBooking == null) {
             return "Booking with ID: " + bookingID + " does not exist!!!";
         } else {
+            if (findBooking.getDropOffDateTime() != null) return "Booking with ID: " + bookingID + " is already finalized!!!";
+
             // check if the drop-off datetime has valid format
             LocalDateTime verifyDateObj = DateUtility.StringToLocalDateTime(dropOffDatetime);
             if (verifyDateObj == null) return "The drop off date time is invalid!!!";

@@ -78,7 +78,7 @@ public class InvoiceService {
         if (findInvoice == null) {
             return "Invoice with ID: " + invoice.getInvoiceID() + " does not exist!!!";
         } else {
-            findInvoice.setTotalCharge(invoice.getTotalCharge());
+            if (invoice.getTotalCharge() > 0) findInvoice.setTotalCharge(invoice.getTotalCharge());
             invoiceRepository.save(findInvoice);
             return "Invoice with ID: " + invoice.getInvoiceID() + " is updated!!!";
         }
