@@ -47,6 +47,7 @@ public class Car {
 
     public Car() {
         this.dateCreated = ZonedDateTime.now();
+        this.isAvailable = true;
     }
 
     public Car(Long VIN, String make, String model, String color, boolean isConvertible, double rating, String licensePlate, double ratePerKilometer) {
@@ -59,6 +60,7 @@ public class Car {
         this.licensePlate = licensePlate;
         this.ratePerKilometer = ratePerKilometer;
         this.dateCreated = ZonedDateTime.now();
+        this.isAvailable = true;
     }
 
     public Car(String make, String model, String color, boolean isConvertible, double rating, String licensePlate, double ratePerKilometer) {
@@ -70,6 +72,7 @@ public class Car {
         this.licensePlate = licensePlate;
         this.ratePerKilometer = ratePerKilometer;
         this.dateCreated = ZonedDateTime.now();
+        this.isAvailable = true;
     }
 
     public Long getVIN() {

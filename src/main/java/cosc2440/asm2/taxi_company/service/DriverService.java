@@ -1,5 +1,6 @@
 package cosc2440.asm2.taxi_company.service;
 
+import cosc2440.asm2.taxi_company.model.Car;
 import cosc2440.asm2.taxi_company.model.Driver;
 import cosc2440.asm2.taxi_company.repository.DriverRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,9 @@ import java.util.List;
 public class DriverService {
     @Autowired
     private DriverRepository driverRepository;
+
+    @Autowired
+    private CarService carService;
 
     public void setDriverRepository(DriverRepository driverRepository) {
         this.driverRepository = driverRepository;
@@ -61,5 +65,36 @@ public class DriverService {
 
         driverRepository.save(driver);
         return String.format("Driver with id %d updated!", driver.getId());
+    }
+
+    public String pickCarById(Long carVIN, Long driverId) {
+        Car carToUpdate = carService.getCarById(carVIN);
+        Driver driverToUpdate = getDriverById(driverId);
+
+        if (carToUpdate == null) {
+            return String.format("Car with VIN %d does not exist!", carVIN);
+        }
+
+        if (driverToUpdate == null) {
+            return String.format("Driver with id %d does not exist!", driverId);
+        }
+
+        if (carToUpdate.getDriver() != null) {
+            return String.format("Car with VIN %d is not available!", carVIN);
+        }
+
+        if (driverToUpdate.getCar() != null) {
+            return String.format("Driver with id %d already have car with VIN %d!", driverId, driverToUpdate.getCar().getVIN());
+        }
+
+        // Assign car and driver to each other
+        driverToUpdate.setCar(carToUpdate);
+        carToUpdate.setDriver(driverToUpdate);
+
+        // Update in database
+        updateDriver(driverToUpdate);
+        carService.updateCar(carToUpdate);
+
+        return String.format("Assign car with VIN %d to driver with id %d!", carVIN, driverId);
     }
 }

@@ -47,37 +47,7 @@ public class DriverController {
 
     @RequestMapping(path = "/driver/pick", method = RequestMethod.GET)
     public String pickCarById(@RequestParam(value = "carVIN") Long carVIN,
-                              @RequestParam(value = "driverId") Long driverID) {
-        Car carToUpdate = carService.getCarById(carVIN);
-        Driver driverToUpdate = driverService.getDriverById(driverID);
-
-        if (carToUpdate == null) {
-            return String.format("Car with VIN %d does not exist!", carVIN);
-        }
-
-        if (driverToUpdate == null) {
-            return String.format("Driver with id %d does not exist!", driverID);
-        }
-
-        if (!carToUpdate.isAvailable()) {
-            return String.format("Car with VIN %d is not available!", carVIN);
-        }
-
-        if (driverToUpdate.getCar() != null) {
-            return String.format("Driver with id %d already have car with VIN %d!", driverID, driverToUpdate.getCar().getVIN());
-        }
-
-        // Assign car and driver to each other
-        driverToUpdate.setCar(carToUpdate);
-        carToUpdate.setDriver(driverToUpdate);
-
-        // Make car unavailable
-        carToUpdate.setAvailable(false);
-
-        // Update in database
-        driverService.updateDriver(driverToUpdate);
-        carService.updateCar(carToUpdate);
-
-        return String.format("Assign car with VIN %d to driver with id %d!", carVIN, driverID);
+                              @RequestParam(value = "driverId") Long driverId) {
+        return driverService.pickCarById(carVIN, driverId);
     }
 }
