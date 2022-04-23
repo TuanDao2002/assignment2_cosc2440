@@ -1,8 +1,6 @@
 package cosc2440.asm2.taxi_company.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -33,14 +31,14 @@ public class Booking {
 
     @Column
     @JsonFormat(pattern = datetimePattern)
-    LocalDateTime dropOffDatetime;
+    private LocalDateTime dropOffDatetime = null;
 
     @Column
-    int distance;
+    private int distance;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     // set name for the join column in Booking and the name of reference column is the ID column of Invoice
-    @JoinColumn(name = "invoiceID", referencedColumnName = "invoiceID")
+    @JoinColumn(name = "invoiceID")
     @JsonIgnoreProperties(value = "booking")
     private Invoice invoice;
 
@@ -54,7 +52,7 @@ public class Booking {
     public Booking(String startLocation, String endLocation, String dateString) {
         this.startLocation = startLocation;
         this.endLocation = endLocation;
-        this.pickUpDatetime = LocalDateTime.parse(dateString, DATE_TIME_FORMATTER.withResolverStyle(ResolverStyle.STRICT));
+        setPickUpDatetime(dateString);
         this.dateCreated = ZonedDateTime.now();
     }
 
@@ -90,6 +88,8 @@ public class Booking {
         this.pickUpDatetime = LocalDateTime.parse(dateTimeString, DATE_TIME_FORMATTER.withResolverStyle(ResolverStyle.STRICT));
     }
 
+    // require this annotation as dropOffDatetime can be null => can create duplicate keys in JSON object
+    @JsonProperty("dropOffDatetime")
     public String getDropOffDateTime() {
         return dropOffDatetime != null ? dropOffDatetime.format(DATE_TIME_FORMATTER) : null;
     }

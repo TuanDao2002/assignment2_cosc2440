@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -22,7 +21,7 @@ public class BookingController {
 
     @RequestMapping(path = "/booking", method = RequestMethod.GET)
     public ResponseEntity<List<Booking>> getAllBookings(@RequestParam(value = "page", defaultValue = "0") int page,
-                                                        @RequestParam(value = "size", defaultValue = "5") int size,
+                                                        @RequestParam(value = "size", defaultValue = "20") int size,
                                                         @RequestParam(value = "matchDate", required = false) String matchDate,
                                                         @RequestParam(value = "startDate", required = false) String startDate,
                                                         @RequestParam(value = "endDate", required = false) String endDate) {

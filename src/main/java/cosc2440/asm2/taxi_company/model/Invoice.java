@@ -58,4 +58,8 @@ public class Invoice {
     public void setInvoiceID(Long invoiceID) {
         this.invoiceID = invoiceID;
     }
+
+    public ZonedDateTime getDateCreated() {
+        return dateCreated;
+    }
 }

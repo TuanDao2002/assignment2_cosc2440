@@ -1,9 +1,9 @@
 package cosc2440.asm2.taxi_company.service;
 
 import cosc2440.asm2.taxi_company.model.Booking;
+import cosc2440.asm2.taxi_company.model.Invoice;
 import cosc2440.asm2.taxi_company.repository.BookingRepository;
-import cosc2440.asm2.taxi_company.repository.InvoiceRepository;
-import cosc2440.asm2.taxi_company.utility.DateComparator;
+import cosc2440.asm2.taxi_company.utility.DateUtility;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +30,7 @@ public class BookingService {
     private BookingRepository bookingRepository;
 
     @Autowired
-    private InvoiceRepository invoiceRepository;
+    private InvoiceService invoiceService;
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -39,8 +39,8 @@ public class BookingService {
         this.bookingRepository = bookingRepository;
     }
 
-    public void setInvoiceRepository(InvoiceRepository invoiceRepository) {
-        this.invoiceRepository = invoiceRepository;
+    public void setInvoiceService(InvoiceService invoiceService) {
+        this.invoiceService = invoiceService;
     }
 
     public void setSessionFactory(SessionFactory sessionFactory) {
@@ -50,13 +50,15 @@ public class BookingService {
     public List<Booking> searchBookingByDate(String matchPickUpDate, String startDate, String endDate) {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Booking.class);
 
-        // format of the input date from the request
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM-uuuu");
-
+        // search date based on a specific date
         // if the Booking's pickUpDatetime is matched with matchPickUpDate, return it to client
         if (matchPickUpDate != null) {
+            // if startDate or endDate is not null, the function will not work
+            if (startDate != null || endDate != null) return null;
+
             // convert string to LocalDate
-            LocalDate match = LocalDate.parse(matchPickUpDate, dtf);
+            LocalDate match = DateUtility.StringToLocalDate(matchPickUpDate);
+            if (match == null) return null;
 
             // find all bookings in the database
             List<Booking> allBookings = (List<Booking>) bookingRepository.findAll();
@@ -72,10 +74,12 @@ public class BookingService {
             return matchBookings;
         }
 
+        // search dates in a period
         // if the Booking's pickUpDatetime is greater than or equal to startDate, return it to client
         if (startDate != null) {
             // convert string to LocalDate
-            LocalDate start = LocalDate.parse(startDate, dtf);
+            LocalDate start = DateUtility.StringToLocalDate(startDate);
+            if (start == null) return null;
 
             // find all bookings that have pickUpDatetime greater than or equal to startDate
             criteria.add(Restrictions.ge("pickUpDatetime", start.atStartOfDay()));
@@ -84,7 +88,8 @@ public class BookingService {
         // if the Booking's pickUpDatetime is less than or equal to endDate, return it to client
         if (endDate != null) {
             // convert string to LocalDate
-            LocalDate end = LocalDate.parse(endDate, dtf);
+            LocalDate end = DateUtility.StringToLocalDate(endDate);
+            if (end == null) return null;
 
             // find all bookings that have pickUpDatetime less than or equal to endDate
             criteria.add(Restrictions.le("pickUpDatetime", end.atStartOfDay()));
@@ -96,17 +101,24 @@ public class BookingService {
     public ResponseEntity<List<Booking>> getAll(Integer pageNumber, Integer pageSize,
                                                 String matchPickUpDate, String startDate, String endDate) {
 
-        // return empty if the retrieve Bookings are not found or the page size is 0
         List<Booking> retrievedBookingList = searchBookingByDate(matchPickUpDate, startDate, endDate);
-        if (retrievedBookingList.isEmpty() || pageSize == 0) return new ResponseEntity<>(new ArrayList<>(), new HttpHeaders(), HttpStatus.OK);
+        // return empty if the retrieve Bookings are null or not found or the page size is less than 1 or page number is negative
+        if (retrievedBookingList == null || retrievedBookingList.isEmpty() || pageSize < 1 || pageNumber < 0) {
+            return new ResponseEntity<>(new ArrayList<>(), new HttpHeaders(), HttpStatus.OK);
+        }
 
         Pageable paging = PageRequest.of(pageNumber, pageSize);
         int start = (int)paging.getOffset();
         int end = Math.min((start + paging.getPageSize()), retrievedBookingList.size());
+
+        // return empty if the page's start index is greater than page's end index
+        if (start >= end) {
+            return new ResponseEntity<>(new ArrayList<>(), new HttpHeaders(), HttpStatus.OK);
+        }
+
         Page<Booking> pagedResult = new PageImpl<>(retrievedBookingList.subList(start, end), paging, retrievedBookingList.size());
 
         List<Booking> list;
-
         if (pagedResult.hasContent()) {
             list = pagedResult.getContent();
         } else {
@@ -146,22 +158,28 @@ public class BookingService {
             return "Booking with ID: " + booking.getBookingID() + " does not exist!!!";
         } else {
             // set new attributes for updated Booking
-            findBooking.setStartLocation(booking.getStartLocation());
-            findBooking.setEndLocation(booking.getEndLocation());
+            if (booking.getStartLocation() != null) findBooking.setStartLocation(booking.getStartLocation());
+            if (booking.getEndLocation() != null) findBooking.setEndLocation(booking.getEndLocation());
 
-            findBooking.setPickUpDatetime(booking.getPickUpDatetime());
-            findBooking.setDropOffDateTime(booking.getDropOffDateTime());
+            if (booking.getPickUpDatetime() != null) findBooking.setPickUpDatetime(booking.getPickUpDatetime());
+            if (booking.getDropOffDateTime() != null) findBooking.setDropOffDateTime(booking.getDropOffDateTime());
 
-            if (!DateComparator.validateDatetimeOf(findBooking)) {
+            if (!DateUtility.validateDatetimeOf(findBooking)) {
                 return "The drop-off date time must be after the pick-up date time";
             }
 
-            // if the Invoice exists in Booking, delete it from database
-            if (invoiceRepository.findById(findBooking.getInvoice().getInvoiceID()).isPresent())
-                invoiceRepository.delete(findBooking.getInvoice());
+            // if the Invoice exists in Booking, delete it from database and update new attributes for the Invoice
+            Invoice invoice = invoiceService.getOne(findBooking.getInvoice().getInvoiceID());
+            if (invoice != null) {
+                if (booking.getInvoice().getTotalCharge() != 0) {
+                    invoice.setTotalCharge(booking.getInvoice().getTotalCharge());
+                }
+
+                Invoice savedInvoice = invoiceService.getInvoiceRepository().save(invoice);
+                findBooking.setInvoice(savedInvoice);
+            }
 
             // set the new Invoice for Booking and update Booking
-            findBooking.setInvoice(booking.getInvoice());
             bookingRepository.save(findBooking);
             return "Booking with ID: " + booking.getBookingID() + " is updated!!!";
         }
@@ -178,10 +196,14 @@ public class BookingService {
         if (findBooking == null) {
             return "Booking with ID: " + bookingID + " does not exist!!!";
         } else {
+            // check if the drop-off datetime has valid format
+            LocalDateTime verifyDateObj = DateUtility.StringToLocalDateTime(dropOffDatetime);
+            if (verifyDateObj == null) return "The drop off date time is invalid!!!";
+
             // set the new drop off date time and distance to finalize booking
             findBooking.setDropOffDateTime(dropOffDatetime);
 
-            if (!DateComparator.validateDatetimeOf(findBooking)) {
+            if (!DateUtility.validateDatetimeOf(findBooking)) {
                 return "The drop-off date time must be after the pick-up date time";
             }
 

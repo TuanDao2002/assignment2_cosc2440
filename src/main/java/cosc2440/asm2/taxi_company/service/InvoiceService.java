@@ -25,6 +25,10 @@ public class InvoiceService {
         this.invoiceRepository = invoiceRepository;
     }
 
+    public InvoiceRepository getInvoiceRepository() {
+        return invoiceRepository;
+    }
+
     public ResponseEntity<List<Invoice>> getAll(Integer pageNumber, Integer pageSize) {
         Pageable paging = PageRequest.of(pageNumber, pageSize);
         Page<Invoice> pagedResult = invoiceRepository.findAll(paging);
