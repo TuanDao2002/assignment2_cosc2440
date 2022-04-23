@@ -1,7 +1,6 @@
 package cosc2440.asm2.taxi_company.service;
 
 import cosc2440.asm2.taxi_company.model.Booking;
-import cosc2440.asm2.taxi_company.model.Driver;
 import cosc2440.asm2.taxi_company.model.Invoice;
 import cosc2440.asm2.taxi_company.repository.BookingRepository;
 import cosc2440.asm2.taxi_company.utility.DateUtility;
@@ -185,7 +184,7 @@ public class BookingService {
                     invoice = new Invoice();
                 }
 
-                if (booking.getInvoice().getTotalCharge() != 0) {
+                if (booking.getInvoice().getTotalCharge() > 0) {
                     invoice.setTotalCharge(booking.getInvoice().getTotalCharge());
                 }
 
