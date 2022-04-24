@@ -29,8 +29,8 @@ public class Driver {
     @JsonIgnore
     private Car car;
 
-    @OneToOne
-    @JoinColumn(name = "invoiceId")
+    @OneToOne(mappedBy = "driver")
+    @JoinColumn(name = "driverID")
     @JsonIgnoreProperties("driver")
     private Invoice invoice;
 

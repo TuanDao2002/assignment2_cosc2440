@@ -23,9 +23,9 @@ public class Invoice {
     @JsonIgnoreProperties(value = "invoice")
     private Booking booking;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id")
-    @JsonIgnoreProperties("invoice")
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "driverID")
+    @JsonIgnoreProperties(value = "invoice")
     private Driver driver;
 
     @Column(nullable = false)
