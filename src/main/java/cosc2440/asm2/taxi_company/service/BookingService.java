@@ -153,7 +153,7 @@ public class BookingService {
         }
         if (driver.getCar() == null) return "This driver does not have a car";
         if (!driver.getCar().isAvailable()) return "This driver has other booking";
-        driver.getCar().setAvailable(false);
+        driver.getCar().setAvailable(false); // set the availability of car to false
 
         // booking is the owning side => no need to set invoice for booking
         // but invoice is the owning side in one-to-one relationship with driver => set driver for invoice then set the invoice to booking
@@ -208,6 +208,10 @@ public class BookingService {
     }
 
     public String bookCar(Long carVIN, String startLocation, String endLocation, String pickUpDatetime) {
+        // check if the pick-up datetime has valid format
+        LocalDateTime verifyDateObj = DateUtility.StringToLocalDateTime(pickUpDatetime);
+        if (verifyDateObj == null) return "The pick-up date time is invalid!!!";
+
         Car findCar = carService.getCarById(carVIN);
         if (findCar == null) return "Car with ID: " + carVIN + " does not exist!!!";
         if (findCar.getDriver() == null) return "This car does not have a driver";
