@@ -29,7 +29,7 @@ public class Driver {
     @JsonIgnore
     private Car car;
 
-    @OneToOne(mappedBy = "driver")
+    @OneToOne(mappedBy = "driver", cascade = CascadeType.REMOVE)
     @JoinColumn(name = "driverID")
     @JsonIgnoreProperties("driver")
     private Invoice invoice;

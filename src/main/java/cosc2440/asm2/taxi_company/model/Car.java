@@ -35,7 +35,7 @@ public class Car {
     @Column
     private double ratePerKilometer;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "id", referencedColumnName = "id")
     @JsonIgnoreProperties(value = "car")
     private Driver driver;
