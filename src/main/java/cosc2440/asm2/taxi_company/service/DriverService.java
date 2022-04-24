@@ -60,11 +60,16 @@ public class DriverService {
     }
 
     public String updateDriver(Driver driver) {
-        if (getDriverById(driver.getId()) == null) {
+        Driver driverToUpdate = getDriverById(driver.getId());
+        if (driverToUpdate == null) {
             return String.format("Driver with id %d does not exist!", driver.getId());
         }
 
-        driverRepository.save(driver);
+        if (!driver.getLicenseNumber().isEmpty()) driverToUpdate.setLicenseNumber(driver.getLicenseNumber());
+        if (!driver.getPhoneNumber().isEmpty()) driverToUpdate.setPhoneNumber(driver.getPhoneNumber());
+        driverToUpdate.setRating(driver.getRating());
+
+        driverRepository.save(driverToUpdate);
         return String.format("Driver with id %d updated!", driver.getId());
     }
 

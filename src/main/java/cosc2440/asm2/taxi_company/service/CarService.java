@@ -61,11 +61,21 @@ public class CarService {
     }
 
     public String updateCar(Car car) {
-        if (getCarById(car.getVIN()) == null) {
+        Car carToUpdate = getCarById(car.getVIN());
+        if (carToUpdate == null) {
             return String.format("Car with VIN %s does not exist!", car.getVIN());
         }
 
-        carRepository.save(car);
+        if (!car.getMake().isEmpty()) carToUpdate.setMake(car.getMake());
+        if (!car.getColor().isEmpty()) carToUpdate.setColor(car.getColor());
+        if (!car.getLicensePlate().isEmpty()) carToUpdate.setLicensePlate(car.getLicensePlate());
+        if (!car.getModel().isEmpty()) carToUpdate.setModel(car.getModel());
+
+        carToUpdate.setConvertible(car.isConvertible());
+        carToUpdate.setRating(car.getRating());
+        carToUpdate.setRatePerKilometer(car.getRatePerKilometer());
+
+        carRepository.save(carToUpdate);
         return String.format("Car with VIN %s updated!", car.getVIN());
     }
 
