@@ -1,6 +1,7 @@
 package cosc2440.asm2.taxi_company.service;
 
 import cosc2440.asm2.taxi_company.model.Booking;
+import cosc2440.asm2.taxi_company.model.Car;
 import cosc2440.asm2.taxi_company.model.Driver;
 import cosc2440.asm2.taxi_company.model.Invoice;
 import cosc2440.asm2.taxi_company.repository.BookingRepository;
@@ -30,11 +31,12 @@ public class BookingService {
     @Autowired
     private BookingRepository bookingRepository;
 
-    @Autowired
-    private InvoiceService invoiceService;
 
     @Autowired
     private DriverService driverService;
+
+    @Autowired
+    private CarService carService;
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -43,12 +45,12 @@ public class BookingService {
         this.bookingRepository = bookingRepository;
     }
 
-    public void setInvoiceService(InvoiceService invoiceService) {
-        this.invoiceService = invoiceService;
-    }
-
     public void setDriverService(DriverService driverService) {
         this.driverService = driverService;
+    }
+
+    public void setCarService(CarService carService) {
+        this.carService = carService;
     }
 
     public void setSessionFactory(SessionFactory sessionFactory) {
@@ -142,13 +144,19 @@ public class BookingService {
         }
 
         if (booking.getInvoice() == null) return "Invoice must not be null";
+        if (booking.getInvoice().getDriver() == null) return "Driver must not be null";
 
         // assign driver to invoice and booking
         Driver driver = driverService.getDriverById(booking.getInvoice().getDriver().getId());
         if (driver == null) {
-            driver = new Driver();
+            return "This driver does not exist";
         }
+        if (driver.getCar() == null) return "This driver does not have a car";
+        if (!driver.getCar().isAvailable()) return "This driver has other booking";
+        driver.getCar().setAvailable(false);
 
+        // booking is the owning side => no need to set invoice for booking
+        // but invoice is the owning side in one-to-one relationship with driver => set driver for invoice then set the invoice to booking
         Invoice invoice = booking.getInvoice();
         invoice.setDriver(driver);
 
@@ -199,10 +207,20 @@ public class BookingService {
         }
     }
 
-    public String createBooking(String startLocation, String endLocation, String pickUpDatetime) {
-        Invoice invoice = new Invoice();
-        Booking booking = new Booking(startLocation, endLocation, pickUpDatetime, invoice);
-        return add(booking);
+    public String bookCar(Long carVIN, String startLocation, String endLocation, String pickUpDatetime) {
+        Car findCar = carService.getCarById(carVIN);
+        if (findCar == null) return "Car with ID: " + carVIN + " does not exist!!!";
+        if (findCar.getDriver() == null) return "This car does not have a driver";
+        if (!findCar.isAvailable()) return "This car is not available";
+
+        Invoice newInvoice = new Invoice(0, findCar.getDriver());
+        Booking newBooking = new Booking(startLocation, endLocation, pickUpDatetime, newInvoice);
+
+        // set the driver's car to be NOT available
+        findCar.setAvailable(false);
+
+        bookingRepository.save(newBooking);
+        return "Booking with ID: " + newBooking.getBookingID() + " is created!!!";
     }
 
     public String finalizeBooking(Long bookingID, String dropOffDatetime, int distance) {
@@ -235,11 +253,16 @@ public class BookingService {
             findBooking.setDropOffDateTime(dropOffDatetime);
             findBooking.setDistance(distance);
 
+            // set the driver's car to be available
+            findBooking.getInvoice().getDriver().getCar().setAvailable(true);
+
+            // calculate the total charge of the booking
+            double ratePerKm = findBooking.getInvoice().getDriver().getCar().getRatePerKilometer();
+            findBooking.getInvoice().setTotalCharge(distance * ratePerKm);
+
             // update the new modification to Booking
             bookingRepository.save(findBooking);
             return "Booking with ID: " + bookingID + " is finalized!!!";
         }
     }
-
-
 }

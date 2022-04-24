@@ -65,8 +65,8 @@ public class DriverService {
             return String.format("Driver with id %d does not exist!", driver.getId());
         }
 
-        if (!driver.getLicenseNumber().isEmpty()) driverToUpdate.setLicenseNumber(driver.getLicenseNumber());
-        if (!driver.getPhoneNumber().isEmpty()) driverToUpdate.setPhoneNumber(driver.getPhoneNumber());
+        if (driver.getLicenseNumber() == null) driverToUpdate.setLicenseNumber(driver.getLicenseNumber());
+        if (driver.getPhoneNumber() == null) driverToUpdate.setPhoneNumber(driver.getPhoneNumber());
         driverToUpdate.setRating(driver.getRating());
 
         driverRepository.save(driverToUpdate);

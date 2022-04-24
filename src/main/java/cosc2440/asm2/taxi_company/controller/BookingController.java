@@ -43,6 +43,14 @@ public class BookingController {
         return bookingService.delete(bookingID);
     }
 
+    @RequestMapping(path = "/booking/bookCar", method = RequestMethod.POST)
+    public String bookCar(@RequestParam("carVIN") Long carVIN,
+                          @RequestParam("startLocation") String startLocation,
+                          @RequestParam("endLocation") String endLocation,
+                          @RequestParam("pickUpDatetime") String pickUpDatetime) {
+        return bookingService.bookCar(carVIN, startLocation, endLocation, pickUpDatetime);
+    }
+
     @RequestMapping(path = "/booking/finalize", method = RequestMethod.POST)
     public String finalizeBooking(@RequestParam("bookingID") Long bookingID,
                                   @RequestParam("dropOffDatetime") String dropOffDatetime,
@@ -50,10 +58,10 @@ public class BookingController {
         return bookingService.finalizeBooking(bookingID, dropOffDatetime, distance);
     }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public String invalidWarning() {
-        return "The request is invalid!!!";
-    }
+//    @ExceptionHandler(HttpMessageNotReadableException.class)
+//    public String invalidWarning() {
+//        return "The request is invalid!!!";
+//    }
 
     @RequestMapping(path = "/invoice", method = RequestMethod.GET)
     public ResponseEntity<List<Invoice>> getAllInvoices(@RequestParam(value = "page", defaultValue = "0") int page,

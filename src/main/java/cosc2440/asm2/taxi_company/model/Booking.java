@@ -39,7 +39,7 @@ public class Booking {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     // set name for the join column in Booking and the name of reference column is the ID column of Invoice
     @JoinColumn(name = "invoiceID", nullable = false)
-    @JsonIgnoreProperties(value = "booking")
+    @JsonIgnoreProperties(value = "booking", allowSetters = true)
     private Invoice invoice;
 
     @Column(nullable = false)

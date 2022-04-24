@@ -1,5 +1,7 @@
 package cosc2440.asm2.taxi_company.service;
 
+import cosc2440.asm2.taxi_company.model.Booking;
+import cosc2440.asm2.taxi_company.model.Driver;
 import cosc2440.asm2.taxi_company.model.Invoice;
 import cosc2440.asm2.taxi_company.repository.InvoiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +23,15 @@ public class InvoiceService {
     @Autowired
     private InvoiceRepository invoiceRepository;
 
+    @Autowired
+    private DriverService driverService;
+
     public void setInvoiceRepository(InvoiceRepository invoiceRepository) {
         this.invoiceRepository = invoiceRepository;
     }
 
-    public InvoiceRepository getInvoiceRepository() {
-        return invoiceRepository;
+    public void setDriverService(DriverService driverService) {
+        this.driverService = driverService;
     }
 
     public ResponseEntity<List<Invoice>> getAll(Integer pageNumber, Integer pageSize) {
@@ -47,6 +52,24 @@ public class InvoiceService {
     public String add(Invoice invoice) {
         if (invoice.getBooking() == null) return "Booking must not be null";
         if (invoice.getDriver() == null) return "Driver must not be null";
+
+        // assign driver to invoice and booking
+        Driver driver = driverService.getDriverById(invoice.getDriver().getId());
+        if (driver == null) {
+            return "This driver does not exist";
+        }
+
+        if (driver.getCar() == null) return "This driver does not have a car";
+        if (!driver.getCar().isAvailable()) return "This driver has other booking";
+
+        // set the driver's car to be not available
+        driver.getCar().setAvailable(false);
+        invoice.setDriver(driver);
+
+        // booking is the owning side => set invoice to booking first before saving invoice to database
+        Booking booking = invoice.getBooking();
+        booking.setInvoice(invoice);
+        invoice.setBooking(booking);
 
         invoiceRepository.save(invoice);
 

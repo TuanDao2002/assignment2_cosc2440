@@ -14,16 +14,16 @@ public class Invoice {
     private Long invoiceID;
 
     @Column
-    private int totalCharge;
+    private double totalCharge;
 
     // Booking own the join column so this will be mapped by "invoice", the table name of Invoice class
     @OneToOne(mappedBy = "invoice", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     // set the name of join column with Booking class
     @JoinColumn(name = "invoiceID", nullable = false)
-    @JsonIgnoreProperties(value = "invoice")
+    @JsonIgnoreProperties(value = "invoice", allowSetters = true)
     private Booking booking;
 
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "driverID", nullable = false)
     @JsonIgnoreProperties(value = "invoice")
     private Driver driver;
@@ -53,11 +53,11 @@ public class Invoice {
         this.dateCreated = dateCreated;
     }
 
-    public int getTotalCharge() {
+    public double getTotalCharge() {
         return totalCharge;
     }
 
-    public void setTotalCharge(int totalCharge) {
+    public void setTotalCharge(double totalCharge) {
         this.totalCharge = totalCharge;
     }
 
@@ -79,5 +79,14 @@ public class Invoice {
 
     public ZonedDateTime getDateCreated() {
         return dateCreated;
+    }
+
+    @Override
+    public String toString() {
+        return "Invoice{" +
+                "invoiceID=" + invoiceID +
+                ", totalCharge=" + totalCharge +
+                ", dateCreated=" + dateCreated +
+                '}';
     }
 }

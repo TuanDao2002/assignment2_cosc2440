@@ -66,10 +66,10 @@ public class CarService {
             return String.format("Car with VIN %s does not exist!", car.getVIN());
         }
 
-        if (!car.getMake().isEmpty()) carToUpdate.setMake(car.getMake());
-        if (!car.getColor().isEmpty()) carToUpdate.setColor(car.getColor());
-        if (!car.getLicensePlate().isEmpty()) carToUpdate.setLicensePlate(car.getLicensePlate());
-        if (!car.getModel().isEmpty()) carToUpdate.setModel(car.getModel());
+        if (car.getMake() == null) carToUpdate.setMake(car.getMake());
+        if (car.getColor() == null) carToUpdate.setColor(car.getColor());
+        if (car.getLicensePlate() == null) carToUpdate.setLicensePlate(car.getLicensePlate());
+        if (car.getModel() == null) carToUpdate.setModel(car.getModel());
 
         carToUpdate.setConvertible(car.isConvertible());
         carToUpdate.setRating(car.getRating());
