@@ -2,6 +2,9 @@ package cosc2440.asm2.taxi_company.service;
 
 import cosc2440.asm2.taxi_company.model.Car;
 import cosc2440.asm2.taxi_company.repository.CarRepository;
+import org.hibernate.Criteria;
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +23,9 @@ import java.util.List;
 public class CarService {
     @Autowired
     private CarRepository carRepository;
+
+    @Autowired
+    private SessionFactory sessionFactory;
 
     public void setCarRepository(CarRepository carRepository) {
         this.carRepository = carRepository;
@@ -61,6 +67,12 @@ public class CarService {
 
         carRepository.save(car);
         return String.format("Car with VIN %s updated!", car.getVIN());
+    }
+
+    public List<Car> getAllAvailableCar() {
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Car.class);
+        criteria.add(Restrictions.eq("isAvailable", true));
+        return criteria.list();
     }
 
 }

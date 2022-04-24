@@ -39,4 +39,9 @@ public class CarController {
     public String updateCar(@RequestBody Car car) {
         return carService.updateCar(car);
     }
+
+    @RequestMapping(path = "car/available", method = RequestMethod.GET)
+    public List<Car> getAllAvailableCar() {
+        return carService.getAllAvailableCar();
+    }
 }
