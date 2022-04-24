@@ -56,6 +56,10 @@ public class CarService {
             return String.format("Car with VIN %s does not exist!", VIN);
         }
 
+        // set the car of the driver to be null
+        carToDelete.getDriver().setCar(null);
+
+        // delete car from database
         carRepository.delete(carToDelete);
         return String.format("Car with VIN %s deleted!", VIN);
     }

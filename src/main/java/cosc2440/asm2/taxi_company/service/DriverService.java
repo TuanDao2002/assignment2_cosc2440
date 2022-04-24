@@ -55,6 +55,10 @@ public class DriverService {
             return String.format("Driver with id %d does not exist!", id);
         }
 
+        // set the driver of the car to be null
+        driverToDelete.getCar().setDriver(null);
+
+        // delete driver from database
         driverRepository.delete(driverToDelete);
         return String.format("Driver with id %d deleted!", id);
     }

@@ -36,7 +36,7 @@ public class Car {
     private double ratePerKilometer;
 
     @OneToOne
-    @JoinColumn(name = "id", referencedColumnName = "id")
+    @JoinColumn(name = "id")
     @JsonIgnoreProperties(value = "car")
     private Driver driver;
 
