@@ -1,6 +1,7 @@
 package cosc2440.asm2.taxi_company.service;
 
 import cosc2440.asm2.taxi_company.model.Booking;
+import cosc2440.asm2.taxi_company.model.Driver;
 import cosc2440.asm2.taxi_company.model.Invoice;
 import cosc2440.asm2.taxi_company.repository.BookingRepository;
 import cosc2440.asm2.taxi_company.utility.DateUtility;
@@ -33,6 +34,9 @@ public class BookingService {
     private InvoiceService invoiceService;
 
     @Autowired
+    private DriverService driverService;
+
+    @Autowired
     private SessionFactory sessionFactory;
 
     public void setBookingRepository(BookingRepository bookingRepository) {
@@ -41,6 +45,10 @@ public class BookingService {
 
     public void setInvoiceService(InvoiceService invoiceService) {
         this.invoiceService = invoiceService;
+    }
+
+    public void setDriverService(DriverService driverService) {
+        this.driverService = driverService;
     }
 
     public void setSessionFactory(SessionFactory sessionFactory) {
@@ -133,6 +141,18 @@ public class BookingService {
             return "The drop-off date time must be after the pick-up date time";
         }
 
+        if (booking.getInvoice() == null) return "Invoice must not be null";
+
+        // assign driver to invoice and booking
+        Driver driver = driverService.getDriverById(booking.getInvoice().getDriver().getId());
+        if (driver == null) {
+            driver = new Driver();
+        }
+
+        Invoice invoice = booking.getInvoice();
+        invoice.setDriver(driver);
+
+        booking.setInvoice(invoice);
         bookingRepository.save(booking);
         return "Booking with id: " + booking.getBookingID() + " is added!!!";
     }
@@ -197,10 +217,12 @@ public class BookingService {
             LocalDateTime verifyDateObj = DateUtility.StringToLocalDateTime(dropOffDatetime);
             if (verifyDateObj == null) return "The drop off date time is invalid!!!";
 
-            // set the new drop off date time and distance to finalize booking
-            findBooking.setDropOffDateTime(dropOffDatetime);
+            // use a temporary Booking object to check if drop-of date time is after the pick-up date time
+            Booking verifyBooking = new Booking();
+            verifyBooking.setPickUpDatetime(findBooking.getPickUpDatetime());
+            verifyBooking.setDropOffDateTime(dropOffDatetime);
 
-            if (!DateUtility.validateDatetimeOf(findBooking)) {
+            if (!DateUtility.validateDatetimeOf(verifyBooking)) {
                 return "The drop-off date time must be after the pick-up date time";
             }
 
@@ -208,9 +230,12 @@ public class BookingService {
             if (distance <= 0) {
                 return "The distance must be greater than 0";
             }
+
+            // if all inputs are valid, assign them to the Booking
+            findBooking.setDropOffDateTime(dropOffDatetime);
             findBooking.setDistance(distance);
 
-            // update the new modification to booking
+            // update the new modification to Booking
             bookingRepository.save(findBooking);
             return "Booking with ID: " + bookingID + " is finalized!!!";
         }

@@ -45,7 +45,11 @@ public class InvoiceService {
     }
 
     public String add(Invoice invoice) {
+        if (invoice.getBooking() == null) return "Booking must not be null";
+        if (invoice.getDriver() == null) return "Driver must not be null";
+
         invoiceRepository.save(invoice);
+
         return "Invoice with id: " + invoice.getInvoiceID() + " is added!!!";
     }
 

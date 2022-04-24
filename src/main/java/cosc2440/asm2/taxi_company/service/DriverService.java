@@ -44,6 +44,7 @@ public class DriverService {
     }
 
     public Driver getDriverById(Long id) {
+        if (id == null) return null;
         return driverRepository.findById(id).isEmpty() ? null : driverRepository.findById(id).get();
     }
 

@@ -17,14 +17,14 @@ public class Invoice {
     private int totalCharge;
 
     // Booking own the join column so this will be mapped by "invoice", the table name of Invoice class
-    @OneToOne(mappedBy = "invoice")
+    @OneToOne(mappedBy = "invoice", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     // set the name of join column with Booking class
-    @JoinColumn(name = "invoiceID")
+    @JoinColumn(name = "invoiceID", nullable = false)
     @JsonIgnoreProperties(value = "invoice")
     private Booking booking;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "driverID")
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "driverID", nullable = false)
     @JsonIgnoreProperties(value = "invoice")
     private Driver driver;
 

@@ -38,7 +38,7 @@ public class Booking {
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     // set name for the join column in Booking and the name of reference column is the ID column of Invoice
-    @JoinColumn(name = "invoiceID")
+    @JoinColumn(name = "invoiceID", nullable = false)
     @JsonIgnoreProperties(value = "booking")
     private Invoice invoice;
 
@@ -131,5 +131,18 @@ public class Booking {
 
     public static DateTimeFormatter getDateTimeFormatter() {
         return DATE_TIME_FORMATTER;
+    }
+
+    @Override
+    public String toString() {
+        return "Booking{" +
+                "bookingID=" + bookingID +
+                ", startLocation='" + startLocation + '\'' +
+                ", endLocation='" + endLocation + '\'' +
+                ", pickUpDatetime=" + pickUpDatetime +
+                ", dropOffDatetime=" + dropOffDatetime +
+                ", distance=" + distance +
+                ", dateCreated=" + dateCreated +
+                '}';
     }
 }

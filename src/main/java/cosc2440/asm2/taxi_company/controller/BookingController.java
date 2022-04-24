@@ -52,7 +52,7 @@ public class BookingController {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public String invalidWarning() {
-        return "Invalid datetime format.\nThe pick up date time should not be null\nAll date times have format of HH:mm:ss dd-MM-uuuu and valid datetime numbers";
+        return "The request is invalid!!!";
     }
 
     @RequestMapping(path = "/invoice", method = RequestMethod.GET)
