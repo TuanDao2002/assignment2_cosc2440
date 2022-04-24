@@ -173,27 +173,6 @@ public class BookingService {
                 return "The drop-off date time must be after the pick-up date time";
             }
 
-            // if the Invoice exists in Booking, delete it from database and update new attributes for the Invoice
-//            if (booking.getInvoice() != null && booking.getInvoice().getInvoiceID() != null
-//                    && findBooking.getInvoice() != null
-//                    && !booking.getInvoice().getInvoiceID().equals(findBooking.getInvoice().getInvoiceID())) {
-//                return "Not match invoice ID";
-//            } else if (booking.getInvoice() != null && booking.getInvoice().getInvoiceID() != null) {
-//                Invoice invoice = invoiceService.getOne(booking.getInvoice().getInvoiceID());
-//                if (invoice == null || findBooking.getInvoice() == null) {
-//                    invoice = new Invoice();
-//                }
-//
-//                if (booking.getInvoice().getTotalCharge() > 0) {
-//                    invoice.setTotalCharge(booking.getInvoice().getTotalCharge());
-//                }
-//
-//                Invoice savedInvoice = invoiceService.getInvoiceRepository().save(invoice);
-//                findBooking.setInvoice(savedInvoice);
-//            } else if (booking.getInvoice() != null && booking.getInvoice().getInvoiceID() == null){
-//                return "No invoice ID is specified";
-//            }
-
             // set the new Invoice for Booking and update Booking
             bookingRepository.save(findBooking);
             return "Booking with ID: " + booking.getBookingID() + " is updated!!!";
@@ -201,7 +180,8 @@ public class BookingService {
     }
 
     public String createBooking(String startLocation, String endLocation, String pickUpDatetime) {
-        Booking booking = new Booking(startLocation, endLocation, pickUpDatetime);
+        Invoice invoice = new Invoice();
+        Booking booking = new Booking(startLocation, endLocation, pickUpDatetime, invoice);
         return add(booking);
     }
 

@@ -50,10 +50,10 @@ public class BookingController {
         return bookingService.finalizeBooking(bookingID, dropOffDatetime, distance);
     }
 
-//    @ExceptionHandler(HttpMessageNotReadableException.class)
-//    public String invalidWarning() {
-//        return "Invalid datetime format.\nThe pick up date time should not be null\nAll date times have format of HH:mm:ss dd-MM-uuuu and valid datetime numbers";
-//    }
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public String invalidWarning() {
+        return "Invalid datetime format.\nThe pick up date time should not be null\nAll date times have format of HH:mm:ss dd-MM-uuuu and valid datetime numbers";
+    }
 
     @RequestMapping(path = "/invoice", method = RequestMethod.GET)
     public ResponseEntity<List<Invoice>> getAllInvoices(@RequestParam(value = "page", defaultValue = "0") int page,
