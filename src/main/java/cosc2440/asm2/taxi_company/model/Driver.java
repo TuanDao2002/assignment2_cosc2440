@@ -1,6 +1,7 @@
 package cosc2440.asm2.taxi_company.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
@@ -25,8 +26,13 @@ public class Driver {
 
     @OneToOne(mappedBy = "driver")
     @JoinColumn(name = "id")
-    @JsonIgnoreProperties(value = "driver")
+    @JsonIgnore
     private Car car;
+
+    @OneToOne
+    @JoinColumn(name = "invoiceId")
+    @JsonIgnoreProperties("driver")
+    private Invoice invoice;
 
     @Column(nullable = false)
     private ZonedDateTime dateCreated;
@@ -96,6 +102,14 @@ public class Driver {
 
     public void setDateCreated(ZonedDateTime dateCreated) {
         this.dateCreated = dateCreated;
+    }
+
+    public Invoice getInvoice() {
+        return invoice;
+    }
+
+    public void setInvoice(Invoice invoice) {
+        this.invoice = invoice;
     }
 
     @Override

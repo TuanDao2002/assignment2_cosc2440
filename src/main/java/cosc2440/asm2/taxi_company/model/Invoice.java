@@ -23,6 +23,11 @@ public class Invoice {
     @JsonIgnoreProperties(value = "invoice")
     private Booking booking;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id")
+    @JsonIgnoreProperties("invoice")
+    private Driver driver;
+
     @Column(nullable = false)
     private ZonedDateTime dateCreated;
 
@@ -30,9 +35,22 @@ public class Invoice {
         this.dateCreated = ZonedDateTime.now();
     }
 
-    public Invoice(int totalCharge) {
+    public Invoice(int totalCharge, Driver driver) {
         this.totalCharge = totalCharge;
+        this.driver = driver;
         this.dateCreated = ZonedDateTime.now();
+    }
+
+    public Driver getDriver() {
+        return driver;
+    }
+
+    public void setDriver(Driver driver) {
+        this.driver = driver;
+    }
+
+    public void setDateCreated(ZonedDateTime dateCreated) {
+        this.dateCreated = dateCreated;
     }
 
     public int getTotalCharge() {

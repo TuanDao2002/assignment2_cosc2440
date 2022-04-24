@@ -174,25 +174,25 @@ public class BookingService {
             }
 
             // if the Invoice exists in Booking, delete it from database and update new attributes for the Invoice
-            if (booking.getInvoice() != null && booking.getInvoice().getInvoiceID() != null
-                    && findBooking.getInvoice() != null
-                    && !booking.getInvoice().getInvoiceID().equals(findBooking.getInvoice().getInvoiceID())) {
-                return "Not match invoice ID";
-            } else if (booking.getInvoice() != null && booking.getInvoice().getInvoiceID() != null) {
-                Invoice invoice = invoiceService.getOne(booking.getInvoice().getInvoiceID());
-                if (invoice == null || findBooking.getInvoice() == null) {
-                    invoice = new Invoice();
-                }
-
-                if (booking.getInvoice().getTotalCharge() > 0) {
-                    invoice.setTotalCharge(booking.getInvoice().getTotalCharge());
-                }
-
-                Invoice savedInvoice = invoiceService.getInvoiceRepository().save(invoice);
-                findBooking.setInvoice(savedInvoice);
-            } else if (booking.getInvoice() != null && booking.getInvoice().getInvoiceID() == null){
-                return "No invoice ID is specified";
-            }
+//            if (booking.getInvoice() != null && booking.getInvoice().getInvoiceID() != null
+//                    && findBooking.getInvoice() != null
+//                    && !booking.getInvoice().getInvoiceID().equals(findBooking.getInvoice().getInvoiceID())) {
+//                return "Not match invoice ID";
+//            } else if (booking.getInvoice() != null && booking.getInvoice().getInvoiceID() != null) {
+//                Invoice invoice = invoiceService.getOne(booking.getInvoice().getInvoiceID());
+//                if (invoice == null || findBooking.getInvoice() == null) {
+//                    invoice = new Invoice();
+//                }
+//
+//                if (booking.getInvoice().getTotalCharge() > 0) {
+//                    invoice.setTotalCharge(booking.getInvoice().getTotalCharge());
+//                }
+//
+//                Invoice savedInvoice = invoiceService.getInvoiceRepository().save(invoice);
+//                findBooking.setInvoice(savedInvoice);
+//            } else if (booking.getInvoice() != null && booking.getInvoice().getInvoiceID() == null){
+//                return "No invoice ID is specified";
+//            }
 
             // set the new Invoice for Booking and update Booking
             bookingRepository.save(findBooking);

@@ -56,6 +56,14 @@ public class Booking {
         this.dateCreated = ZonedDateTime.now();
     }
 
+    public Booking(String startLocation, String endLocation, String dateString, Invoice invoice) {
+        this.startLocation = startLocation;
+        this.endLocation = endLocation;
+        setPickUpDatetime(dateString);
+        this.invoice = invoice;
+        this.dateCreated = ZonedDateTime.now();
+    }
+
     public Long getBookingID() {
         return bookingID;
     }
