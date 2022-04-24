@@ -90,6 +90,11 @@ public class InvoiceService {
         if (findInvoice == null) {
             return "Invoice with ID: " + InvoiceID + " does not exist!!!";
         } else {
+            // if the booking of the invoice is not finalized, when invoice is deleted, set the driver's car availability to true;
+            if (findInvoice.getBooking().getDropOffDateTime() == null) {
+                findInvoice.getDriver().getCar().setAvailable(true);
+            }
+
             // set the Invoice object in Booking to be null
             findInvoice.getBooking().setInvoice(null);
 

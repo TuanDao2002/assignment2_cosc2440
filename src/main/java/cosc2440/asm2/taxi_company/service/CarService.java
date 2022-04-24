@@ -1,6 +1,7 @@
 package cosc2440.asm2.taxi_company.service;
 
 import cosc2440.asm2.taxi_company.model.Car;
+import cosc2440.asm2.taxi_company.model.Invoice;
 import cosc2440.asm2.taxi_company.repository.CarRepository;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
@@ -56,8 +57,12 @@ public class CarService {
             return String.format("Car with VIN %s does not exist!", VIN);
         }
 
-        // set the car of the driver to be null
-        carToDelete.getDriver().setCar(null);
+        if (!carToDelete.isAvailable()) return "Cannot delete this car as it has booking";
+
+        if (carToDelete.getDriver() != null) {
+            // set the car of the driver to be null
+            carToDelete.getDriver().setCar(null);
+        }
 
         // delete car from database
         carRepository.delete(carToDelete);

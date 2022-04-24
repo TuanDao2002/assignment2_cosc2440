@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "driver")
@@ -29,10 +31,14 @@ public class Driver {
     @JsonIgnore
     private Car car;
 
-    @OneToOne(mappedBy = "driver", cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "driverID")
+//    @OneToOne(mappedBy = "driver", cascade = CascadeType.REMOVE)
+//    @JoinColumn(name = "driverID")
+//    @JsonIgnoreProperties("driver")
+//    private Invoice invoice;
+
+    @OneToMany(mappedBy = "driver", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     @JsonIgnoreProperties("driver")
-    private Invoice invoice;
+    private List<Invoice> invoiceList = new ArrayList<>();
 
     @Column(nullable = false)
     private ZonedDateTime dateCreated;
@@ -104,12 +110,12 @@ public class Driver {
         this.dateCreated = dateCreated;
     }
 
-    public Invoice getInvoice() {
-        return invoice;
+    public List<Invoice> getInvoiceList() {
+        return invoiceList;
     }
 
-    public void setInvoice(Invoice invoice) {
-        this.invoice = invoice;
+    public void setInvoiceList(List<Invoice> invoiceList) {
+        this.invoiceList = invoiceList;
     }
 
     @Override

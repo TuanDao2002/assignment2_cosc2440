@@ -180,6 +180,10 @@ public class BookingService {
         if (findBooking == null) {
             return "Booking with ID: " + bookingID + " does not exist!!!";
         } else {
+            // if the booking is not finalized, when booking is deleted, set the driver's car availability to true;
+            if (findBooking.getDropOffDateTime() == null) {
+                findBooking.getInvoice().getDriver().getCar().setAvailable(true);
+            }
             bookingRepository.deleteById(bookingID);
             return "Booking with ID: " + bookingID + " is deleted!!!";
         }

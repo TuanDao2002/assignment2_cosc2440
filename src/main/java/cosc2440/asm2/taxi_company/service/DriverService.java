@@ -55,8 +55,10 @@ public class DriverService {
             return String.format("Driver with id %d does not exist!", id);
         }
 
-        // set the driver of the car to be null
-        driverToDelete.getCar().setDriver(null);
+        if (driverToDelete.getCar() != null) {
+            // set the driver of the car to be null
+            driverToDelete.getCar().setDriver(null);
+        }
 
         // delete driver from database
         driverRepository.delete(driverToDelete);
@@ -69,8 +71,8 @@ public class DriverService {
             return String.format("Driver with id %d does not exist!", driver.getId());
         }
 
-        if (driver.getLicenseNumber() == null) driverToUpdate.setLicenseNumber(driver.getLicenseNumber());
-        if (driver.getPhoneNumber() == null) driverToUpdate.setPhoneNumber(driver.getPhoneNumber());
+        if (driver.getLicenseNumber() != null) driverToUpdate.setLicenseNumber(driver.getLicenseNumber());
+        if (driver.getPhoneNumber() != null) driverToUpdate.setPhoneNumber(driver.getPhoneNumber());
         driverToUpdate.setRating(driver.getRating());
 
         driverRepository.save(driverToUpdate);
