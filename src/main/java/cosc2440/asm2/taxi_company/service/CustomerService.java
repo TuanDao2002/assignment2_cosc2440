@@ -1,8 +1,11 @@
 package cosc2440.asm2.taxi_company.service;
 
+import cosc2440.asm2.taxi_company.model.Booking;
 import cosc2440.asm2.taxi_company.model.Customer;
 import cosc2440.asm2.taxi_company.model.Driver;
+import cosc2440.asm2.taxi_company.model.Invoice;
 import cosc2440.asm2.taxi_company.repository.CustomerRepository;
+import cosc2440.asm2.taxi_company.utility.CustomerUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -51,6 +54,14 @@ public class CustomerService {
         if (customerToDelete == null) {
             return String.format("Customer with id %d does not exist!", id);
         }
+
+        if (!CustomerUtility.checkCustomerBookingIsFinalized(customerToDelete)) {
+            // if the latest booking of the customer is not finalized, delete the customer will allow the car to be available
+            List<Invoice> customerInvoiceList = customerToDelete.getInvoiceList();
+            Booking latestBooking = customerInvoiceList.get(customerInvoiceList.size() - 1).getBooking();
+            latestBooking.getInvoice().getDriver().getCar().setAvailable(true);
+        }
+
         customerRepository.delete(customerToDelete);
         return String.format("Customer with id %d deleted!", id);
     }
@@ -61,6 +72,7 @@ public class CustomerService {
             return String.format("Customer with id %d does not exist!", customer.getId());
         }
 
+        if (customer.getName() != null) customerToUpdate.setName(customer.getName());
         if (customer.getPhoneNumber() != null) customerToUpdate.setPhoneNumber(customer.getPhoneNumber());
         if (customer.getAddress() != null) customerToUpdate.setAddress(customer.getAddress());
 

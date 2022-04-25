@@ -1,10 +1,8 @@
 package cosc2440.asm2.taxi_company.service;
 
-import cosc2440.asm2.taxi_company.model.Booking;
-import cosc2440.asm2.taxi_company.model.Car;
-import cosc2440.asm2.taxi_company.model.Driver;
-import cosc2440.asm2.taxi_company.model.Invoice;
+import cosc2440.asm2.taxi_company.model.*;
 import cosc2440.asm2.taxi_company.repository.BookingRepository;
+import cosc2440.asm2.taxi_company.utility.CustomerUtility;
 import cosc2440.asm2.taxi_company.utility.DateUtility;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
@@ -39,6 +37,9 @@ public class BookingService {
     private CarService carService;
 
     @Autowired
+    private CustomerService customerService;
+
+    @Autowired
     private SessionFactory sessionFactory;
 
     public void setBookingRepository(BookingRepository bookingRepository) {
@@ -51,6 +52,10 @@ public class BookingService {
 
     public void setCarService(CarService carService) {
         this.carService = carService;
+    }
+
+    public void setCustomerService(CustomerService customerService) {
+        this.customerService = customerService;
     }
 
     public void setSessionFactory(SessionFactory sessionFactory) {
@@ -145,20 +150,30 @@ public class BookingService {
 
         if (booking.getInvoice() == null) return "Invoice must not be null";
         if (booking.getInvoice().getDriver() == null) return "Driver must not be null";
+        if (booking.getInvoice().getCustomer() == null) return "Customer must not be null";
 
-        // assign driver to invoice and booking
         Driver driver = driverService.getDriverById(booking.getInvoice().getDriver().getId());
         if (driver == null) {
             return "This driver does not exist";
         }
         if (driver.getCar() == null) return "This driver does not have a car";
         if (!driver.getCar().isAvailable()) return "This driver has other booking";
-        driver.getCar().setAvailable(false); // set the availability of car to false
+
+        Customer customer = customerService.getCustomerById(booking.getInvoice().getCustomer().getId());
+        if (customer == null) {
+            return "This customer does not exist";
+        }
+
+        if (!CustomerUtility.checkCustomerBookingIsFinalized(customer)) {
+            return "The latest booking of this customer is not finalized!!!";
+        }
 
         // booking is the owning side => no need to set invoice for booking
         // but invoice is the owning side in one-to-one relationship with driver => set driver for invoice then set the invoice to booking
         Invoice invoice = booking.getInvoice();
+        driver.getCar().setAvailable(false); // set the availability of car to false
         invoice.setDriver(driver);
+        invoice.setCustomer(customer);
 
         booking.setInvoice(invoice);
         bookingRepository.save(booking);
@@ -210,7 +225,7 @@ public class BookingService {
         }
     }
 
-    public String bookCar(Long carVIN, String startLocation, String endLocation, String pickUpDatetime) {
+    public String bookCar(Long carVIN, Long customerID, String startLocation, String endLocation, String pickUpDatetime) {
         // check if the pick-up datetime has valid format
         LocalDateTime verifyDateObj = DateUtility.StringToLocalDateTime(pickUpDatetime);
         if (verifyDateObj == null) return "The pick-up date time is invalid!!!";
@@ -220,7 +235,14 @@ public class BookingService {
         if (findCar.getDriver() == null) return "This car does not have a driver";
         if (!findCar.isAvailable()) return "This car is not available";
 
-        Invoice newInvoice = new Invoice(0, findCar.getDriver());
+        Customer findCustomer = customerService.getCustomerById(customerID);
+        if (findCustomer == null) return "Customer with ID: " + carVIN + " does not exist!!!";
+
+        if (!CustomerUtility.checkCustomerBookingIsFinalized(findCustomer)) {
+            return "The latest booking of this customer is not finalized!!!";
+        }
+
+        Invoice newInvoice = new Invoice(0, findCar.getDriver(), findCustomer);
         Booking newBooking = new Booking(startLocation, endLocation, pickUpDatetime, newInvoice);
 
         // set the driver's car to be NOT available

@@ -1,9 +1,11 @@
 package cosc2440.asm2.taxi_company.service;
 
 import cosc2440.asm2.taxi_company.model.Booking;
+import cosc2440.asm2.taxi_company.model.Customer;
 import cosc2440.asm2.taxi_company.model.Driver;
 import cosc2440.asm2.taxi_company.model.Invoice;
 import cosc2440.asm2.taxi_company.repository.InvoiceRepository;
+import cosc2440.asm2.taxi_company.utility.CustomerUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,12 +28,19 @@ public class InvoiceService {
     @Autowired
     private DriverService driverService;
 
+    @Autowired
+    private CustomerService customerService;
+
     public void setInvoiceRepository(InvoiceRepository invoiceRepository) {
         this.invoiceRepository = invoiceRepository;
     }
 
     public void setDriverService(DriverService driverService) {
         this.driverService = driverService;
+    }
+
+    public void setCustomerService(CustomerService customerService) {
+        this.customerService = customerService;
     }
 
     public ResponseEntity<List<Invoice>> getAll(Integer pageNumber, Integer pageSize) {
@@ -52,6 +61,7 @@ public class InvoiceService {
     public String add(Invoice invoice) {
         if (invoice.getBooking() == null) return "Booking must not be null";
         if (invoice.getDriver() == null) return "Driver must not be null";
+        if (invoice.getCustomer() == null) return "Customer must not be null";
 
         // assign driver to invoice and booking
         Driver driver = driverService.getDriverById(invoice.getDriver().getId());
@@ -62,9 +72,17 @@ public class InvoiceService {
         if (driver.getCar() == null) return "This driver does not have a car";
         if (!driver.getCar().isAvailable()) return "This driver has other booking";
 
+        Customer customer = customerService.getCustomerById(invoice.getCustomer().getId());
+        if (customer == null) return "This customer does not exist";
+
+        if (!CustomerUtility.checkCustomerBookingIsFinalized(customer)) {
+            return "The latest booking of this customer is not finalized!!!";
+        }
+
         // set the driver's car to be not available
         driver.getCar().setAvailable(false);
         invoice.setDriver(driver);
+        invoice.setCustomer(customer);
 
         // booking is the owning side => set invoice to booking first before saving invoice to database
         Booking booking = invoice.getBooking();

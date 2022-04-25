@@ -50,10 +50,11 @@ public class BookingController {
 
     @RequestMapping(path = "/booking/bookCar", method = RequestMethod.POST)
     public String bookCar(@RequestParam("carVIN") Long carVIN,
+                          @RequestParam("customerID") Long customerID,
                           @RequestParam("startLocation") String startLocation,
                           @RequestParam("endLocation") String endLocation,
                           @RequestParam("pickUpDatetime") String pickUpDatetime) {
-        return bookingService.bookCar(carVIN, startLocation, endLocation, pickUpDatetime);
+        return bookingService.bookCar(carVIN, customerID, startLocation, endLocation, pickUpDatetime);
     }
 
     @RequestMapping(path = "/booking/finalize", method = RequestMethod.POST)
@@ -71,7 +72,7 @@ public class BookingController {
     // controller for invoice
     @RequestMapping(path = "/invoice", method = RequestMethod.GET)
     public ResponseEntity<List<Invoice>> getAllInvoices(@RequestParam(value = "page", defaultValue = "0") int page,
-                                                        @RequestParam(value = "size", defaultValue = "5") int size) {
+                                                        @RequestParam(value = "size", defaultValue = "20") int size) {
         return invoiceService.getAll(page, size);
     }
 

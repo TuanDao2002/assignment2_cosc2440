@@ -3,7 +3,6 @@ package cosc2440.asm2.taxi_company.controller;
 import cosc2440.asm2.taxi_company.model.Customer;
 
 
-import cosc2440.asm2.taxi_company.model.Driver;
 import cosc2440.asm2.taxi_company.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +19,7 @@ public class CustomerController {
 
     @RequestMapping(path = "/customer", method = RequestMethod.GET)
     public ResponseEntity<List<Customer>> getAllCustomers(@RequestParam(value = "page", defaultValue = "0") int page,
-                                                      @RequestParam(value = "size", defaultValue = "5") int size) {
+                                                      @RequestParam(value = "size", defaultValue = "20") int size) {
         return customerService.getAllCustomers(page, size);
     }
 
