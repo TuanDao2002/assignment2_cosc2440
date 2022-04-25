@@ -37,7 +37,7 @@ public class Car {
 
     @OneToOne
     @JoinColumn(name = "id")
-    @JsonIgnoreProperties(value = "car")
+    @JsonIgnoreProperties(value = {"car", "invoiceList"})
     private Driver driver;
 
     private boolean isAvailable;
