@@ -73,7 +73,7 @@ public class DriverService {
 
         if (driver.getLicenseNumber() != null) driverToUpdate.setLicenseNumber(driver.getLicenseNumber());
         if (driver.getPhoneNumber() != null) driverToUpdate.setPhoneNumber(driver.getPhoneNumber());
-        driverToUpdate.setRating(driver.getRating());
+        if (driver.getRating() >= 0) driverToUpdate.setRating(driver.getRating());
 
         driverRepository.save(driverToUpdate);
         return String.format("Driver with id %d updated!", driver.getId());

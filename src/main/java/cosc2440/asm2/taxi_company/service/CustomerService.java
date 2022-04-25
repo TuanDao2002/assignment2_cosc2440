@@ -61,8 +61,8 @@ public class CustomerService {
             return String.format("Customer with id %d does not exist!", customer.getId());
         }
 
-        if (customer.getPhoneNumber() == null) customerToUpdate.setPhoneNumber(customer.getPhoneNumber());
-        if (customer.getAddress() == null) customerToUpdate.setAddress(customer.getAddress());
+        if (customer.getPhoneNumber() != null) customerToUpdate.setPhoneNumber(customer.getPhoneNumber());
+        if (customer.getAddress() != null) customerToUpdate.setAddress(customer.getAddress());
 
         customerRepository.save(customerToUpdate);
         return String.format("Customer with id %d updated!", customer.getId());

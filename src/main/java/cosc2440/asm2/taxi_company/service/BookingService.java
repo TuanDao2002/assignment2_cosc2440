@@ -205,7 +205,6 @@ public class BookingService {
                 return "The drop-off date time must be after the pick-up date time";
             }
 
-            // set the new Invoice for Booking and update Booking
             bookingRepository.save(findBooking);
             return "Booking with ID: " + booking.getBookingID() + " is updated!!!";
         }

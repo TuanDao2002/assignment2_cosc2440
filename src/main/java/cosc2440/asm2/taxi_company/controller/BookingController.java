@@ -6,7 +6,6 @@ import cosc2440.asm2.taxi_company.service.BookingService;
 import cosc2440.asm2.taxi_company.service.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +18,7 @@ public class BookingController {
     @Autowired
     private InvoiceService invoiceService;
 
+    // controller for booking
     @RequestMapping(path = "/booking", method = RequestMethod.GET)
     public ResponseEntity<List<Booking>> getAllBookings(@RequestParam(value = "page", defaultValue = "0") int page,
                                                         @RequestParam(value = "size", defaultValue = "20") int size,
@@ -26,6 +26,11 @@ public class BookingController {
                                                         @RequestParam(value = "startDate", required = false) String startDate,
                                                         @RequestParam(value = "endDate", required = false) String endDate) {
         return bookingService.getAll(page, size, matchDate, startDate, endDate);
+    }
+
+    @RequestMapping(path = "/booking/{bookingID}", method = RequestMethod.GET)
+    public Booking getBookingById(@PathVariable Long bookingID) {
+        return bookingService.getOne(bookingID);
     }
 
     @RequestMapping(path = "/booking", method = RequestMethod.POST)
@@ -63,10 +68,16 @@ public class BookingController {
 //        return "The request is invalid!!!";
 //    }
 
+    // controller for invoice
     @RequestMapping(path = "/invoice", method = RequestMethod.GET)
     public ResponseEntity<List<Invoice>> getAllInvoices(@RequestParam(value = "page", defaultValue = "0") int page,
                                                         @RequestParam(value = "size", defaultValue = "5") int size) {
         return invoiceService.getAll(page, size);
+    }
+
+    @RequestMapping(path = "/invoice/{invoiceID}", method = RequestMethod.GET)
+    public Invoice getInvoiceById(@PathVariable Long invoiceID) {
+        return invoiceService.getOne(invoiceID);
     }
 
     @RequestMapping(path = "/invoice", method = RequestMethod.POST)

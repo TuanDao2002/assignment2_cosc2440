@@ -47,6 +47,7 @@ public class CarService {
     }
 
     public Car getCarById(Long VIN) {
+        if (VIN == null) return null;
         return carRepository.findById(VIN).isEmpty() ? null : carRepository.findById(VIN).get();
     }
 
@@ -75,14 +76,14 @@ public class CarService {
             return String.format("Car with VIN %s does not exist!", car.getVIN());
         }
 
-        if (car.getMake() == null) carToUpdate.setMake(car.getMake());
-        if (car.getColor() == null) carToUpdate.setColor(car.getColor());
-        if (car.getLicensePlate() == null) carToUpdate.setLicensePlate(car.getLicensePlate());
-        if (car.getModel() == null) carToUpdate.setModel(car.getModel());
+        if (car.getMake() != null) carToUpdate.setMake(car.getMake());
+        if (car.getColor() != null) carToUpdate.setColor(car.getColor());
+        if (car.getLicensePlate() != null) carToUpdate.setLicensePlate(car.getLicensePlate());
+        if (car.getModel() != null) carToUpdate.setModel(car.getModel());
 
         carToUpdate.setConvertible(car.isConvertible());
-        carToUpdate.setRating(car.getRating());
-        carToUpdate.setRatePerKilometer(car.getRatePerKilometer());
+        if (car.getRating() >= 0) carToUpdate.setRating(car.getRating());
+        if (car.getRatePerKilometer() >= 0) carToUpdate.setRatePerKilometer(car.getRatePerKilometer());
 
         carRepository.save(carToUpdate);
         return String.format("Car with VIN %s updated!", car.getVIN());
