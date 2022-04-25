@@ -110,6 +110,10 @@ public class InvoiceService {
         if (findInvoice == null) {
             return "Invoice with ID: " + invoice.getInvoiceID() + " does not exist!!!";
         } else {
+            if (findInvoice.getBooking().getDropOffDateTime() == null) {
+                return "Cannot update total charge as the booking is not finalized";
+            }
+
             if (invoice.getTotalCharge() > 0) findInvoice.setTotalCharge(invoice.getTotalCharge());
             invoiceRepository.save(findInvoice);
             return "Invoice with ID: " + invoice.getInvoiceID() + " is updated!!!";
