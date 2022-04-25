@@ -38,12 +38,28 @@ public class CarService {
 
         Page<Car> pageResult;
         if (getByAvailable) {
-            pageResult = new PageImpl<>(getAllAvailableCar().subList(0, pageSize), paging, getAllAvailableCar().size());
+            List<Car> availableCarList = getAllAvailableCar();
+//            int start = (int) paging.getOffset();
+//            int end = Math.min((start + paging.getPageSize()), availableCarList.size());
+//
+//            // return empty if the page's start index is greater than page's end index
+//            if (start >= end) {
+//                return new ResponseEntity<>(new ArrayList<>(), new HttpHeaders(), HttpStatus.OK);
+//            }
+            pageResult = new PageImpl<>(availableCarList.subList(0, pageSize), paging, availableCarList.size());
         } else {
             pageResult = carRepository.findAll(paging);
         }
 
         List<Car> list = pageResult.hasContent() ? pageResult.getContent() : new ArrayList<>();
+
+//        int start = (int) paging.getOffset();
+//        int end = Math.min((start + paging.getPageSize()), list.size());
+//
+//        // return empty if the page's start index is greater than page's end index
+//        if (start >= end) {
+//            return new ResponseEntity<>(new ArrayList<>(), new HttpHeaders(), HttpStatus.OK);
+//        }
 
         return new ResponseEntity<>(list, new HttpHeaders(), HttpStatus.OK);
     }
