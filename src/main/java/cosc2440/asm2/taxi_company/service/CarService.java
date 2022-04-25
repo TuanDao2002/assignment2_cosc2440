@@ -3,6 +3,7 @@ package cosc2440.asm2.taxi_company.service;
 import cosc2440.asm2.taxi_company.model.Car;
 import cosc2440.asm2.taxi_company.model.Invoice;
 import cosc2440.asm2.taxi_company.repository.CarRepository;
+import cosc2440.asm2.taxi_company.utility.PagingUtility;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
@@ -34,34 +35,8 @@ public class CarService {
     }
 
     public ResponseEntity<List<Car>> getAllCar(Integer pageNumber, Integer pageSize, boolean getByAvailable) {
-        Pageable paging = PageRequest.of(pageNumber, pageSize);
-
-        Page<Car> pageResult;
-        if (getByAvailable) {
-            List<Car> availableCarList = getAllAvailableCar();
-//            int start = (int) paging.getOffset();
-//            int end = Math.min((start + paging.getPageSize()), availableCarList.size());
-//
-//            // return empty if the page's start index is greater than page's end index
-//            if (start >= end) {
-//                return new ResponseEntity<>(new ArrayList<>(), new HttpHeaders(), HttpStatus.OK);
-//            }
-            pageResult = new PageImpl<>(availableCarList.subList(0, pageSize), paging, availableCarList.size());
-        } else {
-            pageResult = carRepository.findAll(paging);
-        }
-
-        List<Car> list = pageResult.hasContent() ? pageResult.getContent() : new ArrayList<>();
-
-//        int start = (int) paging.getOffset();
-//        int end = Math.min((start + paging.getPageSize()), list.size());
-//
-//        // return empty if the page's start index is greater than page's end index
-//        if (start >= end) {
-//            return new ResponseEntity<>(new ArrayList<>(), new HttpHeaders(), HttpStatus.OK);
-//        }
-
-        return new ResponseEntity<>(list, new HttpHeaders(), HttpStatus.OK);
+        List<Car> list = getByAvailable ? getAllAvailableCar() : (List<Car>) carRepository.findAll();
+        return PagingUtility.getAll(list, pageSize, pageNumber);
     }
 
     public String addCar(Car car) {
