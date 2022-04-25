@@ -4,6 +4,7 @@ import cosc2440.asm2.taxi_company.model.*;
 import cosc2440.asm2.taxi_company.repository.BookingRepository;
 import cosc2440.asm2.taxi_company.utility.CustomerUtility;
 import cosc2440.asm2.taxi_company.utility.DateUtility;
+import cosc2440.asm2.taxi_company.utility.PagingUtility;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
@@ -117,30 +118,7 @@ public class BookingService {
                                                 String matchPickUpDate, String startDate, String endDate) {
 
         List<Booking> retrievedBookingList = searchBookingByDate(matchPickUpDate, startDate, endDate);
-        // return empty if the retrieve Bookings are null or not found or the page size is less than 1 or page number is negative
-        if (retrievedBookingList == null || retrievedBookingList.isEmpty() || pageSize < 1 || pageNumber < 0) {
-            return new ResponseEntity<>(new ArrayList<>(), new HttpHeaders(), HttpStatus.OK);
-        }
-
-        Pageable paging = PageRequest.of(pageNumber, pageSize);
-        int start = (int)paging.getOffset();
-        int end = Math.min((start + paging.getPageSize()), retrievedBookingList.size());
-
-        // return empty if the page's start index is greater than page's end index
-        if (start >= end) {
-            return new ResponseEntity<>(new ArrayList<>(), new HttpHeaders(), HttpStatus.OK);
-        }
-
-        Page<Booking> pagedResult = new PageImpl<>(retrievedBookingList.subList(start, end), paging, retrievedBookingList.size());
-
-        List<Booking> list;
-        if (pagedResult.hasContent()) {
-            list = pagedResult.getContent();
-        } else {
-            list = new ArrayList<>();
-        }
-
-        return new ResponseEntity<>(list, new HttpHeaders(), HttpStatus.OK);
+        return PagingUtility.getAll(retrievedBookingList, pageSize, pageNumber);
     }
 
     public String add(Booking booking) {
