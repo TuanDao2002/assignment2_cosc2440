@@ -7,14 +7,9 @@ import cosc2440.asm2.taxi_company.utility.DateUtility;
 import cosc2440.asm2.taxi_company.utility.PagingUtility;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -111,6 +106,7 @@ public class BookingService {
             criteria.add(Restrictions.le("pickUpDatetime", end.atStartOfDay()));
         }
 
+        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
         return criteria.list();
     }
 
@@ -144,6 +140,10 @@ public class BookingService {
 
         if (!CustomerUtility.checkCustomerBookingIsFinalized(customer)) {
             return "The latest booking of this customer is not finalized!!!";
+        }
+
+        if (!DateUtility.checkPickUpDatetimeIsValid(customer, driver, booking.getPickUpDatetime())) {
+            return "The pick-up date time must be after the drop-of date time of the latest booking";
         }
 
         // booking is the owning side => no need to set invoice for booking
@@ -218,6 +218,10 @@ public class BookingService {
 
         if (!CustomerUtility.checkCustomerBookingIsFinalized(findCustomer)) {
             return "The latest booking of this customer is not finalized!!!";
+        }
+
+        if (!DateUtility.checkPickUpDatetimeIsValid(findCustomer, findCar.getDriver(), pickUpDatetime)) {
+            return "The pick-up date time must be after the drop-of date time of the latest booking";
         }
 
         Invoice newInvoice = new Invoice(0, findCar.getDriver(), findCustomer);

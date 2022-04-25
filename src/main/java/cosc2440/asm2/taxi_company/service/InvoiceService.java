@@ -6,6 +6,7 @@ import cosc2440.asm2.taxi_company.model.Driver;
 import cosc2440.asm2.taxi_company.model.Invoice;
 import cosc2440.asm2.taxi_company.repository.InvoiceRepository;
 import cosc2440.asm2.taxi_company.utility.CustomerUtility;
+import cosc2440.asm2.taxi_company.utility.DateUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -77,6 +78,10 @@ public class InvoiceService {
 
         if (!CustomerUtility.checkCustomerBookingIsFinalized(customer)) {
             return "The latest booking of this customer is not finalized!!!";
+        }
+
+        if (!DateUtility.checkPickUpDatetimeIsValid(customer, driver, invoice.getBooking().getPickUpDatetime())) {
+            return "The pick-up date time must be after the drop-of date time of the latest booking";
         }
 
         // set the driver's car to be not available

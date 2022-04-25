@@ -1,11 +1,15 @@
 package cosc2440.asm2.taxi_company.utility;
 
 import cosc2440.asm2.taxi_company.model.Booking;
+import cosc2440.asm2.taxi_company.model.Customer;
+import cosc2440.asm2.taxi_company.model.Driver;
+import cosc2440.asm2.taxi_company.model.Invoice;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 
 public final class DateUtility {
     // format of the input date from the request
@@ -44,5 +48,30 @@ public final class DateUtility {
         }
 
         return verifiedDateObj;
+    }
+
+
+    // check if the new pick-up datetime is after the drop-off datetime of the latest booking of customer and invoice
+    public static boolean checkPickUpDatetimeIsValid(Customer customer, Driver driver, String newPickUpDatetime) {
+        LocalDateTime pickUpDatetimeOfNewBooking = DateUtility.StringToLocalDateTime(newPickUpDatetime);
+        if (pickUpDatetimeOfNewBooking == null) return false;
+
+        if (customer.getInvoiceList().isEmpty() && driver.getInvoiceList().isEmpty()) return true;
+
+        if (!customer.getInvoiceList().isEmpty()) {
+            List<Invoice> findCustomerInvoiceList = customer.getInvoiceList();
+            LocalDateTime dropOffDatetimeOfLatestBooking = findCustomerInvoiceList.get(findCustomerInvoiceList.size() - 1).getBooking().getDropOffDatetimeObj();
+            if (!dropOffDatetimeOfLatestBooking.isBefore(pickUpDatetimeOfNewBooking)) {
+                return false;
+            }
+        }
+
+        if (!driver.getInvoiceList().isEmpty()) {
+            List<Invoice> findDriverInvoiceList = driver.getInvoiceList();
+            LocalDateTime dropOffDatetimeOfLatestBooking = findDriverInvoiceList.get(findDriverInvoiceList.size() - 1).getBooking().getDropOffDatetimeObj();
+            return dropOffDatetimeOfLatestBooking.isBefore(pickUpDatetimeOfNewBooking);
+        }
+
+        return true;
     }
 }

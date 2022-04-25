@@ -26,8 +26,6 @@ public final class PagingUtility {
 
         // return empty if the page's start index is greater than page's end index
         if (start >= end) {
-            System.out.println(start);
-            System.out.println(end);
             return new ResponseEntity<>(new ArrayList<>(), new HttpHeaders(), HttpStatus.OK);
         }
 
