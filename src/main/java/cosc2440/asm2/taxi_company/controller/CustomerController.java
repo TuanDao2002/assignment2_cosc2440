@@ -19,8 +19,11 @@ public class CustomerController {
 
     @RequestMapping(path = "/customer", method = RequestMethod.GET)
     public ResponseEntity<List<Customer>> getAllCustomers(@RequestParam(value = "page", defaultValue = "0") int page,
-                                                      @RequestParam(value = "size", defaultValue = "20") int size) {
-        return customerService.getAllCustomers(page, size);
+                                                          @RequestParam(value = "size", defaultValue = "20") int size,
+                                                          @RequestParam(value = "name", required = false) String name,
+                                                          @RequestParam(value = "address", required = false) String address,
+                                                          @RequestParam(value = "phoneNumber", required = false) String phoneNumber) {
+        return customerService.getAllCustomers(page, size, name, address, phoneNumber);
     }
 
     @RequestMapping(path = "/customer", method = RequestMethod.POST)

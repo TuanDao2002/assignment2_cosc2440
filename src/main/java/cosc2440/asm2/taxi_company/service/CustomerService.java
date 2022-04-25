@@ -2,12 +2,17 @@ package cosc2440.asm2.taxi_company.service;
 
 import cosc2440.asm2.taxi_company.model.Booking;
 import cosc2440.asm2.taxi_company.model.Customer;
-import cosc2440.asm2.taxi_company.model.Driver;
 import cosc2440.asm2.taxi_company.model.Invoice;
 import cosc2440.asm2.taxi_company.repository.CustomerRepository;
 import cosc2440.asm2.taxi_company.utility.CustomerUtility;
+import cosc2440.asm2.taxi_company.utility.PagingUtility;
+import org.hibernate.Criteria;
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -25,17 +30,40 @@ public class CustomerService {
     @Autowired
     private CustomerRepository customerRepository;
 
+    @Autowired
+    private SessionFactory sessionFactory;
+
     public void setCustomerRepository(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
     }
 
-    public ResponseEntity<List<Customer>> getAllCustomers(Integer pageNumber, Integer pageSize) {
-        Pageable paging = PageRequest.of(pageNumber, pageSize);
-        Page<Customer> pageResult = customerRepository.findAll(paging);
+    public void setSessionFactory(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
 
-        List<Customer> list = pageResult.hasContent() ? pageResult.getContent() : new ArrayList<>();
+    public List<Customer> searchCustomerBy(String name, String address, String phoneNumber) {
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Customer.class);
 
-        return new ResponseEntity<>(list, new HttpHeaders(), HttpStatus.OK);
+        // find match string with case in-sensitive
+        if (name != null) {
+            criteria.add(Restrictions.ilike("name", name, MatchMode.ANYWHERE));
+        }
+
+        if (address != null) {
+            criteria.add(Restrictions.ilike("address", address, MatchMode.ANYWHERE));
+        }
+
+        if (phoneNumber != null) {
+            criteria.add(Restrictions.ilike("phoneNumber", phoneNumber, MatchMode.ANYWHERE));
+        }
+
+        return criteria.list();
+    }
+
+    public ResponseEntity<List<Customer>> getAllCustomers(Integer pageNumber, Integer pageSize,
+                                                          String name, String address, String phoneNumber) {
+        List<Customer> retrievedCustomerList = searchCustomerBy(name, address, phoneNumber);
+        return PagingUtility.getAll(retrievedCustomerList, pageSize, pageNumber);
     }
 
     public String addCustomer(Customer customer) {
