@@ -8,6 +8,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -32,9 +33,15 @@ public class CarService {
         this.carRepository = carRepository;
     }
 
-    public ResponseEntity<List<Car>> getAllCar(Integer pageNumber, Integer pageSize) {
+    public ResponseEntity<List<Car>> getAllCar(Integer pageNumber, Integer pageSize, boolean getByAvailable) {
         Pageable paging = PageRequest.of(pageNumber, pageSize);
-        Page<Car> pageResult = carRepository.findAll(paging);
+
+        Page<Car> pageResult;
+        if (getByAvailable) {
+            pageResult = new PageImpl<>(getAllAvailableCar().subList(0, pageSize), paging, getAllAvailableCar().size());
+        } else {
+            pageResult = carRepository.findAll(paging);
+        }
 
         List<Car> list = pageResult.hasContent() ? pageResult.getContent() : new ArrayList<>();
 

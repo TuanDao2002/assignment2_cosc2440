@@ -16,8 +16,9 @@ public class CarController {
 
     @RequestMapping(path = "/car", method = RequestMethod.GET)
     public ResponseEntity<List<Car>> getAllCars(@RequestParam(value = "page", defaultValue = "0") int page,
-                                                   @RequestParam(value = "size", defaultValue = "5") int size) {
-        return carService.getAllCar(page, size);
+                                                   @RequestParam(value = "size", defaultValue = "5") int size,
+                                                    @RequestParam(value = "getByAvailable", required = false, defaultValue = "false") boolean getByAvailable) {
+        return carService.getAllCar(page, size, getByAvailable);
     }
 
     @RequestMapping(path = "/car", method = RequestMethod.POST)
@@ -40,8 +41,8 @@ public class CarController {
         return carService.updateCar(car);
     }
 
-    @RequestMapping(path = "car/available", method = RequestMethod.GET)
-    public List<Car> getAllAvailableCar() {
-        return carService.getAllAvailableCar();
-    }
+//    @RequestMapping(path = "car/available", method = RequestMethod.GET)
+//    public List<Car> getAllAvailableCar() {
+//        return carService.getAllAvailableCar();
+//    }
 }
