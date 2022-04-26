@@ -50,4 +50,13 @@ public class DriverController {
                               @RequestParam(value = "driverId") Long driverId) {
         return driverService.pickCarById(carVIN, driverId);
     }
+
+    @RequestMapping(path = "/driver/attribute", method = RequestMethod.GET)
+    public ResponseEntity<List<Driver>> getCarByAttribute(@RequestParam(value = "attributeName") String attributeName,
+                                                       @RequestParam(value = "attributeValue") String attributeValue,
+                                                       @RequestParam(value = "page", defaultValue = "0") int page,
+                                                       @RequestParam(value = "size", defaultValue = "5") int size) {
+
+        return driverService.getDriverByEntity(attributeName, attributeValue, size, page);
+    }
 }
