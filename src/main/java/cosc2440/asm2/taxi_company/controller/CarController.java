@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class CarController {
@@ -39,6 +40,14 @@ public class CarController {
     @RequestMapping(path = "/car", method = RequestMethod.PUT)
     public String updateCar(@RequestBody Car car) {
         return carService.updateCar(car);
+    }
+
+    @RequestMapping(path = "/car/day", method = RequestMethod.GET)
+    public List<Map<String, Integer>> getDayUsedOfCars(@RequestParam(value = "page", defaultValue = "0") int page,
+                                                       @RequestParam(value = "size", defaultValue = "5") int size,
+                                                       @RequestParam(value = "month") String month,
+                                                       @RequestParam(value = "year") int year) {
+        return carService.getDayUsedOfCars(month, year, size, page);
     }
 
 //    @RequestMapping(path = "car/available", method = RequestMethod.GET)

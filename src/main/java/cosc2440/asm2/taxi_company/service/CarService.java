@@ -1,7 +1,9 @@
 package cosc2440.asm2.taxi_company.service;
 
 import cosc2440.asm2.taxi_company.model.Car;
+import cosc2440.asm2.taxi_company.model.Invoice;
 import cosc2440.asm2.taxi_company.repository.CarRepository;
+import cosc2440.asm2.taxi_company.utility.MonthConverter;
 import cosc2440.asm2.taxi_company.utility.PagingUtility;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
@@ -12,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.List;
+import java.util.*;
 
 @Transactional
 @Service
@@ -97,6 +99,53 @@ public class CarService {
         // select distinct to avoid duplicate
         criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
         return criteria.list();
+    }
+
+    public List<Map<String, Integer>> getDayUsedOfCars(String monthString, int year, int pageSize, int pageNum) {
+        // convert month in text to month in number
+        int month = MonthConverter.getMonthFromString(monthString);
+
+        // check if month and year is valid
+        if (month == -1) return null;
+        if (year <= 0) return null;
+
+        // create empty list result
+        List<Map<String, Integer>> result = new ArrayList<>();
+
+        // get list all car
+        List<Car> carList = (List<Car>) carRepository.findAll();
+        if (carList.isEmpty()) return new ArrayList<>();
+
+        // loop through car list
+        for (Car car : carList) {
+            // get invoice list of car
+            List<Invoice> invoiceList = car.getDriver().getInvoiceList();
+
+            // if car does not have any invoice
+            if (invoiceList == null) continue;
+
+            // create new hash map
+            Map<String, Integer> map = new HashMap<>();
+            // create new set
+            Set<Integer> set = new HashSet<>();
+
+            // loop though invoice list
+            for (Invoice invoice : invoiceList) {
+                // check if month and year match
+                if (month == invoice.getBooking().getPickUpDatetimeObj().getMonth().getValue() && year == invoice.getBooking().getPickUpDatetimeObj().getYear()) {
+                    // set.add(day)
+                    set.add(invoice.getBooking().getPickUpDatetimeObj().getDayOfMonth());
+                }
+            }
+            // map.put(plate, set.size)
+            map.put(car.getLicensePlate(), set.size());
+
+            // result.add(map)
+            result.add(map);
+        }
+
+        // return paging(list, pageSize, pageNum)
+        return result;
     }
 
 }
