@@ -74,4 +74,32 @@ public final class DateUtility {
 
         return true;
     }
+
+    public static String displayCustomerLatestBookingDropOff(Customer customer) {
+        if (customer.getInvoiceList().isEmpty()) return "";
+        String customerDropOffDatetimeLatestBooking = customer.getInvoiceList().get(customer.getInvoiceList().size() - 1).getBooking().getDropOffDateTime();
+        return "\nThe drop-of date time of the customer's latest booking is at: " + customerDropOffDatetimeLatestBooking;
+    }
+
+    public static String displayDriverLatestBookingDropOff(Driver driver) {
+        if (driver.getInvoiceList().isEmpty()) return "";
+        String driverDropOffDatetimeLatestBooking = driver.getInvoiceList().get(driver.getInvoiceList().size() - 1).getBooking().getDropOffDateTime();
+        return "\nThe drop-of date time of the driver's latest booking is at: " + driverDropOffDatetimeLatestBooking;
+    }
+
+    public static List<Invoice> invoiceListFilterByPeriod(List<Invoice> invoiceList, String startDate, String endDate) {
+        if (startDate != null) {
+            LocalDate start = DateUtility.StringToLocalDate(startDate);
+            if (start == null) return null;
+            invoiceList.removeIf(invoice -> invoice.getBooking().getPickUpDatetimeObj().isBefore(start.atStartOfDay()));
+        }
+
+        if (endDate != null) {
+            LocalDate end = DateUtility.StringToLocalDate(endDate);
+            if (end == null) return null;
+            invoiceList.removeIf(invoice -> invoice.getBooking().getPickUpDatetimeObj().isAfter(end.atStartOfDay()));
+        }
+
+        return invoiceList;
+    }
 }
