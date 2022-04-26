@@ -25,6 +25,8 @@ public class CarService {
     @Autowired
     private SessionFactory sessionFactory;
 
+    private static final List<String> availableAttribute = List.of("make", "model", "licensePlate");
+
     public void setCarRepository(CarRepository carRepository) {
         this.carRepository = carRepository;
     }
@@ -48,6 +50,18 @@ public class CarService {
 
         // return null if car does not exist, else return the car
         return carRepository.findById(VIN).isEmpty() ? null : carRepository.findById(VIN).get();
+    }
+
+    public ResponseEntity<List<Car>> getCarByEntity(String attribute, String attributeValue, int pageSize, int pageNum) {
+        if (attributeValue == null || attributeValue.isEmpty()) return null;
+        if (attribute == null || attribute.isEmpty()) return null;
+        if (!availableAttribute.contains(attribute)) return null;
+
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Car.class);
+        criteria.add(Restrictions.eq(attribute, attributeValue));
+        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+
+        return criteria.list().isEmpty() ? null : PagingUtility.getAll((List<Car>) criteria.list(), pageSize, pageNum);
     }
 
     public String deleteCarById(Long VIN) {
@@ -118,6 +132,7 @@ public class CarService {
 
         // loop through car list
         for (Car car : carList) {
+            if (car.getDriver() == null) continue;
             // get invoice list of car
             List<Invoice> invoiceList = car.getDriver().getInvoiceList();
 

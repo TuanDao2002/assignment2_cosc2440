@@ -17,8 +17,8 @@ public class CarController {
 
     @RequestMapping(path = "/car", method = RequestMethod.GET)
     public ResponseEntity<List<Car>> getAllCars(@RequestParam(value = "page", defaultValue = "0") int page,
-                                                   @RequestParam(value = "size", defaultValue = "5") int size,
-                                                    @RequestParam(value = "getByAvailable", required = false, defaultValue = "false") boolean getByAvailable) {
+                                                @RequestParam(value = "size", defaultValue = "5") int size,
+                                                @RequestParam(value = "getByAvailable", required = false, defaultValue = "false") boolean getByAvailable) {
         return carService.getAllCar(page, size, getByAvailable);
     }
 
@@ -48,6 +48,15 @@ public class CarController {
                                                        @RequestParam(value = "month") String month,
                                                        @RequestParam(value = "year") int year) {
         return carService.getDayUsedOfCars(month, year, size, page);
+    }
+
+    @RequestMapping(path = "/car/attribute", method = RequestMethod.GET)
+    public ResponseEntity<List<Car>> getCarByAttribute(@RequestParam(value = "attributeName") String attributeName,
+                                       @RequestParam(value = "attributeValue") String attributeValue,
+                                       @RequestParam(value = "page", defaultValue = "0") int page,
+                                       @RequestParam(value = "size", defaultValue = "5") int size) {
+
+        return carService.getCarByEntity(attributeName, attributeValue, size, page);
     }
 
 //    @RequestMapping(path = "car/available", method = RequestMethod.GET)
