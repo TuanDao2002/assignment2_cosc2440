@@ -3,6 +3,7 @@ package cosc2440.asm2.taxi_company.service;
 import cosc2440.asm2.taxi_company.model.Car;
 import cosc2440.asm2.taxi_company.model.Driver;
 import cosc2440.asm2.taxi_company.repository.DriverRepository;
+import cosc2440.asm2.taxi_company.utility.PagingUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,12 +31,11 @@ public class DriverService {
     }
 
     public ResponseEntity<List<Driver>> getAllDriver(Integer pageNumber, Integer pageSize) {
-        Pageable paging = PageRequest.of(pageNumber, pageSize);
-        Page<Driver> pageResult = driverRepository.findAll(paging);
+        // get all driver from database
+        List<Driver> list = (List<Driver>) driverRepository.findAll();
 
-        List<Driver> list = pageResult.hasContent() ? pageResult.getContent() : new ArrayList<>();
-
-        return new ResponseEntity<>(list, new HttpHeaders(), HttpStatus.OK);
+        // use paging utility class to handle paging
+        return PagingUtility.getAll(list, pageSize, pageNumber);
     }
 
     public String addDriver(Driver driver) {
@@ -44,38 +44,43 @@ public class DriverService {
     }
 
     public Driver getDriverById(Long id) {
+        // check if id is null
         if (id == null) return null;
+
+        // return null if driver does not exist, else return the driver
         return driverRepository.findById(id).isEmpty() ? null : driverRepository.findById(id).get();
     }
 
     public String deleteDriverById(Long id) {
         Driver driverToDelete = getDriverById(id);
 
-        if (driverToDelete == null) {
-            return String.format("Driver with id %d does not exist!", id);
-        }
+        // check if driver with the id does exist
+        if (driverToDelete == null) return String.format("Driver with id %d does not exist!", id);
 
-        if (driverToDelete.getCar() != null) {
-            // set the driver of the car to be null
-            driverToDelete.getCar().setDriver(null);
-        }
+        // set the driver of the car to be null if that driver has no car
+        if (driverToDelete.getCar() != null) driverToDelete.getCar().setDriver(null);
 
         // delete driver from database
         driverRepository.delete(driverToDelete);
+
         return String.format("Driver with id %d deleted!", id);
     }
 
     public String updateDriver(Driver driver) {
         Driver driverToUpdate = getDriverById(driver.getId());
-        if (driverToUpdate == null) {
-            return String.format("Driver with id %d does not exist!", driver.getId());
-        }
 
+        // check if id exist
+        if (driverToUpdate == null) return String.format("Driver with id %d does not exist!", driver.getId());
+
+        // check if attributes is null
         if (driver.getLicenseNumber() != null) driverToUpdate.setLicenseNumber(driver.getLicenseNumber());
         if (driver.getPhoneNumber() != null) driverToUpdate.setPhoneNumber(driver.getPhoneNumber());
+
+        // check if rating is negative
         if (driver.getRating() >= 0) driverToUpdate.setRating(driver.getRating());
 
         driverRepository.save(driverToUpdate);
+
         return String.format("Driver with id %d updated!", driver.getId());
     }
 
@@ -83,21 +88,18 @@ public class DriverService {
         Car carToUpdate = carService.getCarById(carVIN);
         Driver driverToUpdate = getDriverById(driverId);
 
-        if (carToUpdate == null) {
-            return String.format("Car with VIN %d does not exist!", carVIN);
-        }
+        // check if car vin exist
+        if (carToUpdate == null) return String.format("Car with VIN %d does not exist!", carVIN);
 
-        if (driverToUpdate == null) {
-            return String.format("Driver with id %d does not exist!", driverId);
-        }
+        // check if driver id exist
+        if (driverToUpdate == null) return String.format("Driver with id %d does not exist!", driverId);
 
-        if (carToUpdate.getDriver() != null) {
-            return String.format("Car with VIN %d is not available!", carVIN);
-        }
+        // check if car has driver
+        if (carToUpdate.getDriver() != null) return String.format("Car with VIN %d is not available!", carVIN);
 
-        if (driverToUpdate.getCar() != null) {
+        // check if driver has any car yet
+        if (driverToUpdate.getCar() != null)
             return String.format("Driver with id %d already have car with VIN %d!", driverId, driverToUpdate.getCar().getVIN());
-        }
 
         // Assign car and driver to each other
         driverToUpdate.setCar(carToUpdate);

@@ -28,7 +28,10 @@ public class CarService {
     }
 
     public ResponseEntity<List<Car>> getAllCar(Integer pageNumber, Integer pageSize, boolean getByAvailable) {
+        // get all (available) car from database
         List<Car> list = getByAvailable ? getAllAvailableCar() : (List<Car>) carRepository.findAll();
+
+        // use paging utility class to handle paging
         return PagingUtility.getAll(list, pageSize, pageNumber);
     }
 
@@ -38,23 +41,24 @@ public class CarService {
     }
 
     public Car getCarById(Long VIN) {
+        // check if id is null
         if (VIN == null) return null;
+
+        // return null if car does not exist, else return the car
         return carRepository.findById(VIN).isEmpty() ? null : carRepository.findById(VIN).get();
     }
 
     public String deleteCarById(Long VIN) {
         Car carToDelete = getCarById(VIN);
 
-        if (carToDelete == null) {
-            return String.format("Car with VIN %s does not exist!", VIN);
-        }
+        // check if car does exist
+        if (carToDelete == null) return String.format("Car with VIN %s does not exist!", VIN);
 
+        // check if car is already in a booking
         if (!carToDelete.isAvailable()) return "Cannot delete this car as it has booking";
 
-        if (carToDelete.getDriver() != null) {
-            // set the car of the driver to be null
-            carToDelete.getDriver().setCar(null);
-        }
+        // set the car to null in case the driver is not null
+        if (carToDelete.getDriver() != null) carToDelete.getDriver().setCar(null);
 
         // delete car from database
         carRepository.delete(carToDelete);
@@ -63,16 +67,19 @@ public class CarService {
 
     public String updateCar(Car car) {
         Car carToUpdate = getCarById(car.getVIN());
-        if (carToUpdate == null) {
-            return String.format("Car with VIN %s does not exist!", car.getVIN());
-        }
 
+        // check if car does exist
+        if (carToUpdate == null) return String.format("Car with VIN %s does not exist!", car.getVIN());
+
+        // check if attributes is not null
         if (car.getMake() != null) carToUpdate.setMake(car.getMake());
         if (car.getColor() != null) carToUpdate.setColor(car.getColor());
         if (car.getLicensePlate() != null) carToUpdate.setLicensePlate(car.getLicensePlate());
         if (car.getModel() != null) carToUpdate.setModel(car.getModel());
 
         carToUpdate.setConvertible(car.isConvertible());
+
+        // check if number attribute is not negative
         if (car.getRating() >= 0) carToUpdate.setRating(car.getRating());
         if (car.getRatePerKilometer() >= 0) carToUpdate.setRatePerKilometer(car.getRatePerKilometer());
 
@@ -81,8 +88,13 @@ public class CarService {
     }
 
     public List<Car> getAllAvailableCar() {
+        // get all car from database
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Car.class);
+
+        // add constrains to the criteria
         criteria.add(Restrictions.eq("isAvailable", true));
+
+        // select distinct to avoid duplicate
         criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
         return criteria.list();
     }
