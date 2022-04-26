@@ -7,12 +7,8 @@ import cosc2440.asm2.taxi_company.model.Invoice;
 import cosc2440.asm2.taxi_company.repository.InvoiceRepository;
 import cosc2440.asm2.taxi_company.utility.CustomerUtility;
 import cosc2440.asm2.taxi_company.utility.DateUtility;
+import cosc2440.asm2.taxi_company.utility.PagingUtility;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +23,9 @@ public class InvoiceService {
     private InvoiceRepository invoiceRepository;
 
     @Autowired
+    private BookingService bookingService;
+
+    @Autowired
     private DriverService driverService;
 
     @Autowired
@@ -34,6 +33,10 @@ public class InvoiceService {
 
     public void setInvoiceRepository(InvoiceRepository invoiceRepository) {
         this.invoiceRepository = invoiceRepository;
+    }
+
+    public void setBookingService(BookingService bookingService) {
+        this.bookingService = bookingService;
     }
 
     public void setDriverService(DriverService driverService) {
@@ -44,19 +47,52 @@ public class InvoiceService {
         this.customerService = customerService;
     }
 
-    public ResponseEntity<List<Invoice>> getAll(Integer pageNumber, Integer pageSize) {
-        Pageable paging = PageRequest.of(pageNumber, pageSize);
-        Page<Invoice> pagedResult = invoiceRepository.findAll(paging);
-
-        List<Invoice> list;
-
-        if (pagedResult.hasContent()) {
-            list = pagedResult.getContent();
-        } else {
-            list = new ArrayList<>();
+    public List<Invoice> searchInvoiceByDate(String matchPickUpDate, String startDate, String endDate) {
+        List<Booking> bookingListByPeriod = bookingService.searchBookingByDate(matchPickUpDate, startDate, endDate);
+        List<Invoice> invoiceListByPeriod = new ArrayList<>();
+        for (Booking booking : bookingListByPeriod) {
+            invoiceListByPeriod.add(booking.getInvoice());
         }
 
-        return new ResponseEntity<>(list, new HttpHeaders(), HttpStatus.OK);
+        return invoiceListByPeriod;
+    }
+
+    public ResponseEntity<List<Invoice>> getAll(Integer pageNumber, Integer pageSize,
+                                                String matchPickUpDate, String startDate, String endDate) {
+        List<Invoice> retrieveInvoiceList = searchInvoiceByDate(matchPickUpDate, startDate, endDate);
+        return PagingUtility.getAll(retrieveInvoiceList, pageSize, pageNumber);
+    }
+
+    public List<Invoice> searchInvoiceByDriverInPeriod(Long driverID, String startDate, String endDate) {
+        Driver findDriver = driverService.getDriverById(driverID);
+        if (findDriver == null) {
+            return null;
+        }
+
+        List<Invoice> driverInvoiceList = findDriver.getInvoiceList();
+        return DateUtility.invoiceListFilterByPeriod(driverInvoiceList, startDate, endDate);
+    }
+
+    public ResponseEntity<List<Invoice>> getByDriverID(Integer pageNumber, Integer pageSize,
+                                                       Long driverID, String startDate, String endDate) {
+        List<Invoice> retrieveInvoiceList = searchInvoiceByDriverInPeriod(driverID, startDate, endDate);
+        return PagingUtility.getAll(retrieveInvoiceList, pageSize, pageNumber);
+    }
+
+    public List<Invoice> searchInvoiceByCustomerInPeriod(Long customerID, String startDate, String endDate) {
+        Customer findCustomer = customerService.getCustomerById(customerID);
+        if (findCustomer == null) {
+            return null;
+        }
+
+        List<Invoice> customerInvoiceList = findCustomer.getInvoiceList();
+        return DateUtility.invoiceListFilterByPeriod(customerInvoiceList, startDate, endDate);
+    }
+
+    public ResponseEntity<List<Invoice>> getByCustomerID(Integer pageNumber, Integer pageSize,
+                                                         Long customerID, String startDate, String endDate) {
+        List<Invoice> retrieveInvoiceList = searchInvoiceByCustomerInPeriod(customerID, startDate, endDate);
+        return PagingUtility.getAll(retrieveInvoiceList, pageSize, pageNumber);
     }
 
     public String add(Invoice invoice) {
@@ -81,7 +117,9 @@ public class InvoiceService {
         }
 
         if (!DateUtility.checkPickUpDatetimeIsValid(customer, driver, invoice.getBooking().getPickUpDatetime())) {
-            return "The pick-up date time must be after the drop-of date time of the latest booking";
+            return "The pick-up date time must be after the drop-of date time of the latest booking" +
+                    DateUtility.displayCustomerLatestBookingDropOff(customer) +
+                    DateUtility.displayDriverLatestBookingDropOff(driver);
         }
 
         // set the driver's car to be not available
