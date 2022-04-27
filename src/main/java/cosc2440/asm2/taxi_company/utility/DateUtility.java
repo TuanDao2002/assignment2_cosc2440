@@ -28,6 +28,14 @@ public final class DateUtility {
         return dropOff.isAfter(pickUp);
     }
 
+    public static boolean isPeriodValid(String startDate, String endDate) {
+        LocalDate startDateObj = StringToLocalDate(startDate);
+        LocalDate endDateObj = StringToLocalDate(endDate);
+
+        if (startDateObj == null || endDateObj == null) return false;
+        return endDateObj.isAfter(startDateObj);
+    }
+
     public static LocalDate StringToLocalDate(String dateString) {
         LocalDate verifiedDateObj;
         try {
@@ -49,7 +57,6 @@ public final class DateUtility {
 
         return verifiedDateObj;
     }
-
 
     // check if the new pick-up datetime is after the drop-off datetime of the latest booking of customer and invoice
     public static boolean checkPickUpDatetimeIsValid(Customer customer, Driver driver, String newPickUpDatetime) {

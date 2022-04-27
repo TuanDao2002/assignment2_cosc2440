@@ -8,6 +8,9 @@ import cosc2440.asm2.taxi_company.repository.InvoiceRepository;
 import cosc2440.asm2.taxi_company.utility.CustomerUtility;
 import cosc2440.asm2.taxi_company.utility.DateUtility;
 import cosc2440.asm2.taxi_company.utility.PagingUtility;
+import org.hibernate.Criteria;
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.CriteriaSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -30,6 +33,9 @@ public class InvoiceService {
 
     @Autowired
     private CustomerService customerService;
+
+    @Autowired
+    private SessionFactory sessionFactory;
 
     public void setInvoiceRepository(InvoiceRepository invoiceRepository) {
         this.invoiceRepository = invoiceRepository;
@@ -180,4 +186,19 @@ public class InvoiceService {
             return "Invoice with ID: " + invoice.getInvoiceID() + " is updated!!!";
         }
     }
+
+    public double getRevenue() {
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Invoice.class);
+        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+        List<Invoice> invoiceList = criteria.list();
+
+        double revenue = 0;
+
+        for (Invoice invoice : invoiceList) {
+            revenue += invoice.getTotalCharge();
+        }
+
+        return revenue;
+    }
+
 }

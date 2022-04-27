@@ -112,4 +112,9 @@ public class BookingController {
         return invoiceService.delete(invoiceID);
     }
 
+    @RequestMapping(path = "/revenue", method = RequestMethod.GET)
+    public double getRevenue() {
+        return invoiceService.getRevenue();
+    }
+
 }
