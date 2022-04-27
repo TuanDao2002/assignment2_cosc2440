@@ -7,6 +7,7 @@ import cosc2440.asm2.taxi_company.utility.PagingUtility;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.CriteriaSpecification;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -47,7 +48,7 @@ public class DriverService {
         if (!availableAttribute.contains(attribute)) return null;
 
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Driver.class);
-        criteria.add(Restrictions.eq(attribute, attributeValue));
+        criteria.add(Restrictions.like(attribute, attributeValue, MatchMode.ANYWHERE));
         criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
 
         return criteria.list().isEmpty() ? null : PagingUtility.getAll((List<Driver>) criteria.list(), pageSize, pageNum);
