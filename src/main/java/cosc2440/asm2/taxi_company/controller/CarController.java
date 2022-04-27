@@ -43,7 +43,7 @@ public class CarController {
     }
 
     @RequestMapping(path = "/car/day", method = RequestMethod.GET)
-    public List<Map<String, Integer>> getDayUsedOfCars(@RequestParam(value = "page", defaultValue = "0") int page,
+    public ResponseEntity<List<Map<String, Integer>>> getDayUsedOfCars(@RequestParam(value = "page", defaultValue = "0") int page,
                                                        @RequestParam(value = "size", defaultValue = "5") int size,
                                                        @RequestParam(value = "month") String month,
                                                        @RequestParam(value = "year") int year) {

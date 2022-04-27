@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public final class PagingUtility {
     private PagingUtility(){}
@@ -40,5 +41,4 @@ public final class PagingUtility {
 
         return new ResponseEntity<>(returnedList, new HttpHeaders(), HttpStatus.OK);
     }
-
 }

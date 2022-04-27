@@ -115,7 +115,7 @@ public class CarService {
         return criteria.list();
     }
 
-    public List<Map<String, Integer>> getDayUsedOfCars(String monthString, int year, int pageSize, int pageNum) {
+    public ResponseEntity<List<Map<String, Integer>>> getDayUsedOfCars(String monthString, int year, int pageSize, int pageNum) {
         // convert month in text to month in number
         int month = MonthConverter.getMonthFromString(monthString);
 
@@ -128,7 +128,7 @@ public class CarService {
 
         // get list all car
         List<Car> carList = (List<Car>) carRepository.findAll();
-        if (carList.isEmpty()) return new ArrayList<>();
+        if (carList.isEmpty()) return null;
 
         // loop through car list
         for (Car car : carList) {
@@ -160,7 +160,7 @@ public class CarService {
         }
 
         // return paging(list, pageSize, pageNum)
-        return result;
+        return PagingUtility.getAll(result, pageSize, pageNum);
     }
 
 }
