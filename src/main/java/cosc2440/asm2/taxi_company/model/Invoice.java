@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javax.persistence.*;
 import java.time.ZonedDateTime;
 
-@Table
-@Entity(name = "invoice")
+@Entity
+@Table(name = "invoice")
 public class Invoice {
     @Id
     @Column
