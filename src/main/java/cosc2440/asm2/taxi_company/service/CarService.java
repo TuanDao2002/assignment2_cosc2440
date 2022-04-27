@@ -59,7 +59,7 @@ public class CarService {
         if (!availableAttribute.contains(attribute)) return null;
 
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Car.class);
-        criteria.add(Restrictions.like(attribute, attributeValue, MatchMode.ANYWHERE));
+        criteria.add(Restrictions.like(attribute, attributeValue, MatchMode.ANYWHERE).ignoreCase());
         criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
 
         return criteria.list().isEmpty() ? null : PagingUtility.getAll((List<Car>) criteria.list(), pageSize, pageNum);
