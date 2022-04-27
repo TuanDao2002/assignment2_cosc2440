@@ -21,7 +21,7 @@ public class DriverController {
 
     @RequestMapping(path = "/driver", method = RequestMethod.GET)
     public ResponseEntity<List<Driver>> getAllDrivers(@RequestParam(value = "page", defaultValue = "0") int page,
-                                                      @RequestParam(value = "size", defaultValue = "5") int size) {
+                                                      @RequestParam(value = "size", defaultValue = "20") int size) {
         return driverService.getAllDriver(page, size);
     }
 
@@ -55,7 +55,7 @@ public class DriverController {
     public ResponseEntity<List<Driver>> getCarByAttribute(@RequestParam(value = "attributeName") String attributeName,
                                                        @RequestParam(value = "attributeValue") String attributeValue,
                                                        @RequestParam(value = "page", defaultValue = "0") int page,
-                                                       @RequestParam(value = "size", defaultValue = "5") int size) {
+                                                       @RequestParam(value = "size", defaultValue = "20") int size) {
 
         return driverService.getDriverByEntity(attributeName, attributeValue, size, page);
     }
