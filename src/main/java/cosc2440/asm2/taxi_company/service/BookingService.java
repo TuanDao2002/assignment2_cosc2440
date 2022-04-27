@@ -2,7 +2,6 @@ package cosc2440.asm2.taxi_company.service;
 
 import cosc2440.asm2.taxi_company.model.*;
 import cosc2440.asm2.taxi_company.repository.BookingRepository;
-import cosc2440.asm2.taxi_company.utility.CustomerUtility;
 import cosc2440.asm2.taxi_company.utility.DateUtility;
 import cosc2440.asm2.taxi_company.utility.PagingUtility;
 import org.hibernate.Criteria;
@@ -138,10 +137,6 @@ public class BookingService {
             return "This customer does not exist";
         }
 
-        if (!CustomerUtility.checkCustomerBookingIsFinalized(customer)) {
-            return "The latest booking of this customer is not finalized!!!";
-        }
-
         if (!DateUtility.checkPickUpDatetimeIsValid(customer, driver, booking.getPickUpDatetime())) {
             return "The pick-up date time must be after the drop-of date time of the latest booking" +
                     DateUtility.displayCustomerLatestBookingDropOff(customer) +
@@ -211,16 +206,12 @@ public class BookingService {
         if (verifyDateObj == null) return "The pick-up date time is invalid!!!";
 
         Car findCar = carService.getCarById(carVIN);
-        if (findCar == null) return "Car with ID: " + carVIN + " does not exist!!!";
+        if (findCar == null) return "Car with VIN: " + carVIN + " does not exist!!!";
         if (findCar.getDriver() == null) return "This car does not have a driver";
         if (!findCar.isAvailable()) return "This car is not available";
 
         Customer findCustomer = customerService.getCustomerById(customerID);
         if (findCustomer == null) return "Customer with ID: " + carVIN + " does not exist!!!";
-
-        if (!CustomerUtility.checkCustomerBookingIsFinalized(findCustomer)) {
-            return "The latest booking of this customer is not finalized!!!";
-        }
 
         if (!DateUtility.checkPickUpDatetimeIsValid(findCustomer, findCar.getDriver(), pickUpDatetime)) {
             return "The pick-up date time must be after the drop-of date time of the latest booking" +

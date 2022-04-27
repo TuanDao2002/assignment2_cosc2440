@@ -5,7 +5,6 @@ import cosc2440.asm2.taxi_company.model.Customer;
 import cosc2440.asm2.taxi_company.model.Driver;
 import cosc2440.asm2.taxi_company.model.Invoice;
 import cosc2440.asm2.taxi_company.repository.InvoiceRepository;
-import cosc2440.asm2.taxi_company.utility.CustomerUtility;
 import cosc2440.asm2.taxi_company.utility.DateUtility;
 import cosc2440.asm2.taxi_company.utility.PagingUtility;
 import org.hibernate.Criteria;
@@ -117,10 +116,6 @@ public class InvoiceService {
 
         Customer customer = customerService.getCustomerById(invoice.getCustomer().getId());
         if (customer == null) return "This customer does not exist";
-
-        if (!CustomerUtility.checkCustomerBookingIsFinalized(customer)) {
-            return "The latest booking of this customer is not finalized!!!";
-        }
 
         if (!DateUtility.checkPickUpDatetimeIsValid(customer, driver, invoice.getBooking().getPickUpDatetime())) {
             return "The pick-up date time must be after the drop-of date time of the latest booking" +

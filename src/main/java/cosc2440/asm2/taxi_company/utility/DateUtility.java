@@ -28,14 +28,6 @@ public final class DateUtility {
         return dropOff.isAfter(pickUp);
     }
 
-    public static boolean isPeriodValid(String startDate, String endDate) {
-        LocalDate startDateObj = StringToLocalDate(startDate);
-        LocalDate endDateObj = StringToLocalDate(endDate);
-
-        if (startDateObj == null || endDateObj == null) return false;
-        return endDateObj.isAfter(startDateObj);
-    }
-
     public static LocalDate StringToLocalDate(String dateString) {
         LocalDate verifiedDateObj;
         try {
@@ -68,7 +60,7 @@ public final class DateUtility {
         if (!customer.getInvoiceList().isEmpty()) {
             List<Invoice> findCustomerInvoiceList = customer.getInvoiceList();
             LocalDateTime dropOffDatetimeOfLatestBooking = findCustomerInvoiceList.get(findCustomerInvoiceList.size() - 1).getBooking().getDropOffDatetimeObj();
-            if (!dropOffDatetimeOfLatestBooking.isBefore(pickUpDatetimeOfNewBooking)) {
+            if (dropOffDatetimeOfLatestBooking != null && !dropOffDatetimeOfLatestBooking.isBefore(pickUpDatetimeOfNewBooking)) {
                 return false;
             }
         }
@@ -76,7 +68,7 @@ public final class DateUtility {
         if (!driver.getInvoiceList().isEmpty()) {
             List<Invoice> findDriverInvoiceList = driver.getInvoiceList();
             LocalDateTime dropOffDatetimeOfLatestBooking = findDriverInvoiceList.get(findDriverInvoiceList.size() - 1).getBooking().getDropOffDatetimeObj();
-            return dropOffDatetimeOfLatestBooking.isBefore(pickUpDatetimeOfNewBooking);
+            return dropOffDatetimeOfLatestBooking != null && dropOffDatetimeOfLatestBooking.isBefore(pickUpDatetimeOfNewBooking);
         }
 
         return true;
