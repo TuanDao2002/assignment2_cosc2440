@@ -113,9 +113,8 @@ public class DriverService {
         // check if car has driver
         if (carToUpdate.getDriver() != null) return String.format("Car with VIN %d is not available!", carVIN);
 
-        // check if driver has any car yet
-        if (driverToUpdate.getCar() != null)
-            return String.format("Driver with id %d already have car with VIN %d!", driverId, driverToUpdate.getCar().getVIN());
+        // set old car driver to null
+        if (driverToUpdate.getCar() != null) driverToUpdate.getCar().setDriver(null);
 
         // Assign car and driver to each other
         driverToUpdate.setCar(carToUpdate);
