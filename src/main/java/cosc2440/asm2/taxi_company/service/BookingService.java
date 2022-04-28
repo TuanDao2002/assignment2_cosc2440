@@ -117,10 +117,6 @@ public class BookingService {
     }
 
     public String add(Booking booking) {
-        if (!DateUtility.validateDatetimeOf(booking)) {
-            return "The drop-off date time must be after the pick-up date time";
-        }
-
         if (booking.getInvoice() == null) return "Invoice must not be null";
         if (booking.getInvoice().getDriver() == null) return "Driver must not be null";
         if (booking.getInvoice().getCustomer() == null) return "Customer must not be null";
@@ -150,9 +146,14 @@ public class BookingService {
         invoice.setDriver(driver);
         invoice.setCustomer(customer);
 
-        booking.setInvoice(invoice);
-        bookingRepository.save(booking);
-        return "Booking with id: " + booking.getBookingID() + " is added!!!";
+        Booking newBooking = new Booking();
+        if (booking.getStartLocation() != null) newBooking.setStartLocation(booking.getStartLocation());
+        if (booking.getEndLocation() != null) newBooking.setEndLocation(booking.getEndLocation());
+        if (booking.getPickUpDatetime() != null) newBooking.setPickUpDatetime(booking.getPickUpDatetime());
+        newBooking.setInvoice(invoice);
+
+        bookingRepository.save(newBooking);
+        return "Booking with id: " + newBooking.getBookingID() + " is added!!!";
     }
 
     public Booking getOne(Long bookingID) {
@@ -189,7 +190,8 @@ public class BookingService {
             if (booking.getEndLocation() != null) findBooking.setEndLocation(booking.getEndLocation());
 
             if (booking.getPickUpDatetime() != null) findBooking.setPickUpDatetime(booking.getPickUpDatetime());
-            if (booking.getDropOffDateTime() != null) findBooking.setDropOffDateTime(booking.getDropOffDateTime());
+            // only update drop-off date time when the booking is already finalized (has drop-off date time already)
+            if (booking.getDropOffDateTime() != null && findBooking.getDropOffDateTime() != null) findBooking.setDropOffDateTime(booking.getDropOffDateTime());
 
             if (!DateUtility.validateDatetimeOf(findBooking)) {
                 return "The drop-off date time must be after the pick-up date time";
@@ -229,6 +231,7 @@ public class BookingService {
         return "Booking with ID: " + newBooking.getBookingID() + " is created!!!";
     }
 
+    // this method is for admin only
     public String finalizeBooking(Long bookingID, String dropOffDatetime, int distance) {
         Booking findBooking = getOne(bookingID);
 

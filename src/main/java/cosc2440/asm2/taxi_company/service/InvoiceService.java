@@ -128,13 +128,16 @@ public class InvoiceService {
         invoice.setDriver(driver);
         invoice.setCustomer(customer);
 
+        Booking newBooking = new Booking();
+        if (invoice.getBooking().getStartLocation() != null) newBooking.setStartLocation(invoice.getBooking().getStartLocation());
+        if (invoice.getBooking().getEndLocation() != null) newBooking.setEndLocation(invoice.getBooking().getEndLocation());
+        if (invoice.getBooking().getPickUpDatetime() != null) newBooking.setPickUpDatetime(invoice.getBooking().getPickUpDatetime());
+        newBooking.setInvoice(invoice);
+
         // booking is the owning side => set invoice to booking first before saving invoice to database
-        Booking booking = invoice.getBooking();
-        booking.setInvoice(invoice);
-        invoice.setBooking(booking);
+        invoice.setBooking(newBooking);
 
         invoiceRepository.save(invoice);
-
         return "Invoice with id: " + invoice.getInvoiceID() + " is added!!!";
     }
 
