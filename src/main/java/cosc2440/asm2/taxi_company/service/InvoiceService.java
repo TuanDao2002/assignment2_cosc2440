@@ -185,10 +185,16 @@ public class InvoiceService {
         }
     }
 
-    public double getRevenue() {
+    public double getRevenue(String startDate, String endDate) {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Invoice.class);
         criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
-        List<Invoice> invoiceList = criteria.list();
+        List<Invoice> invoiceList;
+
+        if (!startDate.isEmpty() && !endDate.isEmpty()) {
+            invoiceList = DateUtility.invoiceListFilterByPeriod(criteria.list(), startDate, endDate);
+        } else {
+            invoiceList = criteria.list();
+        }
 
         double revenue = 0;
 

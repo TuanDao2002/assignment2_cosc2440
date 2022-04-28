@@ -113,8 +113,9 @@ public class BookingController {
     }
 
     @RequestMapping(path = "/revenue", method = RequestMethod.GET)
-    public double getRevenue() {
-        return invoiceService.getRevenue();
+    public double getRevenue(@RequestParam(value = "startDate", required = false, defaultValue = "") String startDate,
+                             @RequestParam(value = "endDate", required = false, defaultValue = "") String endDate) {
+        return invoiceService.getRevenue(startDate, endDate);
     }
 
 }
