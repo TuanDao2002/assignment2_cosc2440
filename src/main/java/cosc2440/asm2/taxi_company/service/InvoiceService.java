@@ -185,55 +185,29 @@ public class InvoiceService {
         }
     }
 
-    private List<Invoice> getInvoiceList(String startDate, String endDate) {
-        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Invoice.class);
-        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
-        List<Invoice> invoiceList;
-
-        if (startDate != null && endDate != null) {
-            invoiceList = DateUtility.invoiceListFilterByPeriod(criteria.list(), startDate, endDate);
-        } else {
-            invoiceList = criteria.list();
-        }
-
-        return invoiceList;
-    }
-
-    public double getRevenue(String startDate, String endDate) {
-        List<Invoice> invoiceList = getInvoiceList(startDate, endDate);
-
+    private double getRevenueFromInvoiceList(List<Invoice> invoiceList) {
         double revenue = 0;
 
         for (Invoice invoice : invoiceList) {
-            revenue += invoice.getTotalCharge();
+            if (invoice.getBooking().getDropOffDatetimeObj() != null)
+                revenue += invoice.getTotalCharge();
         }
 
         return revenue;
     }
 
+    public double getRevenue(String startDate, String endDate) {
+        List<Invoice> invoiceList = searchInvoiceByDate(null, startDate, endDate);
+        return getRevenueFromInvoiceList(invoiceList);
+    }
+
     public double getRevenueByDriver(String startDate, String endDate, Long driverId) {
-        List<Invoice> invoiceList = getInvoiceList(startDate, endDate);
-        double revenueByDriver = 0;
-
-        for (Invoice invoice : invoiceList) {
-            if (invoice.getDriver().getId() == driverId) {
-                revenueByDriver += invoice.getTotalCharge();
-            }
-        }
-
-        return revenueByDriver;
+        List<Invoice> invoiceListByDriver = searchInvoiceByDriverInPeriod(driverId, startDate, endDate);
+        return getRevenueFromInvoiceList(invoiceListByDriver);
     }
 
     public double getRevenueByCustomer(String startDate, String endDate, Long customerId) {
-        List<Invoice> invoiceList = getInvoiceList(startDate, endDate);
-        double revenueByCustomer = 0;
-
-        for (Invoice invoice : invoiceList) {
-            if (invoice.getCustomer().getId() == customerId) {
-                revenueByCustomer += invoice.getTotalCharge();
-            }
-        }
-
-        return revenueByCustomer;
+        List<Invoice> invoiceListByCustomer = searchInvoiceByCustomerInPeriod(customerId, startDate, endDate);
+        return getRevenueFromInvoiceList(invoiceListByCustomer);
     }
 }

@@ -63,8 +63,6 @@ public class BookingService {
         // search date based on a specific date
         // if the Booking's pickUpDatetime is matched with matchPickUpDate, return it to client
         if (matchPickUpDate != null) {
-            // if startDate or endDate is not null, the function will not work
-            if (startDate != null || endDate != null) return null;
 
             // convert string to LocalDate
             LocalDate match = DateUtility.StringToLocalDate(matchPickUpDate);
