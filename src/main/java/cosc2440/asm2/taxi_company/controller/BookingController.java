@@ -113,9 +113,13 @@ public class BookingController {
     }
 
     @RequestMapping(path = "/revenue", method = RequestMethod.GET)
-    public double getRevenue(@RequestParam(value = "startDate", required = false, defaultValue = "") String startDate,
-                             @RequestParam(value = "endDate", required = false, defaultValue = "") String endDate) {
-        return invoiceService.getRevenue(startDate, endDate);
+    public double getRevenue(@RequestParam(value = "startDate", required = false) String startDate,
+                             @RequestParam(value = "endDate", required = false) String endDate,
+                             @RequestParam(value = "driverId", required = false) Long driverId,
+                             @RequestParam(value = "customerId", required = false) Long customerId) {
+        return driverId != null ? invoiceService.getRevenueByDriver(startDate, endDate, driverId) :
+                customerId != null ? invoiceService.getRevenueByCustomer(startDate, endDate, customerId) :
+                        invoiceService.getRevenue(startDate, endDate);
     }
 
 }
