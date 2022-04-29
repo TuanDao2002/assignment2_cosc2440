@@ -275,5 +275,6 @@
 - IntelliJ: for configuration and coding the app
 - Microsoft Word 2022: for documenting technical report
 - Spring initializer: for initializing the project
+- Postman API: to test the APIs
 
 ### References
