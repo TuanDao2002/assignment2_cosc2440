@@ -117,5 +117,4 @@ public class CustomerService {
         customerRepository.save(customerToUpdate);
         return String.format("Customer with id %d updated!", customer.getId());
     }
-
 }
