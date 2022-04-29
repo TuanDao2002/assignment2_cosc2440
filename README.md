@@ -35,7 +35,61 @@
 ### To Run
 - Run the Main.java or type "./mvnw spring:run" in terminal
 
-### Note
+### API call
+#### Manage car
+1. Get all car
+- GET request: http://localhost:8080/car (it will automatically call with pageSize = 5 and pageNumber = 0)
+- GET request with custom paging and size: http://localhost:8080/car?page=0&size=5
+- GET request all available car: http://localhost:8080/car?getByAvailable=true
+
+2. Get one car
+- GET request car by id: http://localhost:8080/car/{id}
+- GET request car by attribute: http://localhost:8080/car/attribute?attributeName=model&attributeValue=GLC63 (custom attribute name and attribute value). Note: available attribute are make, model, licensePlate
+
+3. Add car
+- POST request: http://localhost:8080/car with body:
+```
+{
+    "make": "Toyota",
+    "model": "GLC63",
+    "color": "white",
+    "convertible": "false",
+    "rating": "5.0",
+    "licensePlate": "59F-23537",
+    "ratePerKilometer": "44.22",
+    "available": "true"
+}
+```
+
+4. Update car
+- PUT request: http://localhost:8080/car with body:
+```
+ {
+    "vin": "2",
+    "make": "Mercedes",
+    "model": "GLC300",
+    "color": "red",
+    "convertible": "true",
+    "rating": "3.0",
+    "licensePlate": "0x237",
+    "ratePerKilometer": "32.34",
+    "available": "true"
+} 
+ ```
+
+5. Delete car
+- DELETE request: http://localhost:8080/car/{id}
+
+6. Get car by day used
+- GET request: http://localhost:8080/car/day?month={month}&year={year}. It will respond with a List<Map<String:Integer>>:
+```
+[
+    // Each object contains plate : day used
+    {
+        "59F-23537": 2
+    }
+]
+```
 
 ### Supporting tools used
 - LucidChart: for drawing UML, including use case diagram and class diagram (attached on zip file)
