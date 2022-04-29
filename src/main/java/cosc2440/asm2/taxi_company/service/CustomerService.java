@@ -2,6 +2,7 @@ package cosc2440.asm2.taxi_company.service;
 
 import cosc2440.asm2.taxi_company.model.Booking;
 import cosc2440.asm2.taxi_company.model.Customer;
+import cosc2440.asm2.taxi_company.model.Driver;
 import cosc2440.asm2.taxi_company.model.Invoice;
 import cosc2440.asm2.taxi_company.repository.CustomerRepository;
 import cosc2440.asm2.taxi_company.utility.CustomerUtility;
@@ -26,6 +27,8 @@ public class CustomerService {
 
     @Autowired
     private SessionFactory sessionFactory;
+
+    private static final List<String> availableAttribute = List.of("name", "phoneNumber", "address");
 
     public void setCustomerRepository(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
@@ -87,6 +90,18 @@ public class CustomerService {
 
         customerRepository.delete(customerToDelete);
         return String.format("Customer with id %d deleted!", id);
+    }
+
+    public ResponseEntity<List<Customer>> getCustomerByAttribute(String attributeName, String attributeValue, int pageSize, int pageNum) {
+        if (attributeValue == null || attributeValue.isEmpty()) return null;
+        if (attributeName == null || attributeName.isEmpty()) return null;
+        if (!availableAttribute.contains(attributeName)) return null;
+
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Customer.class);
+        criteria.add(Restrictions.like(attributeName, attributeValue, MatchMode.ANYWHERE).ignoreCase());
+        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+
+        return criteria.list().isEmpty() ? null : PagingUtility.getAll((List<Customer>) criteria.list(), pageSize, pageNum);
     }
 
     public String updateCustomer(Customer customer) {

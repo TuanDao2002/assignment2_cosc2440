@@ -187,6 +187,7 @@ public class InvoiceService {
         double revenue = 0;
 
         for (Invoice invoice : invoiceList) {
+            // if the booking is finalized
             if (invoice.getBooking().getDropOffDatetimeObj() != null)
                 revenue += invoice.getTotalCharge();
         }
@@ -195,17 +196,26 @@ public class InvoiceService {
     }
 
     public double getRevenue(String startDate, String endDate) {
+        // get list of invoice
         List<Invoice> invoiceList = searchInvoiceByDate(null, startDate, endDate);
+
+        // get sum of revenue
         return getRevenueFromInvoiceList(invoiceList);
     }
 
     public double getRevenueByDriver(String startDate, String endDate, Long driverId) {
+        // get list of invoice
         List<Invoice> invoiceListByDriver = searchInvoiceByDriverInPeriod(driverId, startDate, endDate);
+
+        // get sum of revenue
         return getRevenueFromInvoiceList(invoiceListByDriver);
     }
 
     public double getRevenueByCustomer(String startDate, String endDate, Long customerId) {
+        // get list of invoice
         List<Invoice> invoiceListByCustomer = searchInvoiceByCustomerInPeriod(customerId, startDate, endDate);
+
+        // get sum of revenue
         return getRevenueFromInvoiceList(invoiceListByCustomer);
     }
 }
