@@ -91,6 +91,50 @@
 ]
 ```
 
+#### Manage driver
+1. Get all driver
+- GET request: http://localhost:8080/driver (it will automatically call with pageSize = 5 and pageNumber = 0)
+- GET request with custom paging and size: http://localhost:8080/driver?page=0&size=5
+
+2. Get one driver
+- GET request car by id: http://localhost:8080/driver/{id}
+- GET request car by attribute: http://localhost:8080/driver/attribute?attributeName=phoneNumber&attributeValue=0903123456 (custom attribute name and attribute value). Note: available attribute are license number and phone number
+
+3. Add driver
+- POST request: http://localhost:8080/driver with body:
+```
+{
+    "licenseNumber": "02245462",
+    "phoneNumber": "0903123456",
+    "rating": "4.4"
+}
+```
+
+4. Update driver
+- PUT request: http://localhost:8080/driver with body:
+```
+{
+    "id": "2",
+    "licenseNumber": "1234557",
+    "phoneNumber": "09323456",
+    "rating": "2.25"
+}
+```
+
+5. Delete driver
+- DELETE request: http://localhost:8080/driver/{id}
+
+6. Assign car to driver
+- GET request: http://localhost:8080/driver/pick?carVIN={carVIN}&driverId={driverId}
+
+#### Manage customer
+1. Get all customer
+- GET request: http://localhost:8080/customer (it will automatically call with pageSize = 5 and pageNumber = 0)
+- GET request with custom paging and size: http://localhost:8080/customer?page=0&size=5
+
+2. Get one customer
+- GET request: 
+
 ### Supporting tools used
 - LucidChart: for drawing UML, including use case diagram and class diagram (attached on zip file)
 - IntelliJ: for configuration and coding the app
