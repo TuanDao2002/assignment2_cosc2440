@@ -133,7 +133,142 @@
 - GET request with custom paging and size: http://localhost:8080/customer?page=0&size=5
 
 2. Get one customer
-- GET request: 
+- GET request: http://localhost:8080/customer/{id}
+
+3. Add customer
+- POST request: http://localhost:8080/customer with body:
+```
+{
+    "name": "Quoc Bao",
+    "phoneNumber": "0909 90 009",
+    "address": "Quan 3"
+}
+```
+
+4. Update customer
+- PUT request: http://localhost:8080/customer with body: 
+```
+{
+    "id": "1",
+    "name": "Quoc Bao",
+    "phoneNumber": "0909 90 009",
+    "address": "Quan 5"
+}
+```
+
+5. Delete customer
+- DELETE request: http://localhost:8080/customer/1
+
+#### Manage booking
+1. Get all booking
+- GET request: http://localhost:8080/booking (it will automatically call with pageSize = 5 and pageNumber = 0)
+- GET request with custom paging and size: http://localhost:8080/booking?page=0&size=5
+
+2. Get one booking
+- GET request: http://localhost:8080/booking/{id}
+
+3. Add booking
+- POST request: http://localhost:8080/booking with body:
+```
+{
+    "startLocation": "Vietnam",
+    "endLocation": "USA",
+    "pickUpDatetime": "12:09:09 12-09-2020",
+    "invoice": {
+        "totalCharge": "345",
+        "driver": {
+            "id": "1"
+        },
+        "customer":{
+            "id": "2"
+        }
+    }
+}
+```
+
+4. Update booking
+- PUT request: http://localhost:8080/booking with body:
+```
+{
+    "bookingID": "1",
+    "startLocation": "Vietnam",
+    "endLocation": "Lao",
+    "pickUpDatetime": "12:09:09 12-09-2020",
+    "invoice": {
+        "totalCharge": "345",
+        "driver": {
+            "id": "1"
+        },
+        "customer":{
+            "id": "2"
+        }
+    }
+}
+```
+
+5. Delete booking
+- DELETE request: http://localhost:8080/booking/{id}
+
+6. Booking created from car booked
+- POST request: http://localhost:8080/booking/bookCar?carVIN={carVIN}&customerID={customerId}&startLocation={startLocation}&endLocation={endLocation}&pickUpDatetime=hh:mm:ss dd-MM-uuuu
+
+7. Finalize booking (drop customer)
+- POST request: http://localhost:8080/booking/finalize?bookingID={bookingID}&dropOffDatetime=hh:mm:ss dd-MM-uuuu&distance={distance}
+
+#### Manage invoice
+1. Get all invoice
+- GET request: http://localhost:8080/invoice (it will automatically call with pageSize = 5 and pageNumber = 0)
+- GET request with custom paging and size: http://localhost:8080/invoice?page=0&size=5
+
+2. Get one invoice
+- GET request: http://localhost:8080/invoice/{id}
+
+3. Add invoice
+- POST request: http://localhost:8080/booking with body:
+```
+{
+    "totalCharge": "345",
+    "driver": {
+        "id": "1"
+    },
+    "booking": {
+        "id": "1"
+    },
+    "customer": {
+        "id": "1"
+    }
+}
+```
+
+4. Update invoice
+- PUT request: http://localhost:8080/booking with body:
+```
+{
+    "invoiceID: "1",
+    "totalCharge": "345",
+    "driver": {
+        "id": "1"
+    },
+    "booking": {
+        "id": "1"
+    },
+    "customer": {
+        "id": "1"
+    }
+}
+```
+
+5. Delete invoice
+- DELETE request: http://localhost:8080/invoice/{id}
+
+6. Get revenue
+- GET request all revenue: http://localhost:8080/revenue
+- GET request revenue by period: http://localhost:8080/revenue?startDate={dd-mm-yyyy}&endDate={dd-mm-yyyy}
+- GET request revenue by customer: http://localhost:8080/revenue?customerId={customerId}
+- GET request revenue by driver: http://localhost:8080/revenue?driverId={driverId}
+- GET request revenue by customer in a period: http://localhost:8080/revenue?startDate={dd-mm-yyyy}&endDate={dd-mm-yyyy}&customerId={customerId}
+- GET request revenue by driver in a period: http://localhost:8080/revenue?startDate={dd-mm-yyyy}&endDate={dd-mm-yyyy}&driverId={driverId}
+
 
 ### Supporting tools used
 - LucidChart: for drawing UML, including use case diagram and class diagram (attached on zip file)
