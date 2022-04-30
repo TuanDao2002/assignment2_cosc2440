@@ -84,7 +84,7 @@ class CustomerControllerTest {
         assertEquals("Customer with id 2 added successfully!", customerService.addCustomer(customer2));
 
         mockMvc = MockMvcBuilders.standaloneSetup(customerController).build();
-        MvcResult mvcResult =mockMvc.perform(MockMvcRequestBuilders.post("/customer").contentType(MediaType.APPLICATION_JSON_VALUE).content(objectMapper.writeValueAsString(customer))).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/customer").contentType(MediaType.APPLICATION_JSON_VALUE).content(objectMapper.writeValueAsString(customer))).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
         String stringResult = mvcResult.getResponse().getContentAsString();
         assertEquals("Customer with id 1 added successfully!", stringResult);
     }
