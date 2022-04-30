@@ -16,7 +16,6 @@ public class CustomerController {
     @Autowired
     private CustomerService customerService;
 
-
     @RequestMapping(path = "/customer", method = RequestMethod.GET)
     public ResponseEntity<List<Customer>> getAllCustomers(@RequestParam(value = "page", defaultValue = "0") int page,
                                                           @RequestParam(value = "size", defaultValue = "20") int size,
@@ -44,5 +43,14 @@ public class CustomerController {
     @RequestMapping(path = "/customer", method = RequestMethod.PUT)
     public String updateCustomer(@RequestBody Customer customer) {
         return customerService.updateCustomer(customer);
+    }
+
+    @RequestMapping(path = "/customer/attribute", method = RequestMethod.GET)
+    public ResponseEntity<List<Customer>> getCustomerByAttribute(@RequestParam(value = "attributeName") String attributeName,
+                                                          @RequestParam(value = "attributeValue") String attributeValue,
+                                                          @RequestParam(value = "page", defaultValue = "0") int page,
+                                                          @RequestParam(value = "size", defaultValue = "20") int size) {
+
+        return customerService.getCustomerByAttribute(attributeName, attributeValue, size, page);
     }
 }
