@@ -4,10 +4,6 @@ import cosc2440.asm2.taxi_company.model.*;
 import cosc2440.asm2.taxi_company.repository.BookingRepository;
 import cosc2440.asm2.taxi_company.utility.DateUtility;
 import cosc2440.asm2.taxi_company.utility.PagingUtility;
-import org.hibernate.Criteria;
-import org.hibernate.SessionFactory;
-import org.hibernate.criterion.CriteriaSpecification;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -16,7 +12,9 @@ import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -34,8 +32,8 @@ public class BookingService {
     @Autowired
     private CustomerService customerService;
 
-    @Autowired
-    private SessionFactory sessionFactory;
+//    @Autowired
+//    private SessionFactory sessionFactory;
 
     public void setBookingRepository(BookingRepository bookingRepository) {
         this.bookingRepository = bookingRepository;
@@ -53,13 +51,14 @@ public class BookingService {
         this.customerService = customerService;
     }
 
-    public void setSessionFactory(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
+//    public void setSessionFactory(SessionFactory sessionFactory) {
+//        this.sessionFactory = sessionFactory;
+//    }
 
     public List<Booking> searchBookingByDate(String matchPickUpDate, String startDate, String endDate) {
-        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Booking.class);
+//        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Booking.class);
 
+        Set<Booking> allBookings = new HashSet<>((List<Booking>)bookingRepository.findAll());
         // search date based on a specific date
         // if the Booking's pickUpDatetime is matched with matchPickUpDate, return it to client
         if (matchPickUpDate != null) {
@@ -67,9 +66,6 @@ public class BookingService {
             // convert string to LocalDate
             LocalDate match = DateUtility.StringToLocalDate(matchPickUpDate);
             if (match == null) return null;
-
-            // find all bookings in the database
-            List<Booking> allBookings = (List<Booking>) bookingRepository.findAll();
 
             // find all bookings that match with matchPickUpDate
             List<Booking> matchBookings = new ArrayList<>();
@@ -90,7 +86,8 @@ public class BookingService {
             if (start == null) return null;
 
             // find all bookings that have pickUpDatetime greater than or equal to startDate
-            criteria.add(Restrictions.ge("pickUpDatetime", start.atStartOfDay()));
+//            criteria.add(Restrictions.ge("pickUpDatetime", start.atStartOfDay()));
+            allBookings.removeIf(booking -> booking.getPickUpDatetimeObj().isBefore(start.atStartOfDay()));
         }
 
         // if the Booking's pickUpDatetime is less than or equal to endDate, return it to client
@@ -100,11 +97,12 @@ public class BookingService {
             if (end == null) return null;
 
             // find all bookings that have pickUpDatetime less than or equal to endDate
-            criteria.add(Restrictions.le("pickUpDatetime", end.atStartOfDay()));
+//            criteria.add(Restrictions.le("pickUpDatetime", end.atStartOfDay()));
+            allBookings.removeIf(booking -> booking.getPickUpDatetimeObj().isAfter(end.atStartOfDay()));
         }
 
-        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
-        return criteria.list();
+//        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+        return new ArrayList<>(allBookings);
     }
 
     public ResponseEntity<List<Booking>> getAll(Integer pageNumber, Integer pageSize,

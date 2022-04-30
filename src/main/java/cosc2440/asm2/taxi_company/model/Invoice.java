@@ -23,11 +23,6 @@ public class Invoice {
     @JsonIgnoreProperties(value = "invoice", allowSetters = true)
     private Booking booking;
 
-//    @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-//    @JoinColumn(name = "driverID", nullable = false)
-//    @JsonIgnoreProperties(value = "invoice")
-//    private Driver driver;
-
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinColumn(name = "driverID", nullable = false)
     @JsonIgnoreProperties(value = "invoiceList")
@@ -42,6 +37,14 @@ public class Invoice {
     private ZonedDateTime dateCreated;
 
     public Invoice() {
+        this.dateCreated = ZonedDateTime.now();
+    }
+
+    public Invoice(Long invoiceID, int totalCharge, Driver driver, Customer customer) {
+        this.invoiceID = invoiceID;
+        this.totalCharge = totalCharge;
+        this.driver = driver;
+        this.customer = customer;
         this.dateCreated = ZonedDateTime.now();
     }
 
