@@ -56,11 +56,6 @@ public class CarController {
                                        @RequestParam(value = "page", defaultValue = "0") int page,
                                        @RequestParam(value = "size", defaultValue = "20") int size) {
 
-        return carService.getCarByEntity(attributeName, attributeValue, size, page);
+        return carService.getCarByAttribute(attributeName, attributeValue, size, page);
     }
-
-//    @RequestMapping(path = "car/available", method = RequestMethod.GET)
-//    public List<Car> getAllAvailableCar() {
-//        return carService.getAllAvailableCar();
-//    }
 }

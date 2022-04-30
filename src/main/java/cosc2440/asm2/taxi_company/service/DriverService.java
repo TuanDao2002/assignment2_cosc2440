@@ -42,7 +42,7 @@ public class DriverService {
         return PagingUtility.getAll(list, pageSize, pageNumber);
     }
 
-    public ResponseEntity<List<Driver>> getDriverByEntity(String attribute, String attributeValue, int pageSize, int pageNum) {
+    public ResponseEntity<List<Driver>> getDriverByAttribute(String attribute, String attributeValue, int pageSize, int pageNum) {
         if (attributeValue == null || attributeValue.isEmpty()) return null;
         if (attribute == null || attribute.isEmpty()) return null;
         if (!availableAttribute.contains(attribute)) return null;

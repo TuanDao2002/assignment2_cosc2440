@@ -53,7 +53,7 @@ public class CarService {
         return carRepository.findById(VIN).isEmpty() ? null : carRepository.findById(VIN).get();
     }
 
-    public ResponseEntity<List<Car>> getCarByEntity(String attribute, String attributeValue, int pageSize, int pageNum) {
+    public ResponseEntity<List<Car>> getCarByAttribute(String attribute, String attributeValue, int pageSize, int pageNum) {
         if (attributeValue == null || attributeValue.isEmpty()) return null;
         if (attribute == null || attribute.isEmpty()) return null;
         if (!availableAttribute.contains(attribute)) return null;

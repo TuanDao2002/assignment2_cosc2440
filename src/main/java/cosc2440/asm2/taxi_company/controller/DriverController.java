@@ -56,6 +56,6 @@ public class DriverController {
                                                        @RequestParam(value = "page", defaultValue = "0") int page,
                                                        @RequestParam(value = "size", defaultValue = "20") int size) {
 
-        return driverService.getDriverByEntity(attributeName, attributeValue, size, page);
+        return driverService.getDriverByAttribute(attributeName, attributeValue, size, page);
     }
 }
