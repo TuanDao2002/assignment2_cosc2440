@@ -103,4 +103,21 @@ class CustomerControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
+    @Test
+    void deleteCustomerById() throws Exception {
+        Long customerId = 1L;
+        Long customerIdNotExist = 3L;
+        Mockito.when(customerRepository.findById(customerId)).thenReturn(Optional.of(customers.get(0)));
+        String result = customerService.deleteCustomerById(customerId);
+        Customer customerDoesNotExist = customerService.getCustomerById(customerIdNotExist);
+
+        assertNull(customerDoesNotExist);
+        assertEquals("Customer with id 3 does not exist!", customerService.deleteCustomerById(customerIdNotExist));
+        assertEquals("Customer with id 1 deleted!", result);
+
+        mockMvc = MockMvcBuilders.standaloneSetup(customerController).build();
+        mockMvc.perform(MockMvcRequestBuilders.delete("/customer" + "/" + customers.get(1).getId()).contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+    }
 }
