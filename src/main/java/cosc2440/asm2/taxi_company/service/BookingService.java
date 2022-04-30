@@ -142,14 +142,13 @@ public class BookingService {
         invoice.setDriver(driver);
         invoice.setCustomer(customer);
 
-        Booking newBooking = new Booking();
-        if (booking.getStartLocation() != null) newBooking.setStartLocation(booking.getStartLocation());
-        if (booking.getEndLocation() != null) newBooking.setEndLocation(booking.getEndLocation());
-        if (booking.getPickUpDatetime() != null) newBooking.setPickUpDatetime(booking.getPickUpDatetime());
-        newBooking.setInvoice(invoice);
+        // do not set drop off date time or distance for new booking
+        booking.setDropOffDateTime(null);
+        booking.setDistance(0);
+        booking.setInvoice(invoice);
 
-        bookingRepository.save(newBooking);
-        return "Booking with id: " + newBooking.getBookingID() + " is added!!!";
+        bookingRepository.save(booking);
+        return "Booking with id: " + booking.getBookingID() + " is added!!!";
     }
 
     public Booking getOne(Long bookingID) {

@@ -77,12 +77,14 @@ public final class DateUtility {
     public static String displayCustomerLatestBookingDropOff(Customer customer) {
         if (customer.getInvoiceList().isEmpty()) return "";
         String customerDropOffDatetimeLatestBooking = customer.getInvoiceList().get(customer.getInvoiceList().size() - 1).getBooking().getDropOffDateTime();
+        if (customerDropOffDatetimeLatestBooking == null) return "";
         return "\nThe drop-of date time of the customer's latest booking is at: " + customerDropOffDatetimeLatestBooking;
     }
 
     public static String displayDriverLatestBookingDropOff(Driver driver) {
         if (driver.getInvoiceList().isEmpty()) return "";
         String driverDropOffDatetimeLatestBooking = driver.getInvoiceList().get(driver.getInvoiceList().size() - 1).getBooking().getDropOffDateTime();
+        if (driverDropOffDatetimeLatestBooking == null) return "";
         return "\nThe drop-of date time of the driver's latest booking is at: " + driverDropOffDatetimeLatestBooking;
     }
 

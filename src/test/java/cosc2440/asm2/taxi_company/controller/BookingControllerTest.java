@@ -1,6 +1,5 @@
 package cosc2440.asm2.taxi_company.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cosc2440.asm2.taxi_company.model.*;
 import cosc2440.asm2.taxi_company.repository.BookingRepository;
@@ -9,6 +8,7 @@ import cosc2440.asm2.taxi_company.repository.DriverRepository;
 import cosc2440.asm2.taxi_company.service.BookingService;
 import cosc2440.asm2.taxi_company.service.CustomerService;
 import cosc2440.asm2.taxi_company.service.DriverService;
+import cosc2440.asm2.taxi_company.utility.DateUtility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +24,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -72,16 +71,31 @@ class BookingControllerTest {
         Driver driver1 = new Driver(1L, "02245462","0903123456", 2);
         Customer customer1 = new Customer(1L, "Tuan", "0908198061", "binh tan district");
         Invoice invoice1 = new Invoice(1L, 198, driver1, customer1);
+        driver1.getInvoiceList().add(invoice1);
+        customer1.getInvoiceList().add(invoice1);
 
         Driver driver2 = new Driver(2L, "09245469","0903654321", 10);
         Customer customer2 = new Customer(2L, "An", "09081987652", "7 district");
         Invoice invoice2 = new Invoice(2L, 298, driver2, customer2);
+        driver2.getInvoiceList().add(invoice2);
+        customer2.getInvoiceList().add(invoice2);
 
         Invoice invoice3 = new Invoice(3L, 200, driver2, customer1);
+        driver2.getInvoiceList().add(invoice3);
+        customer1.getInvoiceList().add(invoice3);
 
-        return Arrays.asList(new Booking(1L, "hcm", "hanoi", "09:09:09 09-09-2022", invoice1),
-                new Booking(2L, "hanoi", "hcm", "09:09:09 08-12-2022", invoice2),
-                new Booking(3L, "long an", "can tho", "09:09:09 12-12-2022", invoice3));
+        Booking booking1 = new Booking(1L, "hcm", "hanoi", "09:09:09 09-09-2022", invoice1);
+        booking1.setDropOffDateTime("09:09:10 09-09-2022");
+        invoice1.setBooking(booking1);
+
+        Booking booking2 = new Booking(2L, "hanoi", "hcm", "09:09:09 08-12-2022", invoice2);
+        booking2.setDropOffDateTime("09:09:10 09-12-2022");
+        invoice2.setBooking(booking2);
+
+        Booking booking3 = new Booking(3L, "long an", "can tho", "09:09:09 12-12-2022", invoice3);
+        invoice3.setBooking(booking3);
+
+        return Arrays.asList(booking1, booking2, booking3);
     }
 
     @BeforeEach
@@ -156,52 +170,58 @@ class BookingControllerTest {
 
     @Test
     void addBooking() throws Exception {
-        Booking newBooking = new Booking( "hcm", "long an", "09:09:09 09-09-2022", null);
-        Mockito.when(bookingRepository.save(newBooking)).thenReturn(newBooking);
-        System.out.println(bookingRepository.save(newBooking));
-        assertEquals("Invoice must not be null", bookingController.addBooking(newBooking));
+        Booking newBooking = new Booking(1L, "hcm", "long an", "09:09:09 09-09-2022", null);
 
+        assertEquals("Invoice must not be null", bookingController.addBooking(newBooking));
         Invoice newInvoice = new Invoice();
         newBooking.setInvoice(newInvoice);
-        assertEquals("Driver must not be null", bookingController.addBooking(newBooking));
 
-        Driver driver = new Driver(1L, "12345","0908734234", 12);
+        assertEquals("Driver must not be null", bookingController.addBooking(newBooking));
+        Driver driver = setUpData().get(0).getInvoice().getDriver();
         newInvoice.setDriver(driver);
         newBooking.setInvoice(newInvoice);
-        assertEquals("Customer must not be null", bookingController.addBooking(newBooking));
 
-        Customer customer = new Customer(1L, "dao kha tuan", "09082321", "hcm");
+        assertEquals("Customer must not be null", bookingController.addBooking(newBooking));
+        Customer customer = setUpData().get(0).getInvoice().getCustomer();
         newInvoice.setCustomer(customer);
         newBooking.setInvoice(newInvoice);
-        assertEquals("This driver does not exist", bookingController.addBooking(newBooking));
 
+        assertEquals("This driver does not exist", bookingController.addBooking(newBooking));
         Mockito.when(driverRepository.findById(1L)).thenReturn(Optional.of(driver));
         Driver savedDriver = driverService.getDriverById(1L);
         newInvoice.setDriver(savedDriver);
         newBooking.setInvoice(newInvoice);
-        assertEquals("This driver does not have a car", bookingController.addBooking(newBooking));
 
+        assertEquals("This driver does not have a car", bookingController.addBooking(newBooking));
         Car car = new Car();
         car.setAvailable(false);
         savedDriver.setCar(car);
         newInvoice.setDriver(savedDriver);
         newBooking.setInvoice(newInvoice);
-        assertEquals("This driver has other booking", bookingController.addBooking(newBooking));
 
+        assertEquals("This driver has other booking", bookingController.addBooking(newBooking));
         car.setAvailable(true);
         savedDriver.setCar(car);
         newInvoice.setDriver(savedDriver);
         newBooking.setInvoice(newInvoice);
-        assertEquals("This customer does not exist", bookingController.addBooking(newBooking));
 
+        assertEquals("This customer does not exist", bookingController.addBooking(newBooking));
         Mockito.when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
         Customer savedCustomer = customerService.getCustomerById(1L);
         newInvoice.setCustomer(savedCustomer);
         newBooking.setInvoice(newInvoice);
 
+        assertEquals("The pick-up date time must be after the drop-of date time of the latest booking" + DateUtility.displayDriverLatestBookingDropOff(driver),
+                        bookingController.addBooking(newBooking));
+        newBooking.setPickUpDatetime("09:09:11 09-09-2022");
+
+        Mockito.when(bookingRepository.save(newBooking)).thenReturn(newBooking);
+        assertEquals("Booking with id: 1 is added!!!", bookingController.addBooking(newBooking));
+
         mockMvc = MockMvcBuilders.standaloneSetup(bookingController).build();
-        mockMvc.perform(MockMvcRequestBuilders.post("/booking").contentType(MediaType.APPLICATION_JSON_VALUE).content(objectMapper.writeValueAsString(newBooking)))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(MockMvcRequestBuilders.post("/booking").contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(newBooking)))
+                        .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
