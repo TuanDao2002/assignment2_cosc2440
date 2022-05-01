@@ -3,9 +3,11 @@ package cosc2440.asm2.taxi_company.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cosc2440.asm2.taxi_company.model.*;
 import cosc2440.asm2.taxi_company.repository.BookingRepository;
+import cosc2440.asm2.taxi_company.repository.CarRepository;
 import cosc2440.asm2.taxi_company.repository.CustomerRepository;
 import cosc2440.asm2.taxi_company.repository.DriverRepository;
 import cosc2440.asm2.taxi_company.service.BookingService;
+import cosc2440.asm2.taxi_company.service.CarService;
 import cosc2440.asm2.taxi_company.service.CustomerService;
 import cosc2440.asm2.taxi_company.service.DriverService;
 import cosc2440.asm2.taxi_company.utility.DateUtility;
@@ -45,6 +47,9 @@ class BookingControllerTest {
     @MockBean
     private CustomerRepository customerRepository;
 
+    @MockBean
+    private CarRepository carRepository;
+
     @InjectMocks
     @Autowired
     private BookingService bookingService;
@@ -56,6 +61,10 @@ class BookingControllerTest {
     @InjectMocks
     @Autowired
     private CustomerService customerService;
+
+    @InjectMocks
+    @Autowired
+    private CarService carService;
 
     @InjectMocks
     @Autowired
@@ -113,9 +122,9 @@ class BookingControllerTest {
         assertEquals(bookingList.size(), actualResponse.getBody().size());
         assertTrue(Objects.requireNonNull(expectedResponse.getBody()).containsAll(actualResponse.getBody()));
 
-        mockMvc = MockMvcBuilders.standaloneSetup(bookingController).build();
-        mockMvc.perform(MockMvcRequestBuilders.get("/booking").contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(MockMvcRequestBuilders.get("/booking")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                        .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
@@ -147,9 +156,9 @@ class BookingControllerTest {
         assertEquals(matchBookingList.size(), actualResponse3.getBody().size());
         assertEquals(expectedResponse3, actualResponse3);
 
-        mockMvc = MockMvcBuilders.standaloneSetup(bookingController).build();
-        mockMvc.perform(MockMvcRequestBuilders.get("/booking?page=1&&size=2&&startDate=08-12-2022&&endDate=13-12-2022").contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(MockMvcRequestBuilders.get("/booking?page=1&&size=2&&startDate=08-12-2022&&endDate=13-12-2022")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                        .andExpect(MockMvcResultMatchers.status().isOk());
 
     }
 
@@ -163,9 +172,9 @@ class BookingControllerTest {
         assertEquals(bookingID, getBooking.getBookingID());
         assertEquals(bookingList.get(0), getBooking);
 
-        mockMvc = MockMvcBuilders.standaloneSetup(bookingController).build();
-        mockMvc.perform(MockMvcRequestBuilders.get("/booking" + "/" + getBooking.getBookingID()).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(MockMvcRequestBuilders.get("/booking" + "/" + getBooking.getBookingID())
+                        .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
@@ -211,29 +220,112 @@ class BookingControllerTest {
         newInvoice.setCustomer(savedCustomer);
         newBooking.setInvoice(newInvoice);
 
-        assertEquals("The pick-up date time must be after the drop-of date time of the latest booking" + DateUtility.displayDriverLatestBookingDropOff(driver),
+        assertEquals("The pick-up date time must be after the drop-of date time of the latest booking"
+                        + DateUtility.displayDriverLatestBookingDropOff(driver),
                         bookingController.addBooking(newBooking));
         newBooking.setPickUpDatetime("09:09:11 09-09-2022");
 
         Mockito.when(bookingRepository.save(newBooking)).thenReturn(newBooking);
         assertEquals("Booking with id: 1 is added!!!", bookingController.addBooking(newBooking));
 
-        mockMvc = MockMvcBuilders.standaloneSetup(bookingController).build();
         mockMvc.perform(MockMvcRequestBuilders.post("/booking").contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(newBooking)))
                         .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
-    void updateBooking() {
+    void updateBooking() throws Exception {
+        Invoice invoice = new Invoice();
+        Booking booking = new Booking(4L, "hcm", "la", "09:09:09 09-09-2022", invoice);
+
+        assertEquals("Booking with ID: 4 does not exist!!!", bookingController.updateBooking(booking));
+        Mockito.when(bookingRepository.findById(booking.getBookingID())).thenReturn(Optional.of(booking));
+
+        booking.setStartLocation("ho chi minh");
+        booking.setEndLocation("long an");
+        booking.setPickUpDatetime("09:09:09 08-09-2022");
+        booking.setDropOffDateTime("09:09:09 08-09-2022");
+        bookingController.updateBooking(booking);
+
+        assertEquals(booking.getStartLocation(), bookingService.getOne(booking.getBookingID()).getStartLocation());
+        assertEquals(booking.getEndLocation(), bookingService.getOne(booking.getBookingID()).getEndLocation());
+        assertEquals(booking.getPickUpDatetime(), bookingService.getOne(booking.getBookingID()).getPickUpDatetime());
+
+        assertEquals("The drop-off date time must be after the pick-up date time", bookingController.updateBooking(booking));
+        booking.setDropOffDateTime("09:09:09 09-09-2022");
+
+        assertEquals("Booking with ID: 4 is updated!!!", bookingController.updateBooking(booking));
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/booking").contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(booking)))
+                        .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
-    void deleteBooking() {
+    void deleteBooking() throws Exception {
+        Long bookingIdNotExist = 4L;
+        Booking bookingDoesNotExist = bookingService.getOne(bookingIdNotExist);
+        assertNull(bookingDoesNotExist);
+        assertEquals("Booking with ID: 4 does not exist!!!", bookingController.deleteBooking(bookingIdNotExist));
+
+        Long bookingId = 1L;
+        Booking bookingExist = setUpData().get(0);
+        bookingExist.setDropOffDateTime(null);
+        Car car = new Car();
+        car.setAvailable(false);
+        bookingExist.getInvoice().getDriver().setCar(car);
+        Mockito.when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(bookingExist));
+
+        assertFalse(car.isAvailable());
+        assertEquals("Booking with ID: 1 is deleted!!!", bookingController.deleteBooking(bookingId));
+        assertTrue(car.isAvailable());
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/booking" + "/" + bookingId).contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
     void bookCar() {
+        String result = bookingController.bookCar(1L, 1L, "hcm", "la", "09:09:09 32-09-2022");
+
+        assertEquals("The pick-up date time is invalid!!!", result);
+        result = bookingController.bookCar(1L, 1L, "hcm", "la", "09:09:09 09-09-2022");
+
+        assertEquals("Car with VIN: 1 does not exist!!!", result);
+        Car car = new Car();
+        car.setVIN(1L);
+        car.setAvailable(false);
+        Mockito.when(carRepository.findById(1L)).thenReturn(Optional.of(car));
+        result = bookingController.bookCar(1L, 1L, "hcm", "la", "09:09:09 09-09-2022");
+
+        assertEquals("This car does not have a driver", result);
+        Driver driver = new Driver();
+        driver.setCar(car);
+        car.setDriver(driver);
+        result = bookingController.bookCar(1L, 1L, "hcm", "la", "09:09:09 09-09-2022");
+
+        assertEquals("This car is not available", result);
+        car.setAvailable(true);
+        result = bookingController.bookCar(1L, 1L, "hcm", "la", "09:09:09 09-09-2022");
+
+        assertEquals("Customer with ID: 1 does not exist!!!", result);
+        Customer customer = setUpData().get(1).getInvoice().getCustomer();
+        Mockito.when(customerRepository.findById(2L)).thenReturn(Optional.of(customer));
+        result = bookingController.bookCar(1L, 2L, "hcm", "la", "09:09:09 09-09-2022");
+
+        assertEquals("The pick-up date time must be after the drop-of date time of the latest booking"
+                    + DateUtility.displayCustomerLatestBookingDropOff(customer),
+                    result);
+
+        bookingController.bookCar(1L, 2L, "hcm", "la", "09:09:11 09-12-2022");
+        assertFalse(car.isAvailable()); // check whether the car is not available after booking is created
+
+        // use Mockito.spy to create a clone copy of bookingController (due to new Booking POJO object created in the service)
+        BookingController bookingController = Mockito.spy(new BookingController());
+        Mockito.doReturn("Booking with ID: 1 is created!!!").when(bookingController).bookCar(1L, 2L, "hcm", "la", "09:09:11 09-12-2022");
+        result = bookingController.bookCar(1L, 2L, "hcm", "la", "09:09:11 09-12-2022");
+
+        assertEquals("Booking with ID: 1 is created!!!", result);
     }
 
     @Test
