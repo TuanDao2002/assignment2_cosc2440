@@ -4,11 +4,6 @@ import cosc2440.asm2.taxi_company.model.Car;
 import cosc2440.asm2.taxi_company.model.Driver;
 import cosc2440.asm2.taxi_company.repository.DriverRepository;
 import cosc2440.asm2.taxi_company.utility.PagingUtility;
-import org.hibernate.Criteria;
-import org.hibernate.SessionFactory;
-import org.hibernate.criterion.CriteriaSpecification;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -27,9 +22,6 @@ public class DriverService {
 
     @Autowired
     private CarService carService;
-
-//    @Autowired
-//    private SessionFactory sessionFactory;
 
     private static final List<String> availableAttribute = List.of("licenseNumber", "phoneNumber");
 
@@ -50,15 +42,11 @@ public class DriverService {
         if (attribute == null || attribute.isEmpty()) return null;
         if (!availableAttribute.contains(attribute)) return null;
 
-//        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Driver.class);
-//        criteria.add(Restrictions.like(attribute, attributeValue, MatchMode.ANYWHERE).ignoreCase());
-//        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
-
-//        return criteria.list().isEmpty() ? null : PagingUtility.getAll((List<Driver>) criteria.list(), pageSize, pageNum);
-
+        // Get all driver from database
         Set<Driver> allDrivers =  new HashSet<>((List<Driver>) driverRepository.findAll());
         List<Driver> driverByAttribute = new ArrayList<>();
 
+        // Add to list based on criteria
         if (attribute.equals("licenseNumber")) {
             for (Driver driver : allDrivers)
                 if (driver.getLicenseNumber().equalsIgnoreCase(attributeValue))

@@ -5,11 +5,6 @@ import cosc2440.asm2.taxi_company.model.Invoice;
 import cosc2440.asm2.taxi_company.repository.CarRepository;
 import cosc2440.asm2.taxi_company.utility.MonthConverter;
 import cosc2440.asm2.taxi_company.utility.PagingUtility;
-import org.hibernate.Criteria;
-import org.hibernate.SessionFactory;
-import org.hibernate.criterion.CriteriaSpecification;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -22,9 +17,6 @@ import java.util.*;
 public class CarService {
     @Autowired
     private CarRepository carRepository;
-
-//    @Autowired
-//    private SessionFactory sessionFactory;
 
     private static final List<String> availableAttribute = List.of("make", "model", "licensePlate");
 
@@ -58,10 +50,11 @@ public class CarService {
         if (attribute == null || attribute.isEmpty()) return null;
         if (!availableAttribute.contains(attribute)) return null;
 
-//        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Car.class);
+        // Get all car from database
         Set<Car> allCars = new HashSet<>((List<Car>) carRepository.findAll());
         List<Car> carByAttribute = new ArrayList<>();
 
+        // Check criteria and add to list
         if (attribute.equals("make")) {
             for (Car car : allCars)
                 if (car.getMake().equalsIgnoreCase(attributeValue))
@@ -76,10 +69,6 @@ public class CarService {
                     carByAttribute.add(car);
         }
 
-//        criteria.add(Restrictions.like(attribute, attributeValue, MatchMode.ANYWHERE).ignoreCase());
-//        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
-
-//        return criteria.list().isEmpty() ? null : PagingUtility.getAll((List<Car>) criteria.list(), pageSize, pageNum);
         return carByAttribute.isEmpty() ? null : PagingUtility.getAll(carByAttribute, pageSize, pageNum);
     }
 
@@ -125,21 +114,14 @@ public class CarService {
     public List<Car> getAllAvailableCar() {
         // get all car from database
         Set<Car> allCars = new HashSet<>((List<Car>) carRepository.findAll());
-//        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Car.class);
 
-        // add constrains to the criteria
+        // add to list based on criteria
         List<Car> availableCars = new ArrayList<>();
 
-        for (Car car : allCars) {
-            if (car.isAvailable()) {
+        for (Car car : allCars)
+            if (car.isAvailable())
                 availableCars.add(car);
-            }
-        }
 
-//        criteria.add(Restrictions.eq("isAvailable", true));
-
-        // select distinct to avoid duplicate
-//        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
         return availableCars;
     }
 
