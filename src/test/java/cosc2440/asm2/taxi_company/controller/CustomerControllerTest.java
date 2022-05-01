@@ -14,7 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -23,6 +26,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -68,9 +72,9 @@ class CustomerControllerTest {
         Customer savedCustomer1 = customerRepository.save(c1);
         Customer savedCustomer2 = customerRepository.save(c2);
 
-        Mockito.when(customerRepository.findAll()).thenReturn(customers);
         Mockito.when(customerRepository.save(c1)).thenReturn(savedCustomer1);
         Mockito.when(customerRepository.save(c2)).thenReturn(savedCustomer2);
+        Mockito.when(customerRepository.findAll()).thenReturn(customers);
     }
 
     @Test
@@ -81,7 +85,7 @@ class CustomerControllerTest {
 
         Customer customer2 = new Customer(2L,"new", "9999", "tphcm");
         Mockito.when(customerRepository.save(customer2)).thenReturn(customer2);
-        assertEquals("Customer with id 2 added successfully!", customerService.addCustomer(customer2));
+        assertEquals("Customer with id 2 added successfully!", customerController.addCustomer(customer2));
 
         mockMvc = MockMvcBuilders.standaloneSetup(customerController).build();
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/customer").contentType(MediaType.APPLICATION_JSON_VALUE).content(objectMapper.writeValueAsString(customer))).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
@@ -93,7 +97,7 @@ class CustomerControllerTest {
     void getCustomerById() throws Exception {
         Long customerId = 1L;
         Mockito.when(customerRepository.findById(customerId)).thenReturn(Optional.of(customers.get(0)));
-        Customer getCustomer = customerService.getCustomerById(customerId);
+        Customer getCustomer = customerController.getCustomerById(customerId);
         assertNotNull(getCustomer);
         assertEquals(customerId, getCustomer.getId());
         assertEquals(customers.get(0), getCustomer);
@@ -108,16 +112,49 @@ class CustomerControllerTest {
         Long customerId = 1L;
         Long customerIdNotExist = 3L;
         Mockito.when(customerRepository.findById(customerId)).thenReturn(Optional.of(customers.get(0)));
-        String result = customerService.deleteCustomerById(customerId);
-        Customer customerDoesNotExist = customerService.getCustomerById(customerIdNotExist);
+        String result = customerController.deleteCustomerById(customerId);
+        Customer customerDoesNotExist = customerController.getCustomerById(customerIdNotExist);
 
         assertNull(customerDoesNotExist);
-        assertEquals("Customer with id 3 does not exist!", customerService.deleteCustomerById(customerIdNotExist));
+        assertEquals("Customer with id 3 does not exist!", customerController.deleteCustomerById(customerIdNotExist));
         assertEquals("Customer with id 1 deleted!", result);
 
         mockMvc = MockMvcBuilders.standaloneSetup(customerController).build();
         mockMvc.perform(MockMvcRequestBuilders.delete("/customer" + "/" + customers.get(1).getId()).contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
+    }
+
+    @Test
+    void getAllCustomer() throws Exception {
+        ResponseEntity<List<Customer>> expectedResponse = new ResponseEntity<>(customers, new HttpHeaders(), HttpStatus.OK);
+        ResponseEntity<List<Customer>> actualResponse = customerController.getAllCustomers(0, 20, null, null, null);
+
+        assertTrue(Objects.requireNonNull(expectedResponse.getBody()).containsAll(actualResponse.getBody()));
+
+        mockMvc = MockMvcBuilders.standaloneSetup(customerController).build();
+        mockMvc.perform(MockMvcRequestBuilders.get("/customer")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    void updateCustomer() throws Exception {
+        Customer customer = new Customer(3L, "Bao Nguyen", "0246802468", "tphcm");
+        assertEquals("Customer with id 3 does not exist!", customerController.updateCustomer(customer));
+        Mockito.when(customerRepository.findById(customer.getId())).thenReturn(Optional.of(customer));
+
+        customer.setName("Bao Nguyen");
+        customer.setPhoneNumber("0246802468");
+        customer.setAddress("soc trang");
+
+        String updatedCustomer = customerController.updateCustomer(customer);
+        assertEquals("Customer with id 3 updated!", updatedCustomer);
+
+        mockMvc = MockMvcBuilders.standaloneSetup(customerController).build();
+        mockMvc.perform(MockMvcRequestBuilders.put("/customer")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(customer))
+                ).andExpect(MockMvcResultMatchers.status().isOk());
     }
 }
