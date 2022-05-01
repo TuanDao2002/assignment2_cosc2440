@@ -25,7 +25,7 @@
 - Project name: Car Booking System
 - Purpose: Manage car booking of users and invoices for company
 - Functionalities: basic CRUD (Create - Read - Update - Delete) booking, connect the system to work as a real system
-- Technologies used: Java (jdk16), JUnit5, Spring MVC
+- Technologies used: Java (jdk16), JUnit4, Spring MVC
 
 
 - Project started date: 21 April 2022
