@@ -13,6 +13,12 @@ public class BookingController {
     @Autowired
     private BookingService bookingService;
 
+    public BookingController(){}
+
+    public BookingController(BookingService bookingService) {
+        this.bookingService = bookingService;
+    }
+
     // controller for booking
     @RequestMapping(path = "/booking", method = RequestMethod.GET)
     public ResponseEntity<List<Booking>> getAllBookings(@RequestParam(value = "page", defaultValue = "0") int page,

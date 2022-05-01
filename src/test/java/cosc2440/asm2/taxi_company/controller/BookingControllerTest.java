@@ -285,7 +285,7 @@ class BookingControllerTest {
     }
 
     @Test
-    void bookCar() {
+    void bookCar() throws Exception {
         String result = bookingController.bookCar(1L, 1L, "hcm", "la", "09:09:09 32-09-2022");
 
         assertEquals("The pick-up date time is invalid!!!", result);
@@ -320,15 +320,50 @@ class BookingControllerTest {
         bookingController.bookCar(1L, 2L, "hcm", "la", "09:09:11 09-12-2022");
         assertFalse(car.isAvailable()); // check whether the car is not available after booking is created
 
-        // use Mockito.spy to create a clone copy of bookingController (due to new Booking POJO object created in the service)
-        BookingController bookingController = Mockito.spy(new BookingController());
-        Mockito.doReturn("Booking with ID: 1 is created!!!").when(bookingController).bookCar(1L, 2L, "hcm", "la", "09:09:11 09-12-2022");
+        // use Mockito.spy to create a clone copy of bookingService (due to new Booking POJO object created in the service)
+        BookingService clonedBookingService = Mockito.spy(new BookingService());
+        Mockito.doReturn("Booking with ID: 1 is created!!!").when(clonedBookingService).bookCar(1L, 2L, "hcm", "la", "09:09:11 09-12-2022");
+        bookingController = new BookingController(clonedBookingService);
         result = bookingController.bookCar(1L, 2L, "hcm", "la", "09:09:11 09-12-2022");
 
         assertEquals("Booking with ID: 1 is created!!!", result);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/booking/bookCar?carVIN=1&&customerID=2&&startLocation=hcm&&endLocation=la&&pickUpDatetime=09:09:11 09-12-2022")
+                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
     void finalizeBooking() {
+        String result = bookingController.finalizeBooking(1L, "09:09:09 39-09-2022", -2);
+
+        assertEquals("Booking with ID: 1 does not exist!!!", result);
+        Booking findBooking = setUpData().get(0);
+        Car car = new Car();
+        car.setAvailable(false);
+        findBooking.getInvoice().getDriver().setCar(car);
+        car.setDriver(findBooking.getInvoice().getDriver());
+        Mockito.when(bookingRepository.findById(1L)).thenReturn(Optional.of(findBooking));
+        result = bookingController.finalizeBooking(1L, "39:09:09 09-09-2022", -2);
+
+        assertEquals("Booking with ID: 1 is already finalized!!!", result);
+        findBooking.setDropOffDateTime(null);
+        result = bookingController.finalizeBooking(1L, "39:09:09 09-09-2022", -2);
+
+        assertEquals("The drop off date time is invalid!!!", result);
+        result = bookingController.finalizeBooking(1L, "09:09:09 09-09-2022", -2);
+
+        assertEquals("The drop-off date time must be after the pick-up date time", result);
+        result = bookingController.finalizeBooking(1L, "09:09:10 09-09-2022", -2);
+
+        assertEquals("The distance must be greater than 0", result);
+        result = bookingController.finalizeBooking(1L, "09:09:10 09-09-2022", 2);
+
+        assertTrue(findBooking.getInvoice().getDriver().getCar().isAvailable());
+        double ratePerKm = findBooking.getInvoice().getDriver().getCar().getRatePerKilometer();
+        assertEquals(ratePerKm * 2, findBooking.getInvoice().getTotalCharge());
+
+        Mockito.when(bookingRepository.save(findBooking)).thenReturn(findBooking);
+        assertEquals("Booking with ID: 1 is finalized!!!", result);
     }
 }
