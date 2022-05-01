@@ -23,8 +23,8 @@ public class CarService {
     @Autowired
     private CarRepository carRepository;
 
-    @Autowired
-    private SessionFactory sessionFactory;
+//    @Autowired
+//    private SessionFactory sessionFactory;
 
     private static final List<String> availableAttribute = List.of("make", "model", "licensePlate");
 
@@ -58,11 +58,29 @@ public class CarService {
         if (attribute == null || attribute.isEmpty()) return null;
         if (!availableAttribute.contains(attribute)) return null;
 
-        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Car.class);
-        criteria.add(Restrictions.like(attribute, attributeValue, MatchMode.ANYWHERE).ignoreCase());
-        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+//        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Car.class);
+        Set<Car> allCars = new HashSet<>((List<Car>) carRepository.findAll());
+        List<Car> carByAttribute = new ArrayList<>();
 
-        return criteria.list().isEmpty() ? null : PagingUtility.getAll((List<Car>) criteria.list(), pageSize, pageNum);
+        if (attribute.equals("make")) {
+            for (Car car : allCars)
+                if (car.getMake().equalsIgnoreCase(attributeValue))
+                    carByAttribute.add(car);
+        } else if (attribute.equals("model")) {
+            for (Car car : allCars)
+                if (car.getModel().equalsIgnoreCase(attributeValue))
+                    carByAttribute.add(car);
+        } else if (attribute.equals("licensePlate")) {
+            for (Car car : allCars)
+                if (car.getLicensePlate().equalsIgnoreCase(attribute))
+                    carByAttribute.add(car);
+        }
+
+//        criteria.add(Restrictions.like(attribute, attributeValue, MatchMode.ANYWHERE).ignoreCase());
+//        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+
+//        return criteria.list().isEmpty() ? null : PagingUtility.getAll((List<Car>) criteria.list(), pageSize, pageNum);
+        return carByAttribute.isEmpty() ? null : PagingUtility.getAll(carByAttribute, pageSize, pageNum);
     }
 
     public String deleteCarById(Long VIN) {
@@ -106,14 +124,23 @@ public class CarService {
 
     public List<Car> getAllAvailableCar() {
         // get all car from database
-        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Car.class);
+        Set<Car> allCars = new HashSet<>((List<Car>) carRepository.findAll());
+//        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Car.class);
 
         // add constrains to the criteria
-        criteria.add(Restrictions.eq("isAvailable", true));
+        List<Car> availableCars = new ArrayList<>();
+
+        for (Car car : allCars) {
+            if (car.isAvailable()) {
+                availableCars.add(car);
+            }
+        }
+
+//        criteria.add(Restrictions.eq("isAvailable", true));
 
         // select distinct to avoid duplicate
-        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
-        return criteria.list();
+//        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+        return availableCars;
     }
 
     public ResponseEntity<List<Map<String, Integer>>> getDayUsedOfCars(String monthString, int year, int pageSize, int pageNum) {

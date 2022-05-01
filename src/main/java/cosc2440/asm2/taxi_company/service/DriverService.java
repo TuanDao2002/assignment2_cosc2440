@@ -60,15 +60,13 @@ public class DriverService {
         List<Driver> driverByAttribute = new ArrayList<>();
 
         if (attribute.equals("licenseNumber")) {
-            for (Driver driver : allDrivers) {
-                if (driver.getLicenseNumber().equals(attributeValue))
+            for (Driver driver : allDrivers)
+                if (driver.getLicenseNumber().equalsIgnoreCase(attributeValue))
                     driverByAttribute.add(driver);
-            }
         } else if (attribute.equals("phoneNumber")) {
-            for (Driver driver : allDrivers) {
-                if (driver.getPhoneNumber().equals(attributeValue))
+            for (Driver driver : allDrivers)
+                if (driver.getPhoneNumber().equalsIgnoreCase(attributeValue))
                     driverByAttribute.add(driver);
-            }
         }
 
         return driverByAttribute.isEmpty() ? null : PagingUtility.getAll(driverByAttribute, pageSize, pageNum);
