@@ -76,6 +76,8 @@ class BookingControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    private final List<Booking> bookingList = setUpData();
+
     private List<Booking> setUpData(){
         Driver driver1 = new Driver(1L, "02245462","0903123456", 2);
         Customer customer1 = new Customer(1L, "Tuan", "0908198061", "binh tan district");
@@ -114,7 +116,6 @@ class BookingControllerTest {
 
     @Test
     void getAllBookings() throws Exception {
-        List<Booking> bookingList = setUpData();
         Mockito.when(bookingRepository.findAll()).thenReturn(bookingList);
 
         ResponseEntity<List<Booking>> expectedResponse = new ResponseEntity<>(bookingList, new HttpHeaders(), HttpStatus.OK);
@@ -129,7 +130,6 @@ class BookingControllerTest {
 
     @Test
     void getBookingWithFilter() throws Exception {
-        List<Booking> bookingList = setUpData();
         Mockito.when(bookingRepository.findAll()).thenReturn(bookingList);
 
         // test the function of getting a booking list in a period
@@ -164,7 +164,6 @@ class BookingControllerTest {
 
     @Test
     void getBookingById() throws Exception {
-        List<Booking> bookingList = setUpData();
         Long bookingID = 1L;
         Mockito.when(bookingRepository.findById(bookingID)).thenReturn(Optional.of(bookingList.get(0)));
         Booking getBooking = bookingService.getOne(bookingID);
@@ -186,12 +185,12 @@ class BookingControllerTest {
         newBooking.setInvoice(newInvoice);
 
         assertEquals("Driver must not be null", bookingController.addBooking(newBooking));
-        Driver driver = setUpData().get(0).getInvoice().getDriver();
+        Driver driver = bookingList.get(0).getInvoice().getDriver();
         newInvoice.setDriver(driver);
         newBooking.setInvoice(newInvoice);
 
         assertEquals("Customer must not be null", bookingController.addBooking(newBooking));
-        Customer customer = setUpData().get(0).getInvoice().getCustomer();
+        Customer customer = bookingList.get(0).getInvoice().getCustomer();
         newInvoice.setCustomer(customer);
         newBooking.setInvoice(newInvoice);
 
@@ -269,7 +268,7 @@ class BookingControllerTest {
         assertEquals("Booking with ID: 4 does not exist!!!", bookingController.deleteBooking(bookingIdNotExist));
 
         Long bookingId = 1L;
-        Booking bookingExist = setUpData().get(0);
+        Booking bookingExist = bookingList.get(0);
         bookingExist.setDropOffDateTime(null);
         Car car = new Car();
         car.setAvailable(false);
@@ -309,7 +308,7 @@ class BookingControllerTest {
         result = bookingController.bookCar(1L, 1L, "hcm", "la", "09:09:09 09-09-2022");
 
         assertEquals("Customer with ID: 1 does not exist!!!", result);
-        Customer customer = setUpData().get(1).getInvoice().getCustomer();
+        Customer customer = bookingList.get(1).getInvoice().getCustomer();
         Mockito.when(customerRepository.findById(2L)).thenReturn(Optional.of(customer));
         result = bookingController.bookCar(1L, 2L, "hcm", "la", "09:09:09 09-09-2022");
 
@@ -338,7 +337,7 @@ class BookingControllerTest {
         String result = bookingController.finalizeBooking(1L, "09:09:09 39-09-2022", -2);
 
         assertEquals("Booking with ID: 1 does not exist!!!", result);
-        Booking findBooking = setUpData().get(0);
+        Booking findBooking = bookingList.get(0);
         Car car = new Car();
         car.setAvailable(false);
         findBooking.getInvoice().getDriver().setCar(car);
