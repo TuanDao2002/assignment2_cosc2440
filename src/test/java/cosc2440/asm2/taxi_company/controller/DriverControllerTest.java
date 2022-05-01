@@ -28,8 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest
@@ -79,6 +78,42 @@ public class DriverControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/driver")
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    public void addDriver() throws Exception {
+        Driver newDriver =  new Driver(4L, "557507x3", "0903102229", 3.6);
+        assertEquals(String.format("Driver with id %d added successfully!", newDriver.getId()), driverController.addDriver(newDriver));
+        assertEquals("Driver should not be null", driverController.addDriver(null));
+    }
+
+    @Test
+    public void deleteDriver() throws Exception {
+        // id not exist
+        Long idNotExist = 100L;
+        assertEquals(String.format("Driver with id %d does not exist!", idNotExist), driverController.deleteDriverById(idNotExist));
+
+        // id exist
+        Long idExist = 1L;
+        assertEquals(String.format("Driver with id %d deleted!", idExist), driverController.deleteDriverById(idExist));
+
+        // test car.getDriver is null later
+    }
+
+    @Test
+    public void getDriverById() throws Exception {
+        // id not exist
+        Long idNotExist = 100L;
+        assertNull(driverController.getDriverById(idNotExist));
+
+        // id exist
+        Long idExist = 1L;
+//        Driver retrievedDriver = driverController.getDriverById(idExist);
+
+//        assertNotNull(retrievedDriver);
+//        assertEquals(idExist, retrievedDriver.getId());
+//        assertEquals(driverList.get(0), retrievedDriver);
+
     }
 
 

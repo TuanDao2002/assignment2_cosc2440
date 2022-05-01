@@ -7,6 +7,8 @@ import cosc2440.asm2.taxi_company.model.Invoice;
 import cosc2440.asm2.taxi_company.repository.CustomerRepository;
 import cosc2440.asm2.taxi_company.utility.CustomerUtility;
 import cosc2440.asm2.taxi_company.utility.PagingUtility;
+import org.checkerframework.checker.units.qual.A;
+import org.checkerframework.checker.units.qual.C;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.CriteriaSpecification;
@@ -17,7 +19,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -25,8 +30,8 @@ public class CustomerService {
     @Autowired
     private CustomerRepository customerRepository;
 
-    @Autowired
-    private SessionFactory sessionFactory;
+//    @Autowired
+//    private SessionFactory sessionFactory;
 
     private static final List<String> availableAttribute = List.of("name", "phoneNumber", "address");
 
@@ -34,28 +39,36 @@ public class CustomerService {
         this.customerRepository = customerRepository;
     }
 
-    public void setSessionFactory(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
+//    public void setSessionFactory(SessionFactory sessionFactory) {
+//        this.sessionFactory = sessionFactory;
+//    }
 
     public List<Customer> searchCustomerBy(String name, String address, String phoneNumber) {
-        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Customer.class);
+//        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Customer.class);
+        Set<Customer> allCustomers = new HashSet<>((List<Customer>) customerRepository.findAll());
+
+        List<Customer> customerByAttribute = new ArrayList<>();
 
         // find match string with case in-sensitive
         if (name != null) {
-            criteria.add(Restrictions.ilike("name", name, MatchMode.ANYWHERE));
+            for (Customer customer : allCustomers)
+                if (customer.getName().equalsIgnoreCase(name))
+                    customerByAttribute.add(customer);
         }
 
         if (address != null) {
-            criteria.add(Restrictions.ilike("address", address, MatchMode.ANYWHERE));
+            for (Customer customer : allCustomers)
+                if (customer.getAddress().equalsIgnoreCase(address))
+                    customerByAttribute.add(customer);
         }
 
         if (phoneNumber != null) {
-            criteria.add(Restrictions.ilike("phoneNumber", phoneNumber, MatchMode.ANYWHERE));
+            for (Customer customer : allCustomers)
+                if (customer.getPhoneNumber().equalsIgnoreCase(phoneNumber))
+                    customerByAttribute.add(customer);
         }
 
-        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
-        return criteria.list();
+        return customerByAttribute;
     }
 
     public ResponseEntity<List<Customer>> getAllCustomers(Integer pageNumber, Integer pageSize,
@@ -97,11 +110,24 @@ public class CustomerService {
         if (attributeName == null || attributeName.isEmpty()) return null;
         if (!availableAttribute.contains(attributeName)) return null;
 
-        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Customer.class);
-        criteria.add(Restrictions.like(attributeName, attributeValue, MatchMode.ANYWHERE).ignoreCase());
-        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+        Set<Customer> allCustomers = new HashSet<>((List<Customer>) customerRepository.findAll());
+        List<Customer> customerByAttribute = new ArrayList<>();
 
-        return criteria.list().isEmpty() ? null : PagingUtility.getAll((List<Customer>) criteria.list(), pageSize, pageNum);
+        if (attributeName.equalsIgnoreCase("name")) {
+            for (Customer customer : allCustomers)
+                if (customer.getName().equalsIgnoreCase(attributeValue))
+                    customerByAttribute.add(customer);
+        } else if (attributeName.equalsIgnoreCase("address")) {
+            for (Customer customer : allCustomers)
+                if (customer.getAddress().equalsIgnoreCase(attributeValue))
+                    customerByAttribute.add(customer);
+        } else if (attributeName.equalsIgnoreCase("phoneNumber")) {
+            for (Customer customer : allCustomers)
+                if (customer.getPhoneNumber().equalsIgnoreCase(attributeValue))
+                    customerByAttribute.add(customer);
+        }
+
+        return customerByAttribute.isEmpty() ? null : PagingUtility.getAll(customerByAttribute, pageSize, pageNum);
     }
 
     public String updateCustomer(Customer customer) {

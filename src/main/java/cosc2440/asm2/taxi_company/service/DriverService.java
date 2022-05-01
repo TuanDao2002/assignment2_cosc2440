@@ -61,6 +61,7 @@ public class DriverService {
     }
 
     public String addDriver(Driver driver) {
+        if (driver == null) return "Driver should not be null";
         driverRepository.save(driver);
         return String.format("Driver with id %d added successfully!", driver.getId());
     }
