@@ -30,6 +30,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest
@@ -53,12 +54,6 @@ class CustomerControllerTest {
     @Autowired
     protected MockMvc mockMvc;
 
-    //    private List<Customer> setUpData(){
-//        return Arrays.asList(new Customer(1,"An Bui", "0123456789", "tphcm"),
-//                new Customer(2,"Tuan Dao", "9876543210", "tphcm"),
-//                new Customer(3,"Bao Nguyen", "0246802468", "tphcm"),
-//                new Customer(4,"Long Nguyen", "1357913579", "tphcm"));
-//    }
     protected List<Customer> customers = new ArrayList<>();
 
     @BeforeEach
@@ -156,5 +151,39 @@ class CustomerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(customer))
                 ).andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    void getCustomerByAttribute() throws Exception {
+
+        ResponseEntity<List<Customer>> getCustomers1 = customerService.getCustomerByAttribute("name", "An Bui", 20, 0);
+        ResponseEntity<List<Customer>> getCustomers2 = customerService.getCustomerByAttribute("address", "tphcm", 20, 0);
+        ResponseEntity<List<Customer>> getCustomers3 = customerService.getCustomerByAttribute("phoneNumber", "9876543210", 20, 0);
+
+        assertEquals(1 ,getCustomers1.getBody().size());
+        assertEquals(2 ,getCustomers2.getBody().size());
+        assertEquals(1 ,getCustomers3.getBody().size());
+
+        assertTrue(getCustomers1.getBody().contains(customers.get(0)));
+        assertEquals(customers ,getCustomers2.getBody());
+        assertTrue(getCustomers3.getBody().contains(customers.get(1)));
+
+        mockMvc = MockMvcBuilders.standaloneSetup(customerController).build();
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/customer/attribute?attributeName=name&&attributeValue=AnBui")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(getCustomers1)))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/customer/attribute?attributeName=address&&attributeValue=tphcm")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(getCustomers2)))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/customer/attribute?attributeName=phoneNumber&&attributeValue=9876543210")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(getCustomers3)))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
     }
 }
