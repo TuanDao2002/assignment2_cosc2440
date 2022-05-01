@@ -2,18 +2,10 @@ package cosc2440.asm2.taxi_company.service;
 
 import cosc2440.asm2.taxi_company.model.Booking;
 import cosc2440.asm2.taxi_company.model.Customer;
-import cosc2440.asm2.taxi_company.model.Driver;
 import cosc2440.asm2.taxi_company.model.Invoice;
 import cosc2440.asm2.taxi_company.repository.CustomerRepository;
 import cosc2440.asm2.taxi_company.utility.CustomerUtility;
 import cosc2440.asm2.taxi_company.utility.PagingUtility;
-import org.checkerframework.checker.units.qual.A;
-import org.checkerframework.checker.units.qual.C;
-import org.hibernate.Criteria;
-import org.hibernate.SessionFactory;
-import org.hibernate.criterion.CriteriaSpecification;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -30,21 +22,13 @@ public class CustomerService {
     @Autowired
     private CustomerRepository customerRepository;
 
-//    @Autowired
-//    private SessionFactory sessionFactory;
-
     private static final List<String> availableAttribute = List.of("name", "phoneNumber", "address");
 
     public void setCustomerRepository(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
     }
 
-//    public void setSessionFactory(SessionFactory sessionFactory) {
-//        this.sessionFactory = sessionFactory;
-//    }
-
     public List<Customer> searchCustomerBy(String name, String address, String phoneNumber) {
-//        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Customer.class);
         Set<Customer> allCustomers = new HashSet<>((List<Customer>) customerRepository.findAll());
 
         List<Customer> customerByAttribute = new ArrayList<>();

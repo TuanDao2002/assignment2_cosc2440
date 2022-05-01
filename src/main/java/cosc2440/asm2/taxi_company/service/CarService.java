@@ -55,15 +55,15 @@ public class CarService {
         List<Car> carByAttribute = new ArrayList<>();
 
         // Check criteria and add to list
-        if (attribute.equals("make")) {
+        if (attribute.equalsIgnoreCase("make")) {
             for (Car car : allCars)
                 if (car.getMake().equalsIgnoreCase(attributeValue))
                     carByAttribute.add(car);
-        } else if (attribute.equals("model")) {
+        } else if (attribute.equalsIgnoreCase("model")) {
             for (Car car : allCars)
                 if (car.getModel().equalsIgnoreCase(attributeValue))
                     carByAttribute.add(car);
-        } else if (attribute.equals("licensePlate")) {
+        } else if (attribute.equalsIgnoreCase("licensePlate")) {
             for (Car car : allCars)
                 if (car.getLicensePlate().equalsIgnoreCase(attribute))
                     carByAttribute.add(car);

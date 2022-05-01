@@ -47,11 +47,11 @@ public class DriverService {
         List<Driver> driverByAttribute = new ArrayList<>();
 
         // Add to list based on criteria
-        if (attribute.equals("licenseNumber")) {
+        if (attribute.equalsIgnoreCase("licenseNumber")) {
             for (Driver driver : allDrivers)
                 if (driver.getLicenseNumber().equalsIgnoreCase(attributeValue))
                     driverByAttribute.add(driver);
-        } else if (attribute.equals("phoneNumber")) {
+        } else if (attribute.equalsIgnoreCase("phoneNumber")) {
             for (Driver driver : allDrivers)
                 if (driver.getPhoneNumber().equalsIgnoreCase(attributeValue))
                     driverByAttribute.add(driver);
