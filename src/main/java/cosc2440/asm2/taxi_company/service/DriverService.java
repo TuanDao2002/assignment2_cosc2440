@@ -14,7 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -25,8 +28,8 @@ public class DriverService {
     @Autowired
     private CarService carService;
 
-    @Autowired
-    private SessionFactory sessionFactory;
+//    @Autowired
+//    private SessionFactory sessionFactory;
 
     private static final List<String> availableAttribute = List.of("licenseNumber", "phoneNumber");
 
@@ -47,11 +50,28 @@ public class DriverService {
         if (attribute == null || attribute.isEmpty()) return null;
         if (!availableAttribute.contains(attribute)) return null;
 
-        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Driver.class);
-        criteria.add(Restrictions.like(attribute, attributeValue, MatchMode.ANYWHERE).ignoreCase());
-        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+//        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Driver.class);
+//        criteria.add(Restrictions.like(attribute, attributeValue, MatchMode.ANYWHERE).ignoreCase());
+//        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
 
-        return criteria.list().isEmpty() ? null : PagingUtility.getAll((List<Driver>) criteria.list(), pageSize, pageNum);
+//        return criteria.list().isEmpty() ? null : PagingUtility.getAll((List<Driver>) criteria.list(), pageSize, pageNum);
+
+        Set<Driver> allDrivers =  new HashSet<>((List<Driver>) driverRepository.findAll());
+        List<Driver> driverByAttribute = new ArrayList<>();
+
+        if (attribute.equals("licenseNumber")) {
+            for (Driver driver : allDrivers) {
+                if (driver.getLicenseNumber().equals(attributeValue))
+                    driverByAttribute.add(driver);
+            }
+        } else if (attribute.equals("phoneNumber")) {
+            for (Driver driver : allDrivers) {
+                if (driver.getPhoneNumber().equals(attributeValue))
+                    driverByAttribute.add(driver);
+            }
+        }
+
+        return driverByAttribute.isEmpty() ? null : PagingUtility.getAll(driverByAttribute, pageSize, pageNum);
     }
 
     public String addDriver(Driver driver) {
