@@ -226,6 +226,7 @@ class BookingControllerTest {
 
         Mockito.when(bookingRepository.save(newBooking)).thenReturn(newBooking);
         assertEquals("Booking with id: 1 is added!!!", bookingController.addBooking(newBooking));
+        assertFalse(newBooking.getInvoice().getDriver().getCar().isAvailable());
 
         mockMvc.perform(MockMvcRequestBuilders.post("/admin/booking").contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(newBooking)))
@@ -245,10 +246,6 @@ class BookingControllerTest {
         booking.setPickUpDatetime("09:09:09 08-09-2022");
         booking.setDropOffDateTime("09:09:09 08-09-2022");
         bookingController.updateBooking(booking);
-
-        assertEquals(booking.getStartLocation(), bookingService.getOne(booking.getBookingID()).getStartLocation());
-        assertEquals(booking.getEndLocation(), bookingService.getOne(booking.getBookingID()).getEndLocation());
-        assertEquals(booking.getPickUpDatetime(), bookingService.getOne(booking.getBookingID()).getPickUpDatetime());
 
         assertEquals("The drop-off date time must be after the pick-up date time", bookingController.updateBooking(booking));
         booking.setDropOffDateTime("09:09:09 09-09-2022");

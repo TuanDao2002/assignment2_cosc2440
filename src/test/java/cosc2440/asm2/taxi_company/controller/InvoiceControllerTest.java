@@ -1,12 +1,10 @@
 package cosc2440.asm2.taxi_company.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cosc2440.asm2.taxi_company.model.Booking;
-import cosc2440.asm2.taxi_company.model.Customer;
-import cosc2440.asm2.taxi_company.model.Driver;
-import cosc2440.asm2.taxi_company.model.Invoice;
+import cosc2440.asm2.taxi_company.model.*;
 import cosc2440.asm2.taxi_company.repository.*;
 import cosc2440.asm2.taxi_company.service.*;
+import cosc2440.asm2.taxi_company.utility.DateUtility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -114,6 +112,7 @@ class InvoiceControllerTest {
         invoice2.setBooking(booking2);
 
         Booking booking3 = new Booking(3L, "long an", "can tho", "09:09:09 12-12-2022", invoice3);
+        booking3.setDropOffDateTime("09:09:10 12-12-2022");
         invoice3.setBooking(booking3);
 
         return Arrays.asList(invoice1, invoice2, invoice3);
@@ -243,16 +242,98 @@ class InvoiceControllerTest {
     }
 
     @Test
-    void addInvoice() {
+    void addInvoice() throws Exception {
+        Invoice invoice = new Invoice();
+        invoice.setInvoiceID(1L);
 
+        assertEquals("Booking must not be null", invoiceController.addInvoice(invoice));
+        Booking booking = new Booking("hcm", "la", "09:09:09 09-09-2022", invoice);
+        invoice.setBooking(booking);
+
+        assertEquals("Driver must not be null", invoiceController.addInvoice(invoice));
+        Driver driver = invoiceList.get(0).getDriver();
+        invoice.setDriver(driver);
+
+        assertEquals("Customer must not be null", invoiceController.addInvoice(invoice));
+        Customer customer = invoiceList.get(0).getCustomer();
+        invoice.setCustomer(customer);
+
+        assertEquals("This driver does not exist", invoiceController.addInvoice(invoice));
+        Mockito.when(driverRepository.findById(1L)).thenReturn(Optional.of(driver));
+
+        assertEquals("This driver does not have a car", invoiceController.addInvoice(invoice));
+        Car car = new Car();
+        car.setAvailable(false);
+        invoice.getDriver().setCar(car);
+
+        assertEquals("This driver has other booking", invoiceController.addInvoice(invoice));
+        invoice.getDriver().getCar().setAvailable(true);
+
+        assertEquals("This customer does not exist", invoiceController.addInvoice(invoice));
+        Mockito.when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+
+        assertEquals("The pick-up date time must be after the drop-of date time of the latest booking" +
+                        DateUtility.displayCustomerLatestBookingDropOff(customer) +
+                        DateUtility.displayDriverLatestBookingDropOff(driver),
+                invoiceController.addInvoice(invoice));
+        invoice.getBooking().setPickUpDatetime("09:09:11 12-12-2022");
+
+        Mockito.when(invoiceRepository.save(invoice)).thenReturn(invoice);
+        assertEquals("Invoice with id: 1 is added!!!", invoiceController.addInvoice(invoice));
+        assertFalse(invoice.getDriver().getCar().isAvailable());
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/admin/invoice").contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(invoice)))
+                        .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
-    void updateInvoice() {
+    void updateInvoice() throws Exception {
+        Invoice invoice = new Invoice();
+        invoice.setInvoiceID(1L);
+        invoice.setTotalCharge(-1);
+        Booking booking = new Booking(1L, "hcm", "la", "09:09:09 12-12-2022", invoice);
+        invoice.setBooking(booking);
+
+        assertEquals("Invoice with ID: 1 does not exist!!!", invoiceController.updateInvoice(invoice));
+        Mockito.when(invoiceRepository.findById(invoice.getInvoiceID())).thenReturn(Optional.of(invoice));
+
+        assertEquals("Cannot update total charge as the booking is not finalized", invoiceController.updateInvoice(invoice));
+        invoice.getBooking().setDropOffDateTime("09:09:10 13-12-2022");
+
+
+        assertEquals("New total charge must not be less than zero", invoiceController.updateInvoice(invoice));
+        invoice.setTotalCharge(99);
+
+        Mockito.when(invoiceRepository.save(invoice)).thenReturn(invoice);
+        assertEquals("Invoice with ID: 1 is updated!!!", invoiceController.updateInvoice(invoice));
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/admin/invoice").contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(invoice)))
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
-    void deleteInvoice() {
+    void deleteInvoice() throws Exception {
+        Long invoiceIdNotExist = 4L;
+        Invoice invoiceDoesNotExist = invoiceService.getOne(invoiceIdNotExist);
+        assertNull(invoiceDoesNotExist);
+        assertEquals("Invoice with ID: 4 does not exist!!!", invoiceController.deleteInvoice(invoiceIdNotExist));
+
+        Long invoiceId = 1L;
+        Invoice invoiceExist = invoiceList.get(0);
+        invoiceExist.getBooking().setDropOffDateTime(null);
+        Car car = new Car();
+        car.setAvailable(false);
+        invoiceExist.getDriver().setCar(car);
+        Mockito.when(invoiceRepository.findById(invoiceId)).thenReturn(Optional.of(invoiceExist));
+
+        assertFalse(car.isAvailable());
+        assertEquals("Invoice with ID: 1 is deleted!!!", invoiceController.deleteInvoice(invoiceId));
+        assertTrue(car.isAvailable());
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/admin/invoice" + "/" + invoiceId).contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
