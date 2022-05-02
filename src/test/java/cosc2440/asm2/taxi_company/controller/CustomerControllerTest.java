@@ -121,7 +121,7 @@ class CustomerControllerTest {
     @Test
     void getAllCustomer() throws Exception {
         ResponseEntity<List<Customer>> expectedResponse = new ResponseEntity<>(customers, new HttpHeaders(), HttpStatus.OK);
-        ResponseEntity<List<Customer>> actualResponse = customerController.getAllCustomers(0, 20, null, null, null);
+        ResponseEntity<List<Customer>> actualResponse = customerController.getAllCustomers(0, 20);
 
         assertTrue(Objects.requireNonNull(expectedResponse.getBody()).containsAll(actualResponse.getBody()));
 

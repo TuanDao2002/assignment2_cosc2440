@@ -28,36 +28,8 @@ public class CustomerService {
         this.customerRepository = customerRepository;
     }
 
-    public List<Customer> searchCustomerBy(String name, String address, String phoneNumber) {
-        Set<Customer> allCustomers = new HashSet<>((List<Customer>) customerRepository.findAll());
-
-        List<Customer> customerByAttribute = new ArrayList<>();
-
-        // find match string with case in-sensitive
-        if (name != null) {
-            for (Customer customer : allCustomers)
-                if (customer.getName().equalsIgnoreCase(name))
-                    customerByAttribute.add(customer);
-        }
-
-        if (address != null) {
-            for (Customer customer : allCustomers)
-                if (customer.getAddress().equalsIgnoreCase(address))
-                    customerByAttribute.add(customer);
-        }
-
-        if (phoneNumber != null) {
-            for (Customer customer : allCustomers)
-                if (customer.getPhoneNumber().equalsIgnoreCase(phoneNumber))
-                    customerByAttribute.add(customer);
-        }
-
-        return customerByAttribute;
-    }
-
-    public ResponseEntity<List<Customer>> getAllCustomers(Integer pageNumber, Integer pageSize,
-                                                          String name, String address, String phoneNumber) {
-        List<Customer> retrievedCustomerList = searchCustomerBy(name, address, phoneNumber);
+    public ResponseEntity<List<Customer>> getAllCustomers(Integer pageNumber, Integer pageSize) {
+        List<Customer> retrievedCustomerList = (List<Customer>) customerRepository.findAll();
         return PagingUtility.getAll(retrievedCustomerList, pageSize, pageNumber);
     }
 
