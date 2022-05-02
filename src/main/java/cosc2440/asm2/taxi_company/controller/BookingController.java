@@ -29,7 +29,7 @@ public class BookingController {
         return bookingService.getAll(page, size, matchDate, startDate, endDate);
     }
 
-    @RequestMapping(path = "/admin/booking/{bookingID}", method = RequestMethod.GET)
+    @RequestMapping(path = "/booking/{bookingID}", method = RequestMethod.GET)
     public Booking getBookingById(@PathVariable Long bookingID) {
         return bookingService.getOne(bookingID);
     }
@@ -44,12 +44,12 @@ public class BookingController {
         return bookingService.update(booking);
     }
 
-    @RequestMapping(path = "/booking/{bookingID}/admin", method = RequestMethod.DELETE)
+    @RequestMapping(path = "/admin/booking/{bookingID}", method = RequestMethod.DELETE)
     public String deleteBooking(@PathVariable Long bookingID) {
         return bookingService.delete(bookingID);
     }
 
-    @RequestMapping(path = "/admin/booking/bookCar", method = RequestMethod.POST)
+    @RequestMapping(path = "/booking/bookCar", method = RequestMethod.POST)
     public String bookCar(@RequestParam("carVIN") Long carVIN,
                           @RequestParam("customerID") Long customerID,
                           @RequestParam("startLocation") String startLocation,

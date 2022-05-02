@@ -18,28 +18,28 @@ public class DriverController {
     @Autowired
     private CarService carService;
 
-    @RequestMapping(path = "/driver", method = RequestMethod.GET)
+    @RequestMapping(path = "/admin/driver", method = RequestMethod.GET)
     public ResponseEntity<List<Driver>> getAllDrivers(@RequestParam(value = "page", defaultValue = "0") int page,
                                                       @RequestParam(value = "size", defaultValue = "20") int size) {
         return driverService.getAllDriver(page, size);
     }
 
-    @RequestMapping(path = "/driver", method = RequestMethod.POST)
+    @RequestMapping(path = "/admin/driver", method = RequestMethod.POST)
     public String addDriver(@RequestBody Driver driver) {
         return driverService.addDriver(driver);
     }
 
-    @RequestMapping(path = "/driver/{id}", method = RequestMethod.GET)
+    @RequestMapping(path = "/admin/driver/{id}", method = RequestMethod.GET)
     public Driver getDriverById(@PathVariable Long id) {
         return driverService.getDriverById(id);
     }
 
-    @RequestMapping(path = "/driver/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(path = "/admin/driver/{id}", method = RequestMethod.DELETE)
     public String deleteDriverById(@PathVariable Long id) {
         return driverService.deleteDriverById(id);
     }
 
-    @RequestMapping(path = "/driver", method = RequestMethod.PUT)
+    @RequestMapping(path = "/admin/driver", method = RequestMethod.PUT)
     public String updateDriver(@RequestBody Driver driver) {
         return driverService.updateDriver(driver);
     }
@@ -50,7 +50,7 @@ public class DriverController {
         return driverService.pickCarById(carVIN, driverId);
     }
 
-    @RequestMapping(path = "/driver/attribute", method = RequestMethod.GET)
+    @RequestMapping(path = "/admin/driver/attribute", method = RequestMethod.GET)
     public ResponseEntity<List<Driver>> getCarByAttribute(@RequestParam(value = "attributeName") String attributeName,
                                                        @RequestParam(value = "attributeValue") String attributeValue,
                                                        @RequestParam(value = "page", defaultValue = "0") int page,
