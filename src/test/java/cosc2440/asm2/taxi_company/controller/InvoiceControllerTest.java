@@ -215,7 +215,31 @@ class InvoiceControllerTest {
     }
 
     @Test
-    void getInvoiceByCustomerID() {
+    void getInvoiceByCustomerID() throws Exception {
+        ResponseEntity<List<Invoice>> expectedResponse = new ResponseEntity<>(new ArrayList<>(), new HttpHeaders(), HttpStatus.OK);
+        ResponseEntity<List<Invoice>> actualResponse = invoiceController.getByCustomerID(0, 20, 2L, "08-12-2022", "13-12-2022");
+
+        assertEquals(expectedResponse.getBody().size(), actualResponse.getBody().size());
+        Customer findCustomer = invoiceList.get(1).getCustomer();
+        Mockito.when(customerRepository.findById(2L)).thenReturn(Optional.of(findCustomer));
+        List<Invoice> customerInvoiceListInPeriod = new ArrayList<>();
+        customerInvoiceListInPeriod.add(invoiceList.get(1));
+
+        expectedResponse = new ResponseEntity<>(customerInvoiceListInPeriod, new HttpHeaders(), HttpStatus.OK);
+        actualResponse = invoiceController.getByCustomerID(0, 20, 2L, "08-12-2022", "13-12-2022");
+        assertEquals(expectedResponse.getBody().size(), actualResponse.getBody().size());
+
+        System.out.println(expectedResponse.getBody());
+        System.out.println(actualResponse.getBody());
+        assertTrue(expectedResponse.getBody().containsAll(actualResponse.getBody()));
+
+        int expectedPageSize = 1;
+        actualResponse = invoiceController.getByCustomerID(0, 1, 2L, "08-12-2022", "13-12-2022");
+        assertEquals(expectedPageSize, actualResponse.getBody().size());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/admin/invoice/byCustomerID?customerID=2&&page=1&&size=1&&startDate=08-12-2022&&endDate=13-12-2022")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
