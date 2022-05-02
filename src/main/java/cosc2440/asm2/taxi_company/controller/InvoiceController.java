@@ -61,7 +61,7 @@ public class InvoiceController {
         return invoiceService.delete(invoiceID);
     }
 
-    @RequestMapping(path = "/admin/revenue", method = RequestMethod.GET)
+    @RequestMapping(path = "/admin/invoice/revenue", method = RequestMethod.GET)
     public double getRevenue(@RequestParam(value = "startDate", required = false) String startDate,
                              @RequestParam(value = "endDate", required = false) String endDate,
                              @RequestParam(value = "driverId", required = false) Long driverId,

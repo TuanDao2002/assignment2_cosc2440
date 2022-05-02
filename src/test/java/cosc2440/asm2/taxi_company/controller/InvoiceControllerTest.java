@@ -45,28 +45,9 @@ class InvoiceControllerTest {
     @MockBean
     private CustomerRepository customerRepository;
 
-    @MockBean
-    private CarRepository carRepository;
-
-    @InjectMocks
-    @Autowired
-    private BookingService bookingService;
-
     @InjectMocks
     @Autowired
     private InvoiceService invoiceService;
-
-    @InjectMocks
-    @Autowired
-    private DriverService driverService;
-
-    @InjectMocks
-    @Autowired
-    private CustomerService customerService;
-
-    @InjectMocks
-    @Autowired
-    private CarService carService;
 
     @InjectMocks
     @Autowired
@@ -337,6 +318,48 @@ class InvoiceControllerTest {
     }
 
     @Test
-    void getRevenue() {
+    void getRevenue() throws Exception {
+        Mockito.when(invoiceRepository.findAll()).thenReturn(invoiceList);
+        Mockito.when(bookingRepository.findAll()).thenReturn(bookingList);
+
+        double revenueOfAll = 0;
+        for (Invoice invoice : invoiceList) {
+            revenueOfAll += invoice.getTotalCharge();
+        }
+        assertEquals(revenueOfAll, invoiceController.getRevenue(null, null, null, null));
+
+        double revenueOfPeriod = 0;
+        revenueOfPeriod += invoiceList.get(0).getTotalCharge();
+        revenueOfPeriod += invoiceList.get(1).getTotalCharge();
+        assertEquals(revenueOfPeriod, invoiceController.getRevenue("09-09-2022", "09-12-2022", null, null));
+
+        // test get revenue by driver
+        Long driverIdNotExist = 4L;
+        assertEquals(0, invoiceController.getRevenue(null, null, driverIdNotExist, null));
+
+        Long driverIdExist = 2L;
+        Driver driverExist = invoiceList.get(1).getDriver();
+        Mockito.when(driverRepository.findById(driverIdExist)).thenReturn(Optional.of(driverExist));
+
+        double revenueOfDriver = 0;
+        revenueOfDriver += invoiceList.get(1).getTotalCharge();
+        revenueOfDriver += invoiceList.get(2).getTotalCharge();
+        assertEquals(revenueOfDriver, invoiceController.getRevenue(null, null, driverIdExist, null));
+
+        // test get revenue by customer
+        Long customerIdNotExist = 10L;
+        assertEquals(0, invoiceController.getRevenue(null, null, null, customerIdNotExist));
+
+        Long customerIdExist = 1L;
+        Customer customerExist = invoiceList.get(0).getCustomer();
+        Mockito.when(customerRepository.findById(customerIdExist)).thenReturn(Optional.of(customerExist));
+
+        double revenueOfCustomerInPeriod = 0;
+        revenueOfCustomerInPeriod += invoiceList.get(0).getTotalCharge();
+        assertEquals(revenueOfCustomerInPeriod, invoiceController.getRevenue("08-09-2022", "10-09-2022", null, customerIdExist));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/admin/invoice/revenue?startDate=08-12-2022&&endDate=13-12-2022")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 }

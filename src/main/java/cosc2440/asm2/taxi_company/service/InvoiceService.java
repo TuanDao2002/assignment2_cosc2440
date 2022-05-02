@@ -209,6 +209,8 @@ public class InvoiceService {
         // get list of invoice
         List<Invoice> invoiceListByDriver = searchInvoiceByDriverInPeriod(driverId, startDate, endDate);
 
+        if (invoiceListByDriver == null) return 0;
+
         // get sum of revenue
         return getRevenueFromInvoiceList(invoiceListByDriver);
     }
@@ -216,6 +218,8 @@ public class InvoiceService {
     public double getRevenueByCustomer(String startDate, String endDate, Long customerId) {
         // get list of invoice
         List<Invoice> invoiceListByCustomer = searchInvoiceByCustomerInPeriod(customerId, startDate, endDate);
+
+        if (invoiceListByCustomer == null) return 0;
 
         // get sum of revenue
         return getRevenueFromInvoiceList(invoiceListByCustomer);
