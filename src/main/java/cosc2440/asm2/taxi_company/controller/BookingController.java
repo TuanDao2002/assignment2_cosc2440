@@ -20,7 +20,7 @@ public class BookingController {
     }
 
     // controller for booking
-    @RequestMapping(path = "/booking/admin", method = RequestMethod.GET)
+    @RequestMapping(path = "/admin/booking", method = RequestMethod.GET)
     public ResponseEntity<List<Booking>> getAllBookings(@RequestParam(value = "page", defaultValue = "0") int page,
                                                         @RequestParam(value = "size", defaultValue = "20") int size,
                                                         @RequestParam(value = "matchDate", required = false) String matchDate,
@@ -29,17 +29,17 @@ public class BookingController {
         return bookingService.getAll(page, size, matchDate, startDate, endDate);
     }
 
-    @RequestMapping(path = "/booking/{bookingID}/admin", method = RequestMethod.GET)
+    @RequestMapping(path = "/admin/booking/{bookingID}", method = RequestMethod.GET)
     public Booking getBookingById(@PathVariable Long bookingID) {
         return bookingService.getOne(bookingID);
     }
 
-    @RequestMapping(path = "/booking/admin", method = RequestMethod.POST)
+    @RequestMapping(path = "/admin/booking", method = RequestMethod.POST)
     public String addBooking(@RequestBody Booking booking) {
         return bookingService.add(booking);
     }
 
-    @RequestMapping(path = "/booking/admin", method = RequestMethod.PUT)
+    @RequestMapping(path = "/admin/booking", method = RequestMethod.PUT)
     public String updateBooking(@RequestBody Booking booking) {
         return bookingService.update(booking);
     }
@@ -49,7 +49,7 @@ public class BookingController {
         return bookingService.delete(bookingID);
     }
 
-    @RequestMapping(path = "/booking/bookCar/admin", method = RequestMethod.POST)
+    @RequestMapping(path = "/admin/booking/bookCar", method = RequestMethod.POST)
     public String bookCar(@RequestParam("carVIN") Long carVIN,
                           @RequestParam("customerID") Long customerID,
                           @RequestParam("startLocation") String startLocation,
@@ -58,7 +58,7 @@ public class BookingController {
         return bookingService.bookCar(carVIN, customerID, startLocation, endLocation, pickUpDatetime);
     }
 
-    @RequestMapping(path = "/booking/finalize/admin", method = RequestMethod.POST)
+    @RequestMapping(path = "/admin/booking/finalize", method = RequestMethod.POST)
     public String finalizeBooking(@RequestParam("bookingID") Long bookingID,
                                   @RequestParam("dropOffDatetime") String dropOffDatetime,
                                   @RequestParam("distance") int distance) {
