@@ -38,16 +38,16 @@
 ### API call
 #### Manage car
 1. Get all car
-- GET request: http://localhost:8080/car (it will automatically call with pageSize = 5 and pageNumber = 0)
-- GET request with custom paging and size: http://localhost:8080/car?page=0&size=5
-- GET request all available car: http://localhost:8080/car?getByAvailable=true
+- GET request: http://localhost:8080/admin/car (it will automatically call with pageSize = 20 and pageNumber = 0)
+- GET request with custom paging and size: http://localhost:8080/admin/car?page=0&&size=20
+- GET request all available car: http://localhost:8080/admin/car?getByAvailable=true
 
 2. Get one car
-- GET request car by id: http://localhost:8080/car/{id}
-- GET request car by attribute: http://localhost:8080/car/attribute?attributeName=model&attributeValue=GLC63 (custom attribute name and attribute value). Note: available attribute are make, model, licensePlate
+- GET request car by id: http://localhost:8080/admin/car/{id}
+- GET request car by attribute: http://localhost:8080/admin/car/attribute?attributeName=model&attributeValue=GLC63 (custom attribute name and attribute value). Note: available attribute are make, model, licensePlate
 
 3. Add car
-- POST request: http://localhost:8080/car with body:
+- POST request: http://localhost:8080/admin/car with body:
 ```
 {
     "make": "Toyota",
@@ -62,7 +62,7 @@
 ```
 
 4. Update car
-- PUT request: http://localhost:8080/car with body:
+- PUT request: http://localhost:8080/admin/car with body:
 ```
  {
     "vin": "2",
@@ -78,10 +78,10 @@
  ```
 
 5. Delete car
-- DELETE request: http://localhost:8080/car/{id}
+- DELETE request: http://localhost:8080/admin/car/{id}
 
 6. Get car by day used
-- GET request: http://localhost:8080/car/day?month={month}&year={year}. It will respond with a List<Map<String:Integer>>:
+- GET request: http://localhost:8080/admin/car/day?month={month}&year={year}. It will respond with a List<Map<String:Integer>>:
 ```
 [
     // Each object contains plate : day used
@@ -93,15 +93,15 @@
 
 #### Manage driver
 1. Get all driver
-- GET request: http://localhost:8080/driver (it will automatically call with pageSize = 5 and pageNumber = 0)
-- GET request with custom paging and size: http://localhost:8080/driver?page=0&size=5
+- GET request: http://localhost:8080/admin/driver (it will automatically call with pageSize = 20 and pageNumber = 0)
+- GET request with custom paging and size: http://localhost:8080/admin/driver?page=0&&size=20
 
 2. Get one driver
-- GET request car by id: http://localhost:8080/driver/{id}
-- GET request car by attribute: http://localhost:8080/driver/attribute?attributeName=phoneNumber&attributeValue=0903123456 (custom attribute name and attribute value). Note: available attribute are license number and phone number
+- GET request car by id: http://localhost:8080/admin/driver/{id}
+- GET request car by attribute: http://localhost:8080/admin/driver/attribute?attributeName=phoneNumber&attributeValue=0903123456 (custom attribute name and attribute value). Note: available attribute are license number and phone number
 
 3. Add driver
-- POST request: http://localhost:8080/driver with body:
+- POST request: http://localhost:8080/admin/driver with body:
 ```
 {
     "licenseNumber": "02245462",
@@ -111,7 +111,7 @@
 ```
 
 4. Update driver
-- PUT request: http://localhost:8080/driver with body:
+- PUT request: http://localhost:8080/admin/driver with body:
 ```
 {
     "id": "2",
@@ -122,21 +122,21 @@
 ```
 
 5. Delete driver
-- DELETE request: http://localhost:8080/driver/{id}
+- DELETE request: http://localhost:8080/admin/driver/{id}
 
 6. Assign car to driver
 - GET request: http://localhost:8080/driver/pick?carVIN={carVIN}&driverId={driverId}
 
 #### Manage customer
 1. Get all customer
-- GET request: http://localhost:8080/customer (it will automatically call with pageSize = 5 and pageNumber = 0)
-- GET request with custom paging and size: http://localhost:8080/customer?page=0&size=5
+- GET request: http://localhost:8080/admin/customer (it will automatically call with pageSize = 20 and pageNumber = 0)
+- GET request with custom paging and size: http://localhost:8080/admin/customer?page=0&&size=20
 
 2. Get one customer
-- GET request: http://localhost:8080/customer/{id}
+- GET request: http://localhost:8080/admin/customer/{id}
 
 3. Add customer
-- POST request: http://localhost:8080/customer with body:
+- POST request: http://localhost:8080/admin/customer with body:
 ```
 {
     "name": "Quoc Bao",
@@ -146,7 +146,7 @@
 ```
 
 4. Update customer
-- PUT request: http://localhost:8080/customer with body: 
+- PUT request: http://localhost:8080/admin/customer with body: 
 ```
 {
     "id": "1",
@@ -157,25 +157,24 @@
 ```
 
 5. Delete customer
-- DELETE request: http://localhost:8080/customer/1
+- DELETE request: http://localhost:8080/admin/customer/1
 
 #### Manage booking
 1. Get all booking
-- GET request: http://localhost:8080/booking (it will automatically call with pageSize = 5 and pageNumber = 0)
-- GET request with custom paging and size: http://localhost:8080/booking?page=0&size=5
+- GET request: http://localhost:8080/admin/booking (it will automatically call with pageSize = 20 and pageNumber = 0)
+- GET request with custom paging and size: http://localhost:8080/admin/booking?page=0&&size=20
 
 2. Get one booking
 - GET request: http://localhost:8080/booking/{id}
 
 3. Add booking
-- POST request: http://localhost:8080/booking with body:
+- POST request: http://localhost:8080/admin/booking with body:
 ```
 {
     "startLocation": "Vietnam",
     "endLocation": "USA",
     "pickUpDatetime": "12:09:09 12-09-2020",
     "invoice": {
-        "totalCharge": "345",
         "driver": {
             "id": "1"
         },
@@ -187,7 +186,7 @@
 ```
 
 4. Update booking
-- PUT request: http://localhost:8080/booking with body:
+- PUT request: http://localhost:8080/admin/booking with body:
 ```
 {
     "bookingID": "1",
@@ -195,7 +194,6 @@
     "endLocation": "Lao",
     "pickUpDatetime": "12:09:09 12-09-2020",
     "invoice": {
-        "totalCharge": "345",
         "driver": {
             "id": "1"
         },
@@ -207,24 +205,24 @@
 ```
 
 5. Delete booking
-- DELETE request: http://localhost:8080/booking/{id}
+- DELETE request: http://localhost:8080/admin/booking/{id}
 
 6. Booking created from car booked
 - POST request: http://localhost:8080/booking/bookCar?carVIN={carVIN}&customerID={customerId}&startLocation={startLocation}&endLocation={endLocation}&pickUpDatetime=hh:mm:ss dd-MM-uuuu
 
 7. Finalize booking (drop customer)
-- POST request: http://localhost:8080/booking/finalize?bookingID={bookingID}&dropOffDatetime=hh:mm:ss dd-MM-uuuu&distance={distance}
+- POST request: http://localhost:8080/admin/booking/finalize?bookingID={bookingID}&dropOffDatetime=hh:mm:ss dd-MM-uuuu&distance={distance}
 
 #### Manage invoice
 1. Get all invoice
-- GET request: http://localhost:8080/invoice (it will automatically call with pageSize = 5 and pageNumber = 0)
-- GET request with custom paging and size: http://localhost:8080/invoice?page=0&size=5
+- GET request: http://localhost:8080/admin/invoice (it will automatically call with pageSize = 20 and pageNumber = 0)
+- GET request with custom paging and size: http://localhost:8080/admin/invoice?page=0&&size=20
 
 2. Get one invoice
-- GET request: http://localhost:8080/invoice/{id}
+- GET request: http://localhost:8080/admin/invoice/{id}
 
 3. Add invoice
-- POST request: http://localhost:8080/booking with body:
+- POST request: http://localhost:8080/admin/invoice with body:
 ```
 {
     "totalCharge": "345",
@@ -232,7 +230,9 @@
         "id": "1"
     },
     "booking": {
-        "id": "1"
+        "startLocation": "hcm",
+        "endLocation": "new york",
+        "pickUpDatetime": "09:09:09 09-09-2022"
     },
     "customer": {
         "id": "1"
@@ -241,7 +241,7 @@
 ```
 
 4. Update invoice
-- PUT request: http://localhost:8080/booking with body:
+- PUT request: http://localhost:8080/admin/invoice with body:
 ```
 {
     "invoiceID: "1",
@@ -250,7 +250,9 @@
         "id": "1"
     },
     "booking": {
-        "id": "1"
+        "startLocation": "hcm",
+        "endLocation": "new york",
+        "pickUpDatetime": "09:09:09 09-09-2022"
     },
     "customer": {
         "id": "1"
@@ -259,15 +261,15 @@
 ```
 
 5. Delete invoice
-- DELETE request: http://localhost:8080/invoice/{id}
+- DELETE request: http://localhost:8080/admin/invoice/{id}
 
 6. Get revenue
-- GET request all revenue: http://localhost:8080/revenue
-- GET request revenue by period: http://localhost:8080/revenue?startDate={dd-mm-yyyy}&endDate={dd-mm-yyyy}
-- GET request revenue by customer: http://localhost:8080/revenue?customerId={customerId}
-- GET request revenue by driver: http://localhost:8080/revenue?driverId={driverId}
-- GET request revenue by customer in a period: http://localhost:8080/revenue?startDate={dd-mm-yyyy}&endDate={dd-mm-yyyy}&customerId={customerId}
-- GET request revenue by driver in a period: http://localhost:8080/revenue?startDate={dd-mm-yyyy}&endDate={dd-mm-yyyy}&driverId={driverId}
+- GET request all revenue: http://localhost:8080/admin/invoice/revenue
+- GET request revenue by period: http://localhost:8080/admin/invoice/revenue?startDate={dd-mm-yyyy}&endDate={dd-mm-yyyy}
+- GET request revenue by customer: http://localhost:8080/admin/invoice/revenue?customerId={customerId}
+- GET request revenue by driver: http://localhost:8080/admin/invoice/revenue?driverId={driverId}
+- GET request revenue by customer in a period: http://localhost:8080/admin/invoice/revenue?startDate={dd-mm-yyyy}&endDate={dd-mm-yyyy}&customerId={customerId}
+- GET request revenue by driver in a period: http://localhost:8080/admin/invoice/revenue?startDate={dd-mm-yyyy}&endDate={dd-mm-yyyy}&driverId={driverId}
 
 
 ### Supporting tools used
