@@ -69,6 +69,8 @@ class CustomerControllerTest {
         Mockito.when(customerRepository.save(c1)).thenReturn(savedCustomer1);
         Mockito.when(customerRepository.save(c2)).thenReturn(savedCustomer2);
         Mockito.when(customerRepository.findAll()).thenReturn(customers);
+
+        mockMvc = MockMvcBuilders.standaloneSetup(customerController).build();
     }
 
     @Test
@@ -81,7 +83,6 @@ class CustomerControllerTest {
         Mockito.when(customerRepository.save(customer2)).thenReturn(customer2);
         assertEquals("Customer with id 2 added successfully!", customerController.addCustomer(customer2));
 
-        mockMvc = MockMvcBuilders.standaloneSetup(customerController).build();
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/customer").contentType(MediaType.APPLICATION_JSON_VALUE).content(objectMapper.writeValueAsString(customer))).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
         String stringResult = mvcResult.getResponse().getContentAsString();
         assertEquals("Customer with id 1 added successfully!", stringResult);
@@ -96,7 +97,6 @@ class CustomerControllerTest {
         assertEquals(customerId, getCustomer.getId());
         assertEquals(customers.get(0), getCustomer);
 
-        mockMvc = MockMvcBuilders.standaloneSetup(customerController).build();
         mockMvc.perform(MockMvcRequestBuilders.get("/customer" + "/" + getCustomer.getId()).contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
@@ -113,7 +113,6 @@ class CustomerControllerTest {
         assertEquals("Customer with id 3 does not exist!", customerController.deleteCustomerById(customerIdNotExist));
         assertEquals("Customer with id 1 deleted!", result);
 
-        mockMvc = MockMvcBuilders.standaloneSetup(customerController).build();
         mockMvc.perform(MockMvcRequestBuilders.delete("/customer" + "/" + customerId).contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
@@ -126,7 +125,6 @@ class CustomerControllerTest {
 
         assertTrue(Objects.requireNonNull(expectedResponse.getBody()).containsAll(actualResponse.getBody()));
 
-        mockMvc = MockMvcBuilders.standaloneSetup(customerController).build();
         mockMvc.perform(MockMvcRequestBuilders.get("/customer")
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -145,7 +143,6 @@ class CustomerControllerTest {
         String updatedCustomer = customerController.updateCustomer(customer);
         assertEquals("Customer with id 3 updated!", updatedCustomer);
 
-        mockMvc = MockMvcBuilders.standaloneSetup(customerController).build();
         mockMvc.perform(MockMvcRequestBuilders.put("/customer")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(customer))
@@ -166,8 +163,6 @@ class CustomerControllerTest {
         assertTrue(getCustomers1.getBody().contains(customers.get(0)));
         assertEquals(customers ,getCustomers2.getBody());
         assertTrue(getCustomers3.getBody().contains(customers.get(1)));
-
-        mockMvc = MockMvcBuilders.standaloneSetup(customerController).build();
 
         mockMvc.perform(MockMvcRequestBuilders.get("/customer/attribute?attributeName=name&&attributeValue=AnBui")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
