@@ -14,7 +14,7 @@ public class InvoiceController {
     private InvoiceService invoiceService;
 
     // controller for invoice
-    @RequestMapping(path = "/invoice", method = RequestMethod.GET)
+    @RequestMapping(path = "/invoice/admin", method = RequestMethod.GET)
     public ResponseEntity<List<Invoice>> getAllInvoices(@RequestParam(value = "page", defaultValue = "0") int page,
                                                         @RequestParam(value = "size", defaultValue = "20") int size,
                                                         @RequestParam(value = "matchDate", required = false) String matchDate,
@@ -23,12 +23,12 @@ public class InvoiceController {
         return invoiceService.getAll(page, size, matchDate, startDate, endDate);
     }
 
-    @RequestMapping(path = "/invoice/{invoiceID}", method = RequestMethod.GET)
+    @RequestMapping(path = "/invoice/{invoiceID}/admin", method = RequestMethod.GET)
     public Invoice getInvoiceById(@PathVariable Long invoiceID) {
         return invoiceService.getOne(invoiceID);
     }
 
-    @RequestMapping(path = "/invoice/byDriverID", method = RequestMethod.GET)
+    @RequestMapping(path = "/invoice/byDriverID/admin", method = RequestMethod.GET)
     public ResponseEntity<List<Invoice>> getByDriverID(@RequestParam(value = "page", defaultValue = "0") int page,
                                                        @RequestParam(value = "size", defaultValue = "20") int size,
                                                        @RequestParam(value = "driverID") Long driverID,
@@ -37,7 +37,7 @@ public class InvoiceController {
         return invoiceService.getByDriverID(page, size, driverID, startDate, endDate);
     }
 
-    @RequestMapping(path = "/invoice/byCustomerID", method = RequestMethod.GET)
+    @RequestMapping(path = "/invoice/byCustomerID/admin", method = RequestMethod.GET)
     public ResponseEntity<List<Invoice>> getByCustomerID(@RequestParam(value = "page", defaultValue = "0") int page,
                                                          @RequestParam(value = "size", defaultValue = "20") int size,
                                                          @RequestParam(value = "customerID") Long customerID,
@@ -46,22 +46,22 @@ public class InvoiceController {
         return invoiceService.getByCustomerID(page, size, customerID, startDate, endDate);
     }
 
-    @RequestMapping(path = "/invoice", method = RequestMethod.POST)
+    @RequestMapping(path = "/invoice/admin", method = RequestMethod.POST)
     public String addInvoice(@RequestBody Invoice invoice) {
         return invoiceService.add(invoice);
     }
 
-    @RequestMapping(path = "/invoice", method = RequestMethod.PUT)
+    @RequestMapping(path = "/invoice/admin", method = RequestMethod.PUT)
     public String updateInvoice(@RequestBody Invoice invoice) {
         return invoiceService.update(invoice);
     }
 
-    @RequestMapping(path = "/invoice/{invoiceID}", method = RequestMethod.DELETE)
+    @RequestMapping(path = "/invoice/{invoiceID}/admin", method = RequestMethod.DELETE)
     public String deleteInvoice(@PathVariable Long invoiceID) {
         return invoiceService.delete(invoiceID);
     }
 
-    @RequestMapping(path = "/revenue", method = RequestMethod.GET)
+    @RequestMapping(path = "/revenue/admin", method = RequestMethod.GET)
     public double getRevenue(@RequestParam(value = "startDate", required = false) String startDate,
                              @RequestParam(value = "endDate", required = false) String endDate,
                              @RequestParam(value = "driverId", required = false) Long driverId,

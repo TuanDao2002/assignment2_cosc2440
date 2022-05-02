@@ -30,7 +30,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest
@@ -115,7 +114,7 @@ class CustomerControllerTest {
         assertEquals("Customer with id 1 deleted!", result);
 
         mockMvc = MockMvcBuilders.standaloneSetup(customerController).build();
-        mockMvc.perform(MockMvcRequestBuilders.delete("/customer" + "/" + customers.get(1).getId()).contentType(MediaType.APPLICATION_JSON_VALUE))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/customer" + "/" + customerId).contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
     }

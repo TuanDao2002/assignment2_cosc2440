@@ -15,34 +15,34 @@ public class CarController {
     private CarService carService;
 
 
-    @RequestMapping(path = "/car", method = RequestMethod.GET)
+    @RequestMapping(path = "/car/admin", method = RequestMethod.GET)
     public ResponseEntity<List<Car>> getAllCars(@RequestParam(value = "page", defaultValue = "0") int page,
                                                 @RequestParam(value = "size", defaultValue = "20") int size,
                                                 @RequestParam(value = "getByAvailable", required = false, defaultValue = "false") boolean getByAvailable) {
         return carService.getAllCar(page, size, getByAvailable);
     }
 
-    @RequestMapping(path = "/car", method = RequestMethod.POST)
+    @RequestMapping(path = "/car/admin", method = RequestMethod.POST)
     public String addCar(@RequestBody Car car) {
         return carService.addCar(car);
     }
 
-    @RequestMapping(path = "/car/{VIN}", method = RequestMethod.GET)
+    @RequestMapping(path = "/car/{VIN}/admin", method = RequestMethod.GET)
     public Car getCarById(@PathVariable Long VIN) {
         return carService.getCarById(VIN);
     }
 
-    @RequestMapping(path = "/car/{VIN}", method = RequestMethod.DELETE)
+    @RequestMapping(path = "/car/{VIN}/admin", method = RequestMethod.DELETE)
     public String deleteCarById(@PathVariable Long VIN) {
         return carService.deleteCarById(VIN);
     }
 
-    @RequestMapping(path = "/car", method = RequestMethod.PUT)
+    @RequestMapping(path = "/car/admin", method = RequestMethod.PUT)
     public String updateCar(@RequestBody Car car) {
         return carService.updateCar(car);
     }
 
-    @RequestMapping(path = "/car/day", method = RequestMethod.GET)
+    @RequestMapping(path = "/car/day/admin", method = RequestMethod.GET)
     public ResponseEntity<List<Map<String, Integer>>> getDayUsedOfCars(@RequestParam(value = "page", defaultValue = "0") int page,
                                                        @RequestParam(value = "size", defaultValue = "20") int size,
                                                        @RequestParam(value = "month") String month,
@@ -50,7 +50,7 @@ public class CarController {
         return carService.getDayUsedOfCars(month, year, size, page);
     }
 
-    @RequestMapping(path = "/car/attribute", method = RequestMethod.GET)
+    @RequestMapping(path = "/car/attribute/admin", method = RequestMethod.GET)
     public ResponseEntity<List<Car>> getCarByAttribute(@RequestParam(value = "attributeName") String attributeName,
                                        @RequestParam(value = "attributeValue") String attributeValue,
                                        @RequestParam(value = "page", defaultValue = "0") int page,
