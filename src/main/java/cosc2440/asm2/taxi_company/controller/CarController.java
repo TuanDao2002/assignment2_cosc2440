@@ -15,7 +15,7 @@ public class CarController {
     private CarService carService;
 
 
-    @RequestMapping(path = "/admin/car", method = RequestMethod.GET)
+    @RequestMapping(path = "/car", method = RequestMethod.GET)
     public ResponseEntity<List<Car>> getAllCars(@RequestParam(value = "page", defaultValue = "0") int page,
                                                 @RequestParam(value = "size", defaultValue = "20") int size,
                                                 @RequestParam(value = "getByAvailable", required = false, defaultValue = "false") boolean getByAvailable) {
@@ -27,7 +27,7 @@ public class CarController {
         return carService.addCar(car);
     }
 
-    @RequestMapping(path = "/admin/car/{VIN}", method = RequestMethod.GET)
+    @RequestMapping(path = "/car/{VIN}", method = RequestMethod.GET)
     public Car getCarById(@PathVariable Long VIN) {
         return carService.getCarById(VIN);
     }
@@ -50,7 +50,7 @@ public class CarController {
         return carService.getDayUsedOfCars(month, year, size, page);
     }
 
-    @RequestMapping(path = "/admin/car/attribute", method = RequestMethod.GET)
+    @RequestMapping(path = "/car/attribute", method = RequestMethod.GET)
     public ResponseEntity<List<Car>> getCarByAttribute(@RequestParam(value = "attributeName") String attributeName,
                                        @RequestParam(value = "attributeValue") String attributeValue,
                                        @RequestParam(value = "page", defaultValue = "0") int page,

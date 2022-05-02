@@ -38,13 +38,13 @@
 ### API call
 #### Manage car
 1. Get all car
-- GET request: http://localhost:8080/admin/car (it will automatically call with pageSize = 20 and pageNumber = 0)
-- GET request with custom paging and size: http://localhost:8080/admin/car?page=0&&size=20
-- GET request all available car: http://localhost:8080/admin/car?getByAvailable=true
+- GET request: http://localhost:8080/car (it will automatically call with pageSize = 20 and pageNumber = 0)
+- GET request with custom paging and size: http://localhost:8080/car?page=0&&size=20
+- GET request all available car: http://localhost:8080/car?getByAvailable=true
 
 2. Get one car
-- GET request car by id: http://localhost:8080/admin/car/{id}
-- GET request car by attribute: http://localhost:8080/admin/car/attribute?attributeName=model&attributeValue=GLC63 (custom attribute name and attribute value). Note: available attribute are make, model, licensePlate
+- GET request car by id: http://localhost:8080/car/{id}
+- GET request car by attribute: http://localhost:8080/car/attribute?attributeName=model&attributeValue=GLC63 (custom attribute name and attribute value). Note: available attribute are make, model, licensePlate
 
 3. Add car
 - POST request: http://localhost:8080/admin/car with body:
