@@ -138,7 +138,7 @@ class InvoiceControllerTest {
         assertEquals(invoiceList.size(), actualResponse.getBody().size());
         assertTrue(Objects.requireNonNull(expectedResponse.getBody()).containsAll(actualResponse.getBody()));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/admin/invoice")
+        mockMvc.perform(MockMvcRequestBuilders.get("/invoice/admin")
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                         .andExpect(MockMvcResultMatchers.status().isOk());
     }
@@ -169,7 +169,7 @@ class InvoiceControllerTest {
         assertEquals(matchInvoiceList.size(), actualResponse3.getBody().size());
         assertEquals(expectedResponse3, actualResponse3);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/admin/invoice?page=1&&size=2&&startDate=08-12-2022&&endDate=13-12-2022")
+        mockMvc.perform(MockMvcRequestBuilders.get("/invoice/admin?page=1&&size=2&&startDate=08-12-2022&&endDate=13-12-2022")
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
@@ -183,7 +183,7 @@ class InvoiceControllerTest {
         assertEquals(invoiceID, getInvoice.getInvoiceID());
         assertEquals(invoiceList.get(0), getInvoice);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/admin/invoice" + "/" + getInvoice.getInvoiceID())
+        mockMvc.perform(MockMvcRequestBuilders.get("/invoice" + "/" + getInvoice.getInvoiceID() + "/admin")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
@@ -209,7 +209,7 @@ class InvoiceControllerTest {
         actualResponse = invoiceController.getByDriverID(1, 1, 2L, "08-12-2022", "13-12-2022");
         assertEquals(expectedPageSize, actualResponse.getBody().size());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/admin/invoice/byDriverID?driverID=2&&page=1&&size=1&&startDate=08-12-2022&&endDate=13-12-2022")
+        mockMvc.perform(MockMvcRequestBuilders.get("/invoice/byDriverID/admin?driverID=2&&page=1&&size=1&&startDate=08-12-2022&&endDate=13-12-2022")
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }

@@ -123,7 +123,7 @@ class BookingControllerTest {
         assertEquals(bookingList.size(), actualResponse.getBody().size());
         assertTrue(Objects.requireNonNull(expectedResponse.getBody()).containsAll(actualResponse.getBody()));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/admin/booking")
+        mockMvc.perform(MockMvcRequestBuilders.get("/booking/admin")
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                         .andExpect(MockMvcResultMatchers.status().isOk());
     }
@@ -156,7 +156,7 @@ class BookingControllerTest {
         assertEquals(matchBookingList.size(), actualResponse3.getBody().size());
         assertEquals(expectedResponse3, actualResponse3);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/admin/booking?page=1&&size=2&&startDate=08-12-2022&&endDate=13-12-2022")
+        mockMvc.perform(MockMvcRequestBuilders.get("/booking/admin?page=1&&size=2&&startDate=08-12-2022&&endDate=13-12-2022")
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                         .andExpect(MockMvcResultMatchers.status().isOk());
 
@@ -171,7 +171,7 @@ class BookingControllerTest {
         assertEquals(bookingID, getBooking.getBookingID());
         assertEquals(bookingList.get(0), getBooking);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/booking" + "/" + getBooking.getBookingID())
+        mockMvc.perform(MockMvcRequestBuilders.get("/booking" + "/" + getBooking.getBookingID() + "/admin")
                         .contentType(MediaType.APPLICATION_JSON))
                         .andExpect(MockMvcResultMatchers.status().isOk());
     }
@@ -227,7 +227,7 @@ class BookingControllerTest {
         Mockito.when(bookingRepository.save(newBooking)).thenReturn(newBooking);
         assertEquals("Booking with id: 1 is added!!!", bookingController.addBooking(newBooking));
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/admin/booking").contentType(MediaType.APPLICATION_JSON_VALUE)
+        mockMvc.perform(MockMvcRequestBuilders.post("/booking/admin").contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(newBooking)))
                         .andExpect(MockMvcResultMatchers.status().isOk());
     }
@@ -255,7 +255,7 @@ class BookingControllerTest {
 
         assertEquals("Booking with ID: 4 is updated!!!", bookingController.updateBooking(booking));
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/admin/booking").contentType(MediaType.APPLICATION_JSON_VALUE)
+        mockMvc.perform(MockMvcRequestBuilders.put("/booking/admin").contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(booking)))
                         .andExpect(MockMvcResultMatchers.status().isOk());
     }
@@ -279,7 +279,7 @@ class BookingControllerTest {
         assertEquals("Booking with ID: 1 is deleted!!!", bookingController.deleteBooking(bookingId));
         assertTrue(car.isAvailable());
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/admin/booking" + "/" + bookingId).contentType(MediaType.APPLICATION_JSON_VALUE))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/booking" + "/" + bookingId + "/admin").contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -327,13 +327,13 @@ class BookingControllerTest {
 
         assertEquals("Booking with ID: 1 is created!!!", result);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/booking/bookCar?carVIN=1&&customerID=2&&startLocation=hcm&&endLocation=la&&pickUpDatetime=09:09:11 09-12-2022")
+        mockMvc.perform(MockMvcRequestBuilders.post("/booking/bookCar/admin?carVIN=1&&customerID=2&&startLocation=hcm&&endLocation=la&&pickUpDatetime=09:09:11 09-12-2022")
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
-    void finalizeBooking() throws Exception {
+    void finalizeBooking() {
         String result = bookingController.finalizeBooking(1L, "09:09:09 39-09-2022", -2);
 
         assertEquals("Booking with ID: 1 does not exist!!!", result);
@@ -364,9 +364,5 @@ class BookingControllerTest {
 
         Mockito.when(bookingRepository.save(findBooking)).thenReturn(findBooking);
         assertEquals("Booking with ID: 1 is finalized!!!", result);
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/admin/booking/finalize?bookingID=1&&dropOffDatetime=09:09:10 09-09-2022&&distance=10")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 }
