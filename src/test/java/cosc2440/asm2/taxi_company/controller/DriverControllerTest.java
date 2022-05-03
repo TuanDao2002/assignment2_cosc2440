@@ -2,9 +2,14 @@ package cosc2440.asm2.taxi_company.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cosc2440.asm2.taxi_company.model.Booking;
+import cosc2440.asm2.taxi_company.model.Car;
+import cosc2440.asm2.taxi_company.model.Customer;
 import cosc2440.asm2.taxi_company.model.Driver;
+import cosc2440.asm2.taxi_company.repository.CarRepository;
 import cosc2440.asm2.taxi_company.repository.DriverRepository;
 import cosc2440.asm2.taxi_company.service.CarService;
+import cosc2440.asm2.taxi_company.service.DriverService;
+import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +29,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -38,6 +42,9 @@ public class DriverControllerTest {
     @MockBean
     private DriverRepository driverRepository;
 
+    @MockBean
+    private CarRepository carRepository;
+
     @InjectMocks
     @Autowired
     private CarService carService;
@@ -45,6 +52,10 @@ public class DriverControllerTest {
     @InjectMocks
     @Autowired
     private DriverController driverController;
+
+    @InjectMocks
+    @Autowired
+    private DriverService driverService;
 
     @Autowired
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -76,7 +87,7 @@ public class DriverControllerTest {
         assertEquals(driverList.size(), actualResponse.getBody().size());
         assertTrue(Objects.requireNonNull(expectedResponse.getBody()).containsAll(actualResponse.getBody()));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/driver")
+        mockMvc.perform(MockMvcRequestBuilders.get("/admin/driver")
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
@@ -122,9 +133,77 @@ public class DriverControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/admin/driver" + "/" + retrievedDriver.getId()).contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.status().isOk());
-
-
     }
 
+    @Test
+    public void updateDriver() throws Exception {
+        Driver driver = new Driver(100L, "032100x9", "033546233", 4.9);
+        assertEquals(String.format("Driver with id %d does not exist!", driver.getId()), driverController.updateDriver(driver));
+
+        Mockito.when(driverRepository.findById(driver.getId())).thenReturn(Optional.of(driverList.get(0)));
+
+        driver.setRating(4.0);
+        driver.setPhoneNumber("0909098009");
+        driver.setLicenseNumber("3x43465f");
+
+        assertEquals(String.format("Driver with id %d updated!", driver.getId()), driverController.updateDriver(driver));
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/admin/driver")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(driver))
+        ).andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    public void getDriverByAttribute() throws Exception {
+        Mockito.when(driverRepository.findAll()).thenReturn(driverList);
+
+        ResponseEntity<List<Driver>> getDriver1 = driverService.getDriverByAttribute("licenseNumber", "0321000x6", 20, 0);
+        ResponseEntity<List<Driver>> getDriver2 = driverService.getDriverByAttribute("phoneNumber", "0919073118", 20, 0);
+
+        assertEquals(1 , getDriver1.getBody().size());
+        assertEquals(1 , getDriver2.getBody().size());
+
+        assertTrue(getDriver1.getBody().contains(driverList.get(0)));
+        assertTrue(driverList.containsAll(getDriver2.getBody()));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/admin/driver/attribute?attributeName=licenseNumber&&attributeValue=0321000x6")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(getDriver1)))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/admin/driver/attribute?attributeName=phoneNumber&&attributeValue=0919073118")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(getDriver2)))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    public void pickCar() {
+        Long idDriverNotExist = 100L;
+        Long idCarNotExist = 100L;
+        Long driverIdExist = 1L;
+        Long driverIdPickLate = 2L;
+
+        Mockito.when(driverRepository.findById(driverIdExist)).thenReturn(Optional.of(driverList.get(0)));
+        Mockito.when(driverRepository.findById(driverIdPickLate)).thenReturn(Optional.of(driverList.get(1)));
+
+        Car car = new Car(1L, "Mercedes", "G63", "Black", false, 5.0, "59F-23531", 100.45);
+        Mockito.when(carRepository.findById(car.getVIN())).thenReturn(Optional.of(car));
+
+        // car not exist
+        assertEquals(String.format("Car with VIN %d does not exist!", idCarNotExist), driverService.pickCarById(idCarNotExist, idDriverNotExist));
+
+        // driver not exist
+        assertEquals(String.format("Driver with id %d does not exist!", idDriverNotExist), driverService.pickCarById(car.getVIN(), idDriverNotExist));
+
+        // perfect case
+        assertEquals(String.format("Assign car with VIN %d to driver with id %d!", car.getVIN(), driverIdExist), driverService.pickCarById(1L, 1L));
+        assertEquals(driverList.get(0).getCar().getVIN(), car.getVIN());
+        assertEquals(car.getDriver().getId(), driverIdExist);
+
+        // Choose car that have already taken
+        assertEquals(String.format("Car with VIN %d is not available!", car.getVIN()), driverService.pickCarById(car.getVIN(), driverIdPickLate));
+    }
 
 }
