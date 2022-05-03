@@ -1,7 +1,6 @@
 package cosc2440.asm2.taxi_company.controller;
 
 import cosc2440.asm2.taxi_company.model.Driver;
-import cosc2440.asm2.taxi_company.service.CarService;
 import cosc2440.asm2.taxi_company.service.DriverService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

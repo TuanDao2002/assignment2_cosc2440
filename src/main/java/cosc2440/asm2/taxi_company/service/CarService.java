@@ -100,7 +100,6 @@ public class CarService {
         if (car.getColor() != null) carToUpdate.setColor(car.getColor());
         if (car.getLicensePlate() != null) carToUpdate.setLicensePlate(car.getLicensePlate());
         if (car.getModel() != null) carToUpdate.setModel(car.getModel());
-
         carToUpdate.setConvertible(car.isConvertible());
 
         // check if number attribute is not negative
@@ -115,9 +114,9 @@ public class CarService {
         // get all car from database
         Set<Car> allCars = new HashSet<>((List<Car>) carRepository.findAll());
 
-        // add to list based on criteria
         List<Car> availableCars = new ArrayList<>();
 
+        // add to list based on criteria
         for (Car car : allCars)
             if (car.isAvailable())
                 availableCars.add(car);

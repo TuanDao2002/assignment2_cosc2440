@@ -64,10 +64,6 @@ class BookingControllerTest {
 
     @InjectMocks
     @Autowired
-    private CarService carService;
-
-    @InjectMocks
-    @Autowired
     private BookingController bookingController;
 
     @Autowired

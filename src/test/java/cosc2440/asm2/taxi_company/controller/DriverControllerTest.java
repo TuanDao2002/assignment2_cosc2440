@@ -5,7 +5,6 @@ import cosc2440.asm2.taxi_company.model.Car;
 import cosc2440.asm2.taxi_company.model.Driver;
 import cosc2440.asm2.taxi_company.repository.CarRepository;
 import cosc2440.asm2.taxi_company.repository.DriverRepository;
-import cosc2440.asm2.taxi_company.service.CarService;
 import cosc2440.asm2.taxi_company.service.DriverService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -127,9 +126,11 @@ public class DriverControllerTest {
 
     @Test
     public void updateDriver() throws Exception {
+        // id not exist
         Driver driver = new Driver(100L, "032100x9", "033546233", 4.9);
         assertEquals(String.format("Driver with id %d does not exist!", driver.getId()), driverController.updateDriver(driver));
 
+        // id exist
         Mockito.when(driverRepository.findById(driver.getId())).thenReturn(Optional.of(driverList.get(0)));
 
         driver.setRating(4.0);
