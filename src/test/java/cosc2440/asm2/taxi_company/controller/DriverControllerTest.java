@@ -42,10 +42,6 @@ public class DriverControllerTest {
 
     @InjectMocks
     @Autowired
-    private CarService carService;
-
-    @InjectMocks
-    @Autowired
     private DriverController driverController;
 
     @InjectMocks
@@ -112,7 +108,6 @@ public class DriverControllerTest {
 
     @Test
     public void getDriverById() throws Exception {
-
         // id not exist
         Long idNotExist = 100L;
         assertNull(driverController.getDriverById(idNotExist));

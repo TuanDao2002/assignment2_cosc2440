@@ -65,7 +65,7 @@ public class CarService {
                     carByAttribute.add(car);
         } else if (attribute.equalsIgnoreCase("licensePlate")) {
             for (Car car : allCars)
-                if (car.getLicensePlate().equalsIgnoreCase(attribute))
+                if (car.getLicensePlate().equalsIgnoreCase(attributeValue))
                     carByAttribute.add(car);
         }
 
