@@ -1,15 +1,12 @@
 package cosc2440.asm2.taxi_company.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cosc2440.asm2.taxi_company.model.Booking;
 import cosc2440.asm2.taxi_company.model.Car;
-import cosc2440.asm2.taxi_company.model.Customer;
 import cosc2440.asm2.taxi_company.model.Driver;
 import cosc2440.asm2.taxi_company.repository.CarRepository;
 import cosc2440.asm2.taxi_company.repository.DriverRepository;
 import cosc2440.asm2.taxi_company.service.CarService;
 import cosc2440.asm2.taxi_company.service.DriverService;
-import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,11 +25,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
