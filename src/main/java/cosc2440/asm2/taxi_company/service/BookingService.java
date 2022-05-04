@@ -32,9 +32,6 @@ public class BookingService {
     @Autowired
     private CustomerService customerService;
 
-//    @Autowired
-//    private SessionFactory sessionFactory;
-
     public void setBookingRepository(BookingRepository bookingRepository) {
         this.bookingRepository = bookingRepository;
     }
@@ -51,12 +48,7 @@ public class BookingService {
         this.customerService = customerService;
     }
 
-//    public void setSessionFactory(SessionFactory sessionFactory) {
-//        this.sessionFactory = sessionFactory;
-//    }
-
     public List<Booking> searchBookingByDate(String matchPickUpDate, String startDate, String endDate) {
-//        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Booking.class);
 
         Set<Booking> allBookings = new HashSet<>((List<Booking>)bookingRepository.findAll());
         // search date based on a specific date
@@ -86,7 +78,6 @@ public class BookingService {
             if (start == null) return null;
 
             // find all bookings that have pickUpDatetime greater than or equal to startDate
-//            criteria.add(Restrictions.ge("pickUpDatetime", start.atStartOfDay()));
             allBookings.removeIf(booking -> booking.getPickUpDatetimeObj().isBefore(start.atStartOfDay()));
         }
 
@@ -97,11 +88,9 @@ public class BookingService {
             if (end == null) return null;
 
             // find all bookings that have pickUpDatetime less than or equal to endDate
-//            criteria.add(Restrictions.le("pickUpDatetime", end.atStartOfDay()));
             allBookings.removeIf(booking -> booking.getPickUpDatetimeObj().isAfter(end.atStartOfDay()));
         }
 
-//        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
         return new ArrayList<>(allBookings);
     }
 
