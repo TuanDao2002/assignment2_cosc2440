@@ -83,7 +83,9 @@ class CustomerControllerTest {
         Mockito.when(customerRepository.save(customer2)).thenReturn(customer2);
         assertEquals("Customer with id 2 added successfully!", customerController.addCustomer(customer2));
 
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/admin/customer").contentType(MediaType.APPLICATION_JSON_VALUE).content(objectMapper.writeValueAsString(customer))).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/admin/customer")
+                .contentType(MediaType.APPLICATION_JSON_VALUE).content(objectMapper.writeValueAsString(customer)))
+                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
         String stringResult = mvcResult.getResponse().getContentAsString();
         assertEquals("Customer with id 1 added successfully!", stringResult);
     }

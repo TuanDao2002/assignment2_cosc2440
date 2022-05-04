@@ -1,6 +1,7 @@
 package cosc2440.asm2.taxi_company.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import cosc2440.asm2.taxi_company.model.Booking;
 import cosc2440.asm2.taxi_company.model.Car;
 import cosc2440.asm2.taxi_company.repository.CarRepository;
 import cosc2440.asm2.taxi_company.service.CarService;
@@ -24,6 +25,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -63,6 +65,9 @@ public class CarControllerTest {
         Car car1 = new Car(1L, "Mercedes", "G63", "Black", false, 5.0, "59F-23531", 100.45);
         Car car2 = new Car(2L, "Toyota", "Vios", "Red", false, 4.8, "59F-24011", 82.5);
         Car car3 = new Car(3L, "BMW", "i8", "White", true, 2.9, "59F-46154", 90.45);
+
+        car1.setAvailable(true);
+        car2.setAvailable(true);
         car3.setAvailable(false);
 
         return List.of(car1, car2, car3);
@@ -191,9 +196,10 @@ public class CarControllerTest {
     @Test
     public void getAllAvailableCar() throws Exception {
         Mockito.when(carRepository.findAll()).thenReturn(carList);
+        ResponseEntity<List<Car>> expectedResponse = new ResponseEntity<>(carList.subList(0, 2), new HttpHeaders(), HttpStatus.OK);
+
         assertEquals(2, carController.getAllCars(0, 20, true).getBody().size());
-        assertEquals(1L, carController.getAllCars(0, 20, true).getBody().get(0).getVIN());
-        assertEquals(2L, carController.getAllCars(0, 20, true).getBody().get(1).getVIN());
+        assertTrue(Objects.requireNonNull(expectedResponse.getBody()).containsAll(Objects.requireNonNull(carController.getAllCars(0, 20, true).getBody())));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/car?getByAvailable=true")
                         .contentType(MediaType.APPLICATION_JSON_VALUE))

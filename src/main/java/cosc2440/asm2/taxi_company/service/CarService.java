@@ -28,7 +28,7 @@ public class CarService {
         // get all (available) car from database
         List<Car> list = getByAvailable ? getAllAvailableCar() : (List<Car>) carRepository.findAll();
 
-        // use paging utility class to handle paging
+        // use paging utility class to  handle paging
         return PagingUtility.getAll(list, pageSize, pageNumber);
     }
 
