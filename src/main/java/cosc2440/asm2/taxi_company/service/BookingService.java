@@ -22,7 +22,6 @@ public class BookingService {
     @Autowired
     private BookingRepository bookingRepository;
 
-
     @Autowired
     private DriverService driverService;
 

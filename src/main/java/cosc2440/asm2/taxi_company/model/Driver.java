@@ -1,6 +1,5 @@
 package cosc2440.asm2.taxi_company.model;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -30,11 +29,6 @@ public class Driver {
     @JoinColumn(name = "id")
     @JsonIgnore
     private Car car;
-
-//    @OneToOne(mappedBy = "driver", cascade = CascadeType.REMOVE)
-//    @JoinColumn(name = "driverID")
-//    @JsonIgnoreProperties("driver")
-//    private Invoice invoice;
 
     @OneToMany(mappedBy = "driver", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     @JsonIgnoreProperties("driver")
