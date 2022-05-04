@@ -5,6 +5,7 @@ import cosc2440.asm2.taxi_company.model.Car;
 import cosc2440.asm2.taxi_company.model.Driver;
 import cosc2440.asm2.taxi_company.repository.CarRepository;
 import cosc2440.asm2.taxi_company.repository.DriverRepository;
+import cosc2440.asm2.taxi_company.service.BookingService;
 import cosc2440.asm2.taxi_company.service.DriverService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -183,18 +184,18 @@ public class DriverControllerTest {
         Mockito.when(carRepository.findById(car.getVIN())).thenReturn(Optional.of(car));
 
         // car not exist
-        assertEquals(String.format("Car with VIN %d does not exist!", idCarNotExist), driverService.pickCarById(idCarNotExist, idDriverNotExist));
+        assertEquals(String.format("Car with VIN %d does not exist!", idCarNotExist), driverController.pickCarById(idCarNotExist, driverIdExist));
 
         // driver not exist
-        assertEquals(String.format("Driver with id %d does not exist!", idDriverNotExist), driverService.pickCarById(car.getVIN(), idDriverNotExist));
+        assertEquals(String.format("Driver with id %d does not exist!", idDriverNotExist), driverController.pickCarById(car.getVIN(), idDriverNotExist));
 
         // perfect case
-        assertEquals(String.format("Assign car with VIN %d to driver with id %d!", car.getVIN(), driverIdExist), driverService.pickCarById(1L, 1L));
+        assertEquals(String.format("Assign car with VIN %d to driver with id %d!", car.getVIN(), driverIdExist), driverController.pickCarById(1L, 1L));
         assertEquals(driverList.get(0).getCar().getVIN(), car.getVIN());
         assertEquals(car.getDriver().getId(), driverIdExist);
 
         // Choose car that have already taken
-        assertEquals(String.format("Car with VIN %d is not available!", car.getVIN()), driverService.pickCarById(car.getVIN(), driverIdPickLate));
+        assertEquals(String.format("Car with VIN %d is not available!", car.getVIN()), driverController.pickCarById(car.getVIN(), driverIdPickLate));
     }
 
 }

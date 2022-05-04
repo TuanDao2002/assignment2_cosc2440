@@ -1,10 +1,12 @@
 package cosc2440.asm2.taxi_company.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cosc2440.asm2.taxi_company.model.Booking;
-import cosc2440.asm2.taxi_company.model.Car;
+import cosc2440.asm2.taxi_company.model.*;
 import cosc2440.asm2.taxi_company.repository.CarRepository;
+import cosc2440.asm2.taxi_company.service.BookingService;
 import cosc2440.asm2.taxi_company.service.CarService;
+import cosc2440.asm2.taxi_company.service.DriverService;
+import org.apache.tomcat.jni.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,6 +48,14 @@ public class CarControllerTest {
 
     @InjectMocks
     @Autowired
+    private DriverService driverService;
+
+    @InjectMocks
+    @Autowired
+    private BookingService bookingService;
+
+    @InjectMocks
+    @Autowired
     private CarController carController;
 
     @Autowired
@@ -69,6 +79,20 @@ public class CarControllerTest {
         car1.setAvailable(true);
         car2.setAvailable(true);
         car3.setAvailable(false);
+
+        Driver driver1 = new Driver(1L, "02245462","0903123456", 2);
+        driver1.setCar(car1);
+        car1.setDriver(driver1);
+
+        Customer customer1 = new Customer(1L, "Tuan", "0908198061", "binh tan district");
+        Invoice invoice1 = new Invoice(1L, 198, driver1, customer1);
+        driver1.getInvoiceList().add(invoice1);
+        customer1.getInvoiceList().add(invoice1);
+
+        Booking booking1 = new Booking(1L, "hcm", "hanoi", "09:09:09 09-09-2022", invoice1);
+        booking1.setDropOffDateTime("09:09:10 09-09-2022");
+        booking1.setDistance(20);
+        invoice1.setBooking(booking1);
 
         return List.of(car1, car2, car3);
     }
@@ -202,6 +226,24 @@ public class CarControllerTest {
         assertTrue(Objects.requireNonNull(expectedResponse.getBody()).containsAll(Objects.requireNonNull(carController.getAllCars(0, 20, true).getBody())));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/car?getByAvailable=true")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    public void getCarByDayUsed() throws Exception {
+        Mockito.when(carRepository.findAll()).thenReturn(carList);
+        String month = "september";
+        int year = 2022;
+
+        // Invalid month and year
+        assertNull(carController.getDayUsedOfCars(0, 20, "september", -3));
+        assertNull(carController.getDayUsedOfCars(0, 20, "invalid", 2022));
+
+        assertNotNull(carController.getDayUsedOfCars(0, 20, "september", 2022).getBody());
+        assertEquals(1, carController.getDayUsedOfCars(0, 20, "september", 2022).getBody().size());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/admin/car/day?month="+ month +"&year=" + year)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }

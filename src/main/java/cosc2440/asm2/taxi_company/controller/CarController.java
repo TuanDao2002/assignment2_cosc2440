@@ -14,7 +14,6 @@ public class CarController {
     @Autowired
     private CarService carService;
 
-
     @RequestMapping(path = "/car", method = RequestMethod.GET)
     public ResponseEntity<List<Car>> getAllCars(@RequestParam(value = "page", defaultValue = "0") int page,
                                                 @RequestParam(value = "size", defaultValue = "20") int size,
