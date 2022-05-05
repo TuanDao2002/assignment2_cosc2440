@@ -33,7 +33,10 @@
 
 
 ### To Run
-- Run the Main.java or type "./mvnw spring:run" in terminal
+- Run the Main.java or type in terminal
+```
+./mvnw spring:run
+```
 
 ### API call
 #### Manage car
