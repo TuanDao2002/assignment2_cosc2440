@@ -44,6 +44,7 @@
 - GET request: http://localhost:8080/car (it will automatically call with pageSize = 20 and pageNumber = 0)
 - GET request with custom paging and size: http://localhost:8080/car?page=0&&size=20
 - GET request all available car: http://localhost:8080/car?getByAvailable=true
+- GET by attribute: http://localhost:8080/car/attribute?attributeName=make&attributeValue=mercedes
 
 2. Get one car
 - GET request car by id: http://localhost:8080/car/{id}
@@ -98,6 +99,7 @@
 1. Get all driver
 - GET request: http://localhost:8080/admin/driver (it will automatically call with pageSize = 20 and pageNumber = 0)
 - GET request with custom paging and size: http://localhost:8080/admin/driver?page=0&&size=20
+- GET by attribute: http://localhost:8080/admin/driver/attribute?attributeName=licenseNumber&attributeValue=022454654
 
 2. Get one driver
 - GET request driver by id: http://localhost:8080/admin/driver/{id}
