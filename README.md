@@ -197,15 +197,7 @@
     "bookingID": "1",
     "startLocation": "Vietnam",
     "endLocation": "Lao",
-    "pickUpDatetime": "12:09:09 12-09-2020",
-    "invoice": {
-        "driver": {
-            "id": "1"
-        },
-        "customer":{
-            "id": "2"
-        }
-    }
+    "pickUpDatetime": "12:09:09 12-09-2020"
 }
 ```
 
@@ -232,18 +224,7 @@
 - POST request: http://localhost:8080/admin/invoice with body:
 ```
 {
-    "totalCharge": "345",
-    "driver": {
-        "id": "1"
-    },
-    "booking": {
-        "startLocation": "hcm",
-        "endLocation": "new york",
-        "pickUpDatetime": "09:09:09 09-09-2022"
-    },
-    "customer": {
-        "id": "1"
-    }
+    "totalCharge": "345"
 }
 ```
 
