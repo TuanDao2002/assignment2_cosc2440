@@ -19,7 +19,6 @@ public class BookingController {
         this.bookingService = bookingService;
     }
 
-    // controller for booking
     @RequestMapping(path = "/admin/booking", method = RequestMethod.GET)
     public ResponseEntity<List<Booking>> getAllBookings(@RequestParam(value = "page", defaultValue = "0") int page,
                                                         @RequestParam(value = "size", defaultValue = "20") int size,

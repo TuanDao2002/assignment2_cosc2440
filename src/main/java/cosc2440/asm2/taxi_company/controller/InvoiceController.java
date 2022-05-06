@@ -13,7 +13,6 @@ public class InvoiceController {
     @Autowired
     private InvoiceService invoiceService;
 
-    // controller for invoice
     @RequestMapping(path = "/admin/invoice", method = RequestMethod.GET)
     public ResponseEntity<List<Invoice>> getAllInvoices(@RequestParam(value = "page", defaultValue = "0") int page,
                                                         @RequestParam(value = "size", defaultValue = "20") int size,
