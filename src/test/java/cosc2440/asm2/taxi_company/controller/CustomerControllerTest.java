@@ -154,9 +154,9 @@ class CustomerControllerTest {
     @Test
     void getCustomerByAttribute() throws Exception {
 
-        ResponseEntity<List<Customer>> getCustomers1 = customerService.getCustomerByAttribute("name", "An Bui", 20, 0);
-        ResponseEntity<List<Customer>> getCustomers2 = customerService.getCustomerByAttribute("address", "tphcm", 20, 0);
-        ResponseEntity<List<Customer>> getCustomers3 = customerService.getCustomerByAttribute("phoneNumber", "9876543210", 20, 0);
+        ResponseEntity<List<Customer>> getCustomers1 = customerController.getCustomerByAttribute("name", "An Bui", 0, 20);
+        ResponseEntity<List<Customer>> getCustomers2 = customerController.getCustomerByAttribute("address", "tphcm", 0, 20);
+        ResponseEntity<List<Customer>> getCustomers3 = customerController.getCustomerByAttribute("phoneNumber", "9876543210", 0, 20);
 
         assertEquals(1 ,getCustomers1.getBody().size());
         assertEquals(2 ,getCustomers2.getBody().size());
