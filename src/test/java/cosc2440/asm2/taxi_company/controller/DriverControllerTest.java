@@ -5,7 +5,6 @@ import cosc2440.asm2.taxi_company.model.Car;
 import cosc2440.asm2.taxi_company.model.Driver;
 import cosc2440.asm2.taxi_company.repository.CarRepository;
 import cosc2440.asm2.taxi_company.repository.DriverRepository;
-import cosc2440.asm2.taxi_company.service.BookingService;
 import cosc2440.asm2.taxi_company.service.DriverService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

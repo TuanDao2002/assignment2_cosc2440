@@ -7,7 +7,6 @@ import cosc2440.asm2.taxi_company.repository.CarRepository;
 import cosc2440.asm2.taxi_company.repository.CustomerRepository;
 import cosc2440.asm2.taxi_company.repository.DriverRepository;
 import cosc2440.asm2.taxi_company.service.BookingService;
-import cosc2440.asm2.taxi_company.service.CarService;
 import cosc2440.asm2.taxi_company.service.CustomerService;
 import cosc2440.asm2.taxi_company.service.DriverService;
 import cosc2440.asm2.taxi_company.utility.DateUtility;

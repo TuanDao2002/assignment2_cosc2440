@@ -6,7 +6,6 @@ import cosc2440.asm2.taxi_company.repository.CarRepository;
 import cosc2440.asm2.taxi_company.service.BookingService;
 import cosc2440.asm2.taxi_company.service.CarService;
 import cosc2440.asm2.taxi_company.service.DriverService;
-import org.apache.tomcat.jni.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
