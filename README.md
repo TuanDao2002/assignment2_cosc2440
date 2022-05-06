@@ -100,8 +100,8 @@
 - GET request with custom paging and size: http://localhost:8080/admin/driver?page=0&&size=20
 
 2. Get one driver
-- GET request car by id: http://localhost:8080/admin/driver/{id}
-- GET request car by attribute: http://localhost:8080/admin/driver/attribute?attributeName=phoneNumber&attributeValue=0903123456 (custom attribute name and attribute value). Note: available attribute are license number and phone number
+- GET request driver by id: http://localhost:8080/admin/driver/{id}
+- GET request driver by attribute: http://localhost:8080/admin/driver/attribute?attributeName=phoneNumber&attributeValue=0903123456 (custom attribute name and attribute value). Note: available attribute are license number and phone number
 
 3. Add driver
 - POST request: http://localhost:8080/admin/driver with body:
