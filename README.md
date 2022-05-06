@@ -166,6 +166,8 @@
 1. Get all booking
 - GET request: http://localhost:8080/admin/booking (it will automatically call with pageSize = 20 and pageNumber = 0)
 - GET request with custom paging and size: http://localhost:8080/admin/booking?page=0&&size=20
+- GET request in a day: http://localhost:8080/admin/booking?matchDate=09-09-2022
+- GET request in a period: http://localhost:8070/admin/booking?startDate=09-09-2022&&endDate=10-09-2022
 
 2. Get one booking
 - GET request: http://localhost:8080/booking/{id}
@@ -220,6 +222,8 @@
 1. Get all invoice
 - GET request: http://localhost:8080/admin/invoice (it will automatically call with pageSize = 20 and pageNumber = 0)
 - GET request with custom paging and size: http://localhost:8080/admin/invoice?page=0&&size=20
+- GET request in a day: http://localhost:8080/admin/invoice?matchDate=09-09-2022
+- GET request in a period: http://localhost:8070/admin/invoice?startDate=09-09-2022&&endDate=10-09-2022
 
 2. Get one invoice
 - GET request: http://localhost:8080/admin/invoice/{id}
