@@ -136,12 +136,8 @@
 1. Get all customer
 - GET request: http://localhost:8080/admin/customer (it will automatically call with pageSize = 20 and pageNumber = 0)
 - GET request with custom paging and size: http://localhost:8080/admin/customer?page=0&&size=20
-<<<<<<< HEAD
 - GET by attribute: http://localhost:8080/admin/customer/attribute?attributeName=licenseNumber&&attributeValue=022454654
   (custom attribute name and attribute value). Note: available attributes are name, phoneNumber, address
-=======
-- GET by attribute: http://localhost:8080/admin/driver/attribute?attributeName=name&attributeValue=Bao
->>>>>>> 48f8cbeed7a360663db0e38cbdd663a951792c03
 
 2. Get one customer
 - GET request: http://localhost:8080/admin/customer/{id}
