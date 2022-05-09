@@ -29,7 +29,7 @@ public class Car {
     @Column
     private double rating;
 
-    @Column
+    @Column(nullable = false)
     private String licensePlate;
 
     @Column
