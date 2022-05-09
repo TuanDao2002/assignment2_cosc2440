@@ -33,6 +33,7 @@
 
 
 ### To Run
+- Create a database name "taxi_company", set username to "postgres" and password to "cosc2440"
 - Run the Main.java or type in terminal
 ```
 ./mvnw spring:run
