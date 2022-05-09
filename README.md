@@ -44,11 +44,11 @@
 - GET request: http://localhost:8080/car (it will automatically call with pageSize = 20 and pageNumber = 0)
 - GET request with custom paging and size: http://localhost:8080/car?page=0&&size=20
 - GET request all available car: http://localhost:8080/car?getByAvailable=true
-- GET by attribute: http://localhost:8080/car/attribute?attributeName=make&attributeValue=mercedes
+- GET by attribute: http://localhost:8080/car/attribute?attributeName=make&&attributeValue=mercedes
+(custom attribute name and attribute value). Note: available attributes are make, model, licensePlate
 
 2. Get one car
 - GET request car by id: http://localhost:8080/car/{id}
-- GET request car by attribute: http://localhost:8080/car/attribute?attributeName=model&attributeValue=GLC63 (custom attribute name and attribute value). Note: available attribute are make, model, licensePlate
 
 3. Add car
 - POST request: http://localhost:8080/admin/car with body:
@@ -85,7 +85,7 @@
 - DELETE request: http://localhost:8080/admin/car/{id}
 
 6. Get car by day used
-- GET request: http://localhost:8080/admin/car/day?month={month}&year={year}. It will respond with a List<Map<String:Integer>>:
+- GET request: http://localhost:8080/admin/car/day?month={month}&&year={year}. It will respond with a List<Map<String:Integer>>:
 ```
 [
     // Each object contains plate : day used
@@ -99,11 +99,11 @@
 1. Get all driver
 - GET request: http://localhost:8080/admin/driver (it will automatically call with pageSize = 20 and pageNumber = 0)
 - GET request with custom paging and size: http://localhost:8080/admin/driver?page=0&&size=20
-- GET by attribute: http://localhost:8080/admin/driver/attribute?attributeName=licenseNumber&attributeValue=022454654
+- GET by attribute: http://localhost:8080/admin/driver/attribute?attributeName=licenseNumber&&attributeValue=022454654
+(custom attribute name and attribute value). Note: available attributes are licenseNumber, phoneNumber
 
 2. Get one driver
 - GET request driver by id: http://localhost:8080/admin/driver/{id}
-- GET request driver by attribute: http://localhost:8080/admin/driver/attribute?attributeName=phoneNumber&attributeValue=0903123456 (custom attribute name and attribute value). Note: available attribute are license number and phone number
 
 3. Add driver
 - POST request: http://localhost:8080/admin/driver with body:
@@ -130,12 +130,14 @@
 - DELETE request: http://localhost:8080/admin/driver/{id}
 
 6. Assign car to driver
-- GET request: http://localhost:8080/driver/pick?carVIN={carVIN}&driverId={driverId}
+- GET request: http://localhost:8080/driver/pick?carVIN={carVIN}&&driverId={driverId}
 
 #### Manage customer
 1. Get all customer
 - GET request: http://localhost:8080/admin/customer (it will automatically call with pageSize = 20 and pageNumber = 0)
 - GET request with custom paging and size: http://localhost:8080/admin/customer?page=0&&size=20
+- GET by attribute: http://localhost:8080/admin/customer/attribute?attributeName=licenseNumber&&attributeValue=022454654
+  (custom attribute name and attribute value). Note: available attributes are name, phoneNumber, address
 
 2. Get one customer
 - GET request: http://localhost:8080/admin/customer/{id}
@@ -207,10 +209,10 @@
 - DELETE request: http://localhost:8080/admin/booking/{id}
 
 6. Booking created from car booked
-- POST request: http://localhost:8080/booking/bookCar?carVIN={carVIN}&customerID={customerId}&startLocation={startLocation}&endLocation={endLocation}&pickUpDatetime=hh:mm:ss dd-MM-uuuu
+- POST request: http://localhost:8080/booking/bookCar?carVIN={carVIN}&&customerID={customerId}&&startLocation={startLocation}&&endLocation={endLocation}&&pickUpDatetime={hh:mm:ss dd-MM-uuuu}
 
 7. Finalize booking (drop customer)
-- POST request: http://localhost:8080/admin/booking/finalize?bookingID={bookingID}&dropOffDatetime=hh:mm:ss dd-MM-uuuu&distance={distance}
+- POST request: http://localhost:8080/admin/booking/finalize?bookingID={bookingID}&&dropOffDatetime={hh:mm:ss dd-MM-uuuu}&&distance={distance}
 
 #### Manage invoice
 1. Get all invoice
@@ -255,11 +257,11 @@
 
 6. Get revenue
 - GET request all revenue: http://localhost:8080/admin/invoice/revenue
-- GET request revenue by period: http://localhost:8080/admin/invoice/revenue?startDate={dd-mm-yyyy}&endDate={dd-mm-yyyy}
+- GET request revenue by period: http://localhost:8080/admin/invoice/revenue?startDate={dd-mm-yyyy}&&endDate={dd-mm-yyyy}
 - GET request revenue by customer: http://localhost:8080/admin/invoice/revenue?customerId={customerId}
 - GET request revenue by driver: http://localhost:8080/admin/invoice/revenue?driverId={driverId}
-- GET request revenue by customer in a period: http://localhost:8080/admin/invoice/revenue?startDate={dd-mm-yyyy}&endDate={dd-mm-yyyy}&customerId={customerId}
-- GET request revenue by driver in a period: http://localhost:8080/admin/invoice/revenue?startDate={dd-mm-yyyy}&endDate={dd-mm-yyyy}&driverId={driverId}
+- GET request revenue by customer in a period: http://localhost:8080/admin/invoice/revenue?startDate={dd-mm-yyyy}&&endDate={dd-mm-yyyy}&&customerId={customerId}
+- GET request revenue by driver in a period: http://localhost:8080/admin/invoice/revenue?startDate={dd-mm-yyyy}&&endDate={dd-mm-yyyy}&&driverId={driverId}
 
 
 ### Supporting tools used
