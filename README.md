@@ -136,6 +136,7 @@
 1. Get all customer
 - GET request: http://localhost:8080/admin/customer (it will automatically call with pageSize = 20 and pageNumber = 0)
 - GET request with custom paging and size: http://localhost:8080/admin/customer?page=0&&size=20
+- GET by attribute: http://localhost:8080/admin/driver/attribute?attributeName=name&attributeValue=Bao
 
 2. Get one customer
 - GET request: http://localhost:8080/admin/customer/{id}
